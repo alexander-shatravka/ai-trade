@@ -13,6 +13,11 @@ withDefaults(
   { variant: 'primary', size: 'md' },
 );
 
+// Resolved here rather than inline in :is — resolveComponent must run during
+// setup, and calling it in the template silently yields an unresolved
+// <nuxtlink> element with no href, i.e. a link that does not navigate.
+const NuxtLink = resolveComponent('NuxtLink');
+
 const base =
   'inline-flex items-center justify-center gap-2 font-semibold whitespace-nowrap ' +
   'rounded-[var(--r-md)] border transition-all duration-[var(--d-fast)] ' +
@@ -38,7 +43,7 @@ const sizes = {
 
 <template>
   <component
-    :is="to ? resolveComponent('NuxtLink') : 'button'"
+    :is="to ? NuxtLink : 'button'"
     :to="to"
     :class="[base, variants[variant], sizes[size]]"
   >
