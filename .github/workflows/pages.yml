@@ -1,0 +1,43 @@
+# Публікація статичних сторінок Етапу 1 на GitHub Pages.
+# Джерело в налаштуваннях репозиторію: Settings → Pages → Source → GitHub Actions.
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Одночасно виконується лише один деплой; проміжні запуски скасовуються.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Збираємо _site явно, а не віддаємо корінь репозиторію:
+      # коли з'являться apps/ і packages/, у публікацію не потрапить зайве.
+      - name: Зібрати _site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp .nojekyll _site/
+          cp -R design _site/design
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
