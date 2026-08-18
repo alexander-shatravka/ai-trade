@@ -35,7 +35,7 @@ const trust = ['Безкоштовний старт', 'Без банківськ
         Ви лише завантажуєте фотографію.
       </p>
 
-      <div class="mt-9 flex flex-wrap justify-center gap-3">
+      <div class="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
         <BaseButton variant="ai" size="lg" to="/sell">✨ Продати товар</BaseButton>
         <BaseButton variant="secondary" size="lg" to="/search">Знайти товар</BaseButton>
       </div>

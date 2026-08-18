@@ -44,11 +44,15 @@ const widthOf = (kop: number) => {
           />
         </span>
         <span
-          class="w-40 shrink-0 truncate text-[var(--t-xs)]"
+          class="hidden w-40 shrink-0 truncate text-[var(--t-xs)] sm:block"
           :class="item.isYours ? 'font-semibold text-danger-500' : 'text-text-muted'"
         >{{ item.label }}</span>
       </li>
     </ul>
+
+    <p class="mt-3 text-[var(--t-xs)] text-text-muted sm:hidden">
+      Червона смуга — ваше оголошення.
+    </p>
 
     <p class="mt-4 text-[var(--t-xs)] text-text-muted">
       Шкала охоплює діапазон {{ formatKop(minKop) }} – {{ formatKop(maxKop) }} і не починається

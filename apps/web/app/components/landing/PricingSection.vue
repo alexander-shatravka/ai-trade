@@ -31,7 +31,7 @@ const priceLabel = (priceKop: number) =>
         >
           <span
             v-if="plan.featured"
-            class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-[var(--r-full)] bg-primary px-3 py-1 text-[var(--t-xs)] font-semibold text-white"
+            class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-[var(--r-full)] bg-primary px-3 py-1 text-[var(--t-xs)] font-semibold text-white"
           >★ Найпопулярніший</span>
 
           <h3 class="text-[length:var(--t-h3)] font-bold">{{ plan.name }}</h3>

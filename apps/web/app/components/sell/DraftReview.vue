@@ -136,7 +136,7 @@ const seconds = computed(() => Math.max(1, Math.round(props.elapsedMs / 1000)));
               title="AI вважає якість цього фото низькою"
             >якість ↓</span>
           </div>
-          <span v-if="evidenceFor(photo.id)" class="mt-1.5 block text-[10px] leading-tight text-text-muted">
+          <span v-if="evidenceFor(photo.id)" class="mt-1.5 line-clamp-2 text-[10px] leading-tight text-text-muted" :title="evidenceFor(photo.id)">
             {{ evidenceFor(photo.id) }}
           </span>
         </li>
@@ -164,7 +164,7 @@ const seconds = computed(() => Math.max(1, Math.round(props.elapsedMs / 1000)));
         :edited="editedTitle"
         :hint="`${title.length} / 70 символів`"
       >
-        <div class="flex gap-2">
+        <div class="flex flex-col gap-2 sm:flex-row">
           <input
             v-model="title"
             type="text"

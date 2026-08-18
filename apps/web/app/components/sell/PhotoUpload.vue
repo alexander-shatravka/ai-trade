@@ -46,8 +46,14 @@ const canAnalyze = computed(() => props.photos.length > 0);
       @drop.prevent="drop"
     >
       <p class="text-4xl" aria-hidden="true">📸</p>
-      <p class="mt-3 font-semibold">Перетягніть фото сюди</p>
-      <p class="mt-1 text-[var(--t-sm)] text-text-muted">або оберіть файли — до 10 штук</p>
+      <p class="mt-3 font-semibold">
+        <span class="sm:hidden">Додайте фото товару</span>
+        <span class="hidden sm:inline">Перетягніть фото сюди</span>
+      </p>
+      <p class="mt-1 text-[var(--t-sm)] text-text-muted">
+        <span class="sm:hidden">Знімок з камери або з галереї — до 10 штук</span>
+        <span class="hidden sm:inline">або оберіть файли — до 10 штук</span>
+      </p>
 
       <input
         ref="input"
@@ -57,7 +63,7 @@ const canAnalyze = computed(() => props.photos.length > 0);
         class="sr-only"
         @change="pick"
       >
-      <BaseButton class="mt-5" variant="secondary" @click="input?.click()">
+      <BaseButton class="mt-5 w-full sm:w-auto" variant="secondary" @click="input?.click()">
         Обрати фото
       </BaseButton>
     </div>
@@ -69,9 +75,14 @@ const canAnalyze = computed(() => props.photos.length > 0);
           :alt="photo.name"
           class="aspect-square w-full rounded-[var(--r-md)] border border-border object-cover"
         >
+        <!--
+          The visible circle stays 24px so it does not cover the thumbnail, but
+          ::after widens the touch target to 44px, which is the minimum a finger
+          can hit reliably.
+        -->
         <button
           type="button"
-          class="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full border border-border bg-surface text-[var(--t-xs)] shadow-[var(--sh-sm)]"
+          class="absolute -right-2 -top-2 grid h-6 w-6 place-items-center rounded-full border border-border bg-surface text-[var(--t-xs)] shadow-[var(--sh-sm)] after:absolute after:-inset-2.5 after:content-['']"
           :aria-label="`Видалити фото ${photo.name}`"
           @click="emit('remove', photo.id)"
         >✕</button>

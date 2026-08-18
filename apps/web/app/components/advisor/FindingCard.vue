@@ -29,16 +29,18 @@ const kop = (value: unknown) => formatKop(Number(value));
     class="rounded-[var(--r-lg)] border bg-surface p-5"
     :class="applied ? 'border-success-500' : primary ? 'border-warning-500' : 'border-border'"
   >
-    <header class="flex flex-wrap items-center gap-2">
-      <span class="text-xl" aria-hidden="true">{{ icons[finding.axis] }}</span>
-      <h3 class="font-semibold">{{ finding.finding }}</h3>
-      <span
-        v-if="primary"
-        class="rounded-[var(--r-full)] bg-warning-500/15 px-2 py-0.5 text-[10px] font-semibold text-warning-500"
-      >головна причина</span>
-      <span v-else class="text-[var(--t-xs)] text-text-muted">
-        важливість: {{ severityLabel[finding.severity] }}
-      </span>
+    <header class="flex gap-2.5">
+      <span class="shrink-0 text-xl leading-tight" aria-hidden="true">{{ icons[finding.axis] }}</span>
+      <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <h3 class="font-semibold">{{ finding.finding }}</h3>
+        <span
+          v-if="primary"
+          class="whitespace-nowrap rounded-[var(--r-full)] bg-warning-500/15 px-2 py-0.5 text-[10px] font-semibold text-warning-500"
+        >головна причина</span>
+        <span v-else class="text-[var(--t-xs)] text-text-muted">
+          важливість: {{ severityLabel[finding.severity] }}
+        </span>
+      </div>
     </header>
 
     <!-- Evidence: the numbers the finding was computed from. Hidden on FREE. -->

@@ -83,7 +83,7 @@ const summary = computed(() => {
         <p class="mt-1 text-text-secondary">{{ summary }}</p>
       </div>
       <span
-        class="ml-auto rounded-[var(--r-full)] border border-border px-3 py-1.5 text-[var(--t-sm)] font-medium"
+        class="rounded-[var(--r-full)] border border-border px-3 py-1.5 text-[var(--t-sm)] font-medium sm:ml-auto"
       >Health {{ advice.healthScore }} / 100</span>
     </header>
 
