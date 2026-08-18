@@ -1,5 +1,5 @@
-# Публікація статичних сторінок Етапу 1 на GitHub Pages.
-# Джерело в налаштуваннях репозиторію: Settings → Pages → Source → GitHub Actions.
+# Publishes the Stage 1 static pages to GitHub Pages.
+# Repository setting: Settings → Pages → Source → GitHub Actions.
 name: Deploy Pages
 
 on:
@@ -12,7 +12,7 @@ permissions:
   pages: write
   id-token: write
 
-# Одночасно виконується лише один деплой; проміжні запуски скасовуються.
+# Only one deploy at a time; queued runs are cancelled.
 concurrency:
   group: pages
   cancel-in-progress: true
@@ -26,17 +26,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Збираємо _site явно, а не віддаємо корінь репозиторію:
-      # коли з'являться apps/ і packages/, у публікацію не потрапить зайве.
-      - name: Зібрати _site
+      # Assemble _site explicitly instead of publishing the repository root,
+      # so build output from apps/ and packages/ never leaks into the site.
+      - name: Build _site
         run: |
           mkdir -p _site
           cp index.html _site/
           cp .nojekyll _site/
           cp -R design _site/design
 
-      # enablement: true — вмикає Pages із джерелом "GitHub Actions" через API,
-      # щоб деплой не залежав від ручного перемикача в Settings → Pages.
+      # enablement: true turns Pages on via the API with the "GitHub Actions"
+      # source, so the deploy does not depend on the manual Settings toggle.
       - uses: actions/configure-pages@v5
         with:
           enablement: true

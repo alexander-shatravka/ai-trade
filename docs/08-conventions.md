@@ -158,14 +158,14 @@ throw new AppError({
 
 **Гілки:** `main` (захищена) ← `feat/ai-price-suggestion`, `fix/exif-strip`, `chore/deps`.
 
-**Коміти — Conventional Commits, українською:**
+**Коміти — Conventional Commits, англійською:**
 
 ```
-feat(ai): додати три цінові сценарії замість однієї ціни
-fix(media): видаляти EXIF до збереження в S3
-refactor(listings): винести запити в репозиторій
-docs(api): оновити openapi.yaml після зміни /search
-chore(deps): оновити Prisma до 6.4
+feat(ai): add three price scenarios instead of a single price
+fix(media): strip EXIF before uploading to S3
+refactor(listings): extract queries into a repository
+docs(api): update openapi.yaml after the /search change
+chore(deps): bump Prisma to 6.4
 ```
 
 Типи: `feat` `fix` `refactor` `perf` `docs` `test` `chore` `style`.
