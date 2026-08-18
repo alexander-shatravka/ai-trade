@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Trade — Дизайн-система</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   AI TRADE · DESIGN TOKENS
+   Джерело правди для packages/ui/tokens.css та Tailwind preset.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+
+  /* ── Brand (violet-indigo) ─────────────────────────────────────────────── */
+  --brand-50:#F2F1FE; --brand-100:#E5E2FD; --brand-200:#CCC6FB; --brand-300:#ADA3F7;
+  --brand-400:#8C7DF1; --brand-500:#6E5BE8; --brand-600:#5B45D9; --brand-700:#4A36B8;
+  --brand-800:#3C2D93; --brand-900:#322876; --brand-950:#1E1747;
+
+  /* ── Accent (AI / teal) ────────────────────────────────────────────────── */
+  --accent-100:#D3F7F1; --accent-300:#7BE5D6; --accent-400:#35D6C4;
+  --accent-500:#14B8A6; --accent-600:#0E9384;
+
+  /* ── Neutral (cool gray) ───────────────────────────────────────────────── */
+  --n-0:#FFFFFF;  --n-25:#FCFCFD; --n-50:#F8F9FB;  --n-100:#F1F3F7; --n-200:#E4E7EE;
+  --n-300:#CDD2DE; --n-400:#9AA1B1; --n-500:#6E7789; --n-600:#545C6B; --n-700:#3F4653;
+  --n-800:#2A2F3A; --n-900:#1A1D26; --n-950:#101219; --n-1000:#0A0C11;
+
+  /* ── Semantic ──────────────────────────────────────────────────────────── */
+  --success-50:#ECFDF5; --success-500:#10B981; --success-600:#059669;
+  --warning-50:#FFFBEB; --warning-500:#F59E0B; --warning-600:#D97706;
+  --danger-50:#FEF2F2;  --danger-500:#EF4444;  --danger-600:#DC2626;
+  --info-50:#EFF6FF;    --info-500:#3B82F6;    --info-600:#2563EB;
+
+  /* ── Aliases (світла тема) ─────────────────────────────────────────────── */
+  --bg:var(--n-0); --bg-subtle:var(--n-50); --bg-inset:var(--n-100);
+  --surface:var(--n-0); --surface-raised:var(--n-0); --surface-hover:var(--n-50);
+  --border:var(--n-200); --border-strong:var(--n-300);
+  --text:var(--n-950); --text-secondary:var(--n-600); --text-muted:var(--n-500);
+  --text-inverse:var(--n-0);
+  --primary:var(--brand-500); --primary-hover:var(--brand-600); --primary-soft:var(--brand-50);
+  --ring:rgba(110,91,232,.35);
+
+  /* ── Elevation ─────────────────────────────────────────────────────────── */
+  --sh-xs:0 1px 2px rgba(16,18,25,.05);
+  --sh-sm:0 1px 3px rgba(16,18,25,.07), 0 1px 2px rgba(16,18,25,.04);
+  --sh-md:0 4px 12px rgba(16,18,25,.07), 0 2px 4px rgba(16,18,25,.04);
+  --sh-lg:0 12px 32px rgba(16,18,25,.10), 0 4px 8px rgba(16,18,25,.04);
+  --sh-xl:0 24px 64px rgba(16,18,25,.14), 0 8px 16px rgba(16,18,25,.05);
+  --sh-brand:0 8px 24px rgba(110,91,232,.28);
+
+  /* ── Radius ────────────────────────────────────────────────────────────── */
+  --r-xs:4px; --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-full:999px;
+
+  /* ── Spacing (4pt grid) ────────────────────────────────────────────────── */
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+  --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px; --s-20:80px; --s-24:96px; --s-32:128px;
+
+  /* ── Type ──────────────────────────────────────────────────────────────── */
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+  --t-display:clamp(2.6rem,1.4rem + 3.6vw,4.5rem);
+  --t-h1:clamp(2rem,1.3rem + 2.2vw,3rem);
+  --t-h2:clamp(1.5rem,1.15rem + 1.1vw,2.125rem);
+  --t-h3:1.375rem; --t-h4:1.125rem;
+  --t-lg:1.0625rem; --t-base:0.9375rem; --t-sm:0.8125rem; --t-xs:0.75rem;
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  --e-out:cubic-bezier(.32,.72,0,1);
+  --e-spring:cubic-bezier(.34,1.56,.64,1);
+  --d-fast:120ms; --d-base:200ms; --d-slow:320ms;
+
+  --container:1180px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg:var(--n-1000); --bg-subtle:#0E1117; --bg-inset:#161A22;
+  --surface:#12151C; --surface-raised:#181C25; --surface-hover:#1C212B;
+  --border:#242935; --border-strong:#333A48;
+  --text:#F2F4F8; --text-secondary:#A2AABB; --text-muted:#6E7789;
+  --text-inverse:var(--n-950);
+  --primary:#8C7DF1; --primary-hover:#A093F5; --primary-soft:rgba(140,125,241,.14);
+  --ring:rgba(140,125,241,.35);
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);
+  --sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 4px 12px rgba(0,0,0,.5);
+  --sh-lg:0 12px 32px rgba(0,0,0,.55);
+  --sh-xl:0 24px 64px rgba(0,0,0,.6);
+  --sh-brand:0 8px 28px rgba(110,91,232,.4);
+}
+
+/* ═══ Base ═══════════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font); font-size:var(--t-base); line-height:1.6;
+  -webkit-font-smoothing:antialiased; letter-spacing:-.006em;
+  transition:background var(--d-base) var(--e-out), color var(--d-base) var(--e-out);
+}
+h1,h2,h3,h4{margin:0; font-weight:640; letter-spacing:-.024em; line-height:1.15}
+p{margin:0}
+a{color:inherit; text-decoration:none}
+code{font-family:var(--mono); font-size:.85em}
+:focus-visible{outline:2px solid var(--primary); outline-offset:2px; border-radius:var(--r-xs)}
+
+/* ═══ Layout ═════════════════════════════════════════════════════════════ */
+.topbar{
+  position:sticky; top:0; z-index:50; height:60px;
+  display:flex; align-items:center; gap:var(--s-4);
+  padding:0 var(--s-6); border-bottom:1px solid var(--border);
+  background:color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter:saturate(180%) blur(16px);
+}
+.shell{display:grid; grid-template-columns:220px 1fr; max-width:1400px; margin:0 auto}
+.sidenav{
+  position:sticky; top:60px; align-self:start; height:calc(100vh - 60px);
+  overflow-y:auto; padding:var(--s-6) var(--s-4); border-right:1px solid var(--border);
+}
+.sidenav a{
+  display:block; padding:7px var(--s-3); border-radius:var(--r-sm);
+  color:var(--text-secondary); font-size:var(--t-sm); font-weight:500;
+  transition:all var(--d-fast) var(--e-out);
+}
+.sidenav a:hover{background:var(--surface-hover); color:var(--text)}
+.sidenav .nav-group{margin:var(--s-5) 0 var(--s-2); padding-left:var(--s-3);
+  font-size:var(--t-xs); font-weight:640; letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted)}
+main{padding:var(--s-10) var(--s-8) var(--s-32); max-width:900px}
+section{margin-bottom:var(--s-16); scroll-margin-top:80px}
+.sec-head{margin-bottom:var(--s-6); padding-bottom:var(--s-3); border-bottom:1px solid var(--border)}
+.sec-head h2{font-size:var(--t-h3)}
+.sec-head p{margin-top:6px; color:var(--text-secondary); font-size:var(--t-sm)}
+.stack{display:flex; flex-wrap:wrap; gap:var(--s-3); align-items:center}
+.grid{display:grid; gap:var(--s-3)}
+
+/* ═══ Logo ═══════════════════════════════════════════════════════════════ */
+.logo{display:flex; align-items:center; gap:10px; font-weight:680; letter-spacing:-.03em; font-size:1.0625rem}
+.logo-mark{
+  width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+  background:linear-gradient(135deg, var(--brand-400), var(--brand-600) 55%, var(--accent-500));
+  box-shadow:var(--sh-brand); color:#fff; font-weight:800; font-size:14px;
+}
+.badge-ver{
+  margin-left:6px; padding:2px 7px; border-radius:var(--r-full);
+  background:var(--primary-soft); color:var(--primary);
+  font-size:11px; font-weight:640; letter-spacing:0;
+}
+
+/* ═══ Theme toggle ═══════════════════════════════════════════════════════ */
+.theme-toggle{
+  margin-left:auto; display:inline-flex; align-items:center; gap:7px;
+  height:34px; padding:0 var(--s-3); border:1px solid var(--border);
+  border-radius:var(--r-full); background:var(--surface); color:var(--text-secondary);
+  font-family:inherit; font-size:var(--t-sm); font-weight:520; cursor:pointer;
+  transition:all var(--d-fast) var(--e-out);
+}
+.theme-toggle:hover{border-color:var(--border-strong); color:var(--text)}
+
+/* ═══ Buttons ════════════════════════════════════════════════════════════ */
+.btn{
+  --btn-h:40px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  height:var(--btn-h); padding:0 18px; border:1px solid transparent;
+  border-radius:var(--r-md); font-family:inherit; font-size:var(--t-base);
+  font-weight:560; letter-spacing:-.01em; cursor:pointer; white-space:nowrap;
+  transition:transform var(--d-fast) var(--e-out), background var(--d-fast) var(--e-out),
+             border-color var(--d-fast) var(--e-out), box-shadow var(--d-fast) var(--e-out),
+             opacity var(--d-fast);
+}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:var(--primary); color:#fff; box-shadow:var(--sh-sm)}
+.btn-primary:hover{background:var(--primary-hover); box-shadow:var(--sh-brand)}
+.btn-secondary{background:var(--surface); color:var(--text); border-color:var(--border-strong); box-shadow:var(--sh-xs)}
+.btn-secondary:hover{background:var(--surface-hover); border-color:var(--text-muted)}
+.btn-ghost{background:transparent; color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--surface-hover); color:var(--text)}
+.btn-danger{background:var(--danger-500); color:#fff}
+.btn-danger:hover{background:var(--danger-600)}
+.btn-ai{
+  background:linear-gradient(135deg, var(--brand-500), var(--brand-600) 60%, var(--accent-600));
+  color:#fff; box-shadow:var(--sh-brand);
+}
+.btn-ai:hover{filter:brightness(1.08)}
+.btn-sm{--btn-h:32px; padding:0 13px; font-size:var(--t-sm)}
+.btn-lg{--btn-h:50px; padding:0 26px; font-size:var(--t-lg); border-radius:var(--r-lg)}
+.btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
+
+/* ═══ Form ═══════════════════════════════════════════════════════════════ */
+.field{display:flex; flex-direction:column; gap:6px; max-width:340px}
+.label{font-size:var(--t-sm); font-weight:560; color:var(--text-secondary)}
+.input, .select, .textarea{
+  width:100%; height:40px; padding:0 13px; border:1px solid var(--border-strong);
+  border-radius:var(--r-md); background:var(--surface); color:var(--text);
+  font-family:inherit; font-size:var(--t-base);
+  transition:border-color var(--d-fast) var(--e-out), box-shadow var(--d-fast) var(--e-out);
+}
+.textarea{height:auto; padding:11px 13px; resize:vertical; line-height:1.55}
+.input::placeholder{color:var(--text-muted)}
+.input:focus, .select:focus, .textarea:focus{outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--ring)}
+.input.is-error{border-color:var(--danger-500)}
+.hint{font-size:var(--t-xs); color:var(--text-muted)}
+.hint.error{color:var(--danger-500)}
+
+.switch{position:relative; display:inline-flex; align-items:center; gap:10px; cursor:pointer; user-select:none}
+.switch input{position:absolute; opacity:0; width:0}
+.switch-track{
+  width:42px; height:24px; border-radius:var(--r-full); background:var(--n-300);
+  transition:background var(--d-base) var(--e-out); flex:none;
+}
+[data-theme="dark"] .switch-track{background:var(--n-700)}
+.switch-thumb{
+  position:absolute; left:3px; top:3px; width:18px; height:18px; border-radius:50%;
+  background:#fff; box-shadow:var(--sh-sm); transition:transform var(--d-base) var(--e-spring);
+}
+.switch input:checked ~ .switch-track{background:var(--primary)}
+.switch input:checked ~ .switch-thumb{transform:translateX(18px)}
+
+/* ═══ Badges & chips ═════════════════════════════════════════════════════ */
+.badge{
+  display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 9px;
+  border-radius:var(--r-full); font-size:var(--t-xs); font-weight:600; letter-spacing:-.005em;
+}
+.badge-brand{background:var(--primary-soft); color:var(--primary)}
+.badge-success{background:var(--success-50); color:var(--success-600)}
+.badge-warning{background:var(--warning-50); color:var(--warning-600)}
+.badge-danger{background:var(--danger-50); color:var(--danger-600)}
+.badge-neutral{background:var(--bg-inset); color:var(--text-secondary)}
+.badge-vip{background:linear-gradient(135deg,#F59E0B,#EA580C); color:#fff}
+[data-theme="dark"] .badge-success{background:rgba(16,185,129,.14)}
+[data-theme="dark"] .badge-warning{background:rgba(245,158,11,.14)}
+[data-theme="dark"] .badge-danger{background:rgba(239,68,68,.14)}
+
+.chip{
+  display:inline-flex; align-items:center; gap:7px; height:30px; padding:0 12px;
+  border:1px solid var(--border); border-radius:var(--r-full);
+  background:var(--surface); font-size:var(--t-sm); font-weight:520; cursor:pointer;
+  transition:all var(--d-fast) var(--e-out);
+}
+.chip:hover{border-color:var(--border-strong)}
+.chip.is-active{background:var(--primary-soft); border-color:var(--primary); color:var(--primary)}
+.chip .x{opacity:.55; font-size:15px; line-height:1}
+
+/* ═══ Cards ══════════════════════════════════════════════════════════════ */
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg);
+  padding:var(--s-5); box-shadow:var(--sh-xs);
+  transition:box-shadow var(--d-base) var(--e-out), transform var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out);
+}
+.card-hover:hover{transform:translateY(-2px); box-shadow:var(--sh-lg); border-color:var(--border-strong)}
+.card-glow{
+  position:relative; border-color:transparent;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,
+             linear-gradient(135deg,var(--brand-400),var(--accent-500)) border-box;
+  border:1px solid transparent;
+}
+
+/* ═══ Listing card ═══════════════════════════════════════════════════════ */
+.lcard{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg);
+  overflow:hidden; cursor:pointer;
+  transition:transform var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out);
+}
+.lcard:hover{transform:translateY(-3px); box-shadow:var(--sh-lg)}
+.lcard-img{
+  position:relative; aspect-ratio:4/3;
+  background:linear-gradient(135deg,var(--n-100),var(--n-200));
+  display:grid; place-items:center; font-size:40px; color:var(--n-400);
+}
+[data-theme="dark"] .lcard-img{background:linear-gradient(135deg,#1A1E27,#232833)}
+.lcard-img .tags{position:absolute; top:9px; left:9px; display:flex; gap:5px}
+.lcard-body{padding:var(--s-3) var(--s-4) var(--s-4)}
+.lcard-price{font-size:1.0625rem; font-weight:680; letter-spacing:-.02em}
+.lcard-title{
+  margin-top:3px; font-size:var(--t-sm); color:var(--text-secondary); line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.lcard-meta{margin-top:9px; display:flex; gap:10px; font-size:var(--t-xs); color:var(--text-muted)}
+
+/* ═══ AI panel ═══════════════════════════════════════════════════════════ */
+.ai-panel{
+  position:relative; border-radius:var(--r-lg); padding:var(--s-5);
+  background:linear-gradient(160deg, var(--primary-soft), transparent 65%), var(--surface);
+  border:1px solid var(--border);
+}
+.ai-panel::before{
+  content:''; position:absolute; inset:0; border-radius:var(--r-lg); pointer-events:none;
+  background:linear-gradient(135deg,rgba(110,91,232,.5),rgba(20,184,166,.4));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; padding:1px;
+}
+.ai-label{
+  display:inline-flex; align-items:center; gap:6px; font-size:var(--t-xs);
+  font-weight:640; letter-spacing:.04em; text-transform:uppercase; color:var(--primary);
+}
+.ai-dot{width:6px; height:6px; border-radius:50%; background:var(--accent-500); box-shadow:0 0 0 3px rgba(20,184,166,.2)}
+
+.price-tiers{display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s-2); margin-top:var(--s-4)}
+.tier{
+  padding:var(--s-3); border:1px solid var(--border); border-radius:var(--r-md);
+  background:var(--bg-subtle); text-align:center; cursor:pointer;
+  transition:all var(--d-fast) var(--e-out);
+}
+.tier:hover{border-color:var(--border-strong)}
+.tier.is-picked{border-color:var(--primary); background:var(--primary-soft); box-shadow:0 0 0 3px var(--ring)}
+.tier-name{font-size:var(--t-xs); color:var(--text-muted); font-weight:560}
+.tier-val{margin-top:4px; font-size:1.0625rem; font-weight:700; letter-spacing:-.02em}
+
+/* ═══ Progress / meter ═══════════════════════════════════════════════════ */
+.meter{height:6px; border-radius:var(--r-full); background:var(--bg-inset); overflow:hidden}
+.meter-fill{height:100%; border-radius:var(--r-full);
+  background:linear-gradient(90deg,var(--brand-500),var(--accent-500));
+  transition:width var(--d-slow) var(--e-out)}
+.meter-fill.warn{background:linear-gradient(90deg,var(--warning-500),#FB923C)}
+.meter-fill.ok{background:linear-gradient(90deg,var(--success-500),var(--accent-500))}
+
+/* ═══ Tabs ═══════════════════════════════════════════════════════════════ */
+.tabs{display:flex; gap:2px; padding:3px; background:var(--bg-inset); border-radius:var(--r-md); width:fit-content}
+.tab{
+  padding:7px 15px; border:none; border-radius:7px; background:transparent;
+  font-family:inherit; font-size:var(--t-sm); font-weight:560; color:var(--text-secondary);
+  cursor:pointer; transition:all var(--d-fast) var(--e-out);
+}
+.tab.is-active{background:var(--surface); color:var(--text); box-shadow:var(--sh-xs)}
+
+/* ═══ Avatar / rating ════════════════════════════════════════════════════ */
+.avatar{
+  width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
+  background:linear-gradient(135deg,var(--brand-400),var(--brand-600));
+  color:#fff; font-weight:640; font-size:var(--t-sm); flex:none;
+}
+.stars{display:inline-flex; gap:1px; color:var(--warning-500); font-size:14px; letter-spacing:1px}
+
+/* ═══ Alert / toast ══════════════════════════════════════════════════════ */
+.alert{display:flex; gap:11px; padding:13px 15px; border-radius:var(--r-md); font-size:var(--t-sm); line-height:1.5}
+.alert-info{background:var(--info-50); color:var(--info-600)}
+.alert-warn{background:var(--warning-50); color:var(--warning-600)}
+.alert-danger{background:var(--danger-50); color:var(--danger-600)}
+[data-theme="dark"] .alert-info{background:rgba(59,130,246,.12); color:#93C5FD}
+[data-theme="dark"] .alert-warn{background:rgba(245,158,11,.12); color:#FCD34D}
+[data-theme="dark"] .alert-danger{background:rgba(239,68,68,.12); color:#FCA5A5}
+
+/* ═══ Skeleton ═══════════════════════════════════════════════════════════ */
+.skel{border-radius:var(--r-sm); background:linear-gradient(90deg,var(--bg-inset) 25%,var(--surface-hover) 37%,var(--bg-inset) 63%);
+  background-size:400% 100%; animation:shimmer 1.4s ease infinite}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+
+/* ═══ Token swatches ═════════════════════════════════════════════════════ */
+.swatches{display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:var(--s-2)}
+.sw{border-radius:var(--r-md); overflow:hidden; border:1px solid var(--border)}
+.sw-chip{height:56px}
+.sw-meta{padding:7px 9px; background:var(--surface)}
+.sw-name{font-size:11px; font-weight:600}
+.sw-hex{font-family:var(--mono); font-size:10px; color:var(--text-muted)}
+
+.spec-table{width:100%; border-collapse:collapse; font-size:var(--t-sm)}
+.spec-table th{text-align:left; padding:9px 12px; color:var(--text-muted); font-weight:600;
+  font-size:var(--t-xs); text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid var(--border)}
+.spec-table td{padding:11px 12px; border-bottom:1px solid var(--border); vertical-align:middle}
+.spec-table code{background:var(--bg-inset); padding:2px 6px; border-radius:var(--r-xs); color:var(--primary)}
+
+.note{
+  margin-top:var(--s-4); padding:var(--s-4); border-left:3px solid var(--primary);
+  background:var(--bg-subtle); border-radius:0 var(--r-md) var(--r-md) 0;
+  font-size:var(--t-sm); color:var(--text-secondary); line-height:1.6;
+}
+.note strong{color:var(--text)}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .sidenav{display:none}
+  main{padding:var(--s-6) var(--s-4) var(--s-20)}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important; transition:none !important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo"><div class="logo-mark">AI</div>AI&nbsp;Trade<span class="badge-ver">Design System 2.0</span></div>
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <span id="ticon">🌙</span><span id="tlabel">Темна тема</span>
+  </button>
+</header>
+
+<div class="shell">
+  <nav class="sidenav">
+    <div class="nav-group">Основа</div>
+    <a href="#principles">Принципи</a>
+    <a href="#color">Колір</a>
+    <a href="#type">Типографіка</a>
+    <a href="#space">Простір і радіуси</a>
+    <a href="#elevation">Тіні</a>
+    <a href="#motion">Рух</a>
+    <div class="nav-group">Компоненти</div>
+    <a href="#buttons">Кнопки</a>
+    <a href="#forms">Форми</a>
+    <a href="#badges">Бейджі та чіпси</a>
+    <a href="#cards">Картки</a>
+    <a href="#listing">Картка товару</a>
+    <a href="#ai">AI-компоненти</a>
+    <a href="#feedback">Стани та фідбек</a>
+    <div class="nav-group">Правила</div>
+    <a href="#a11y">Доступність</a>
+  </nav>
+
+  <main>
+
+    <!-- ═══ ПРИНЦИПИ ═══ -->
+    <section id="principles">
+      <div class="sec-head">
+        <h2>Принципи</h2>
+        <p>Чотири правила, які вирішують суперечки в дизайні швидше за обговорення.</p>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+        <div class="card">
+          <strong>1. Фото — головний герой</strong>
+          <p style="margin-top:6px;color:var(--text-secondary);font-size:var(--t-sm)">
+            Інтерфейс маркетплейсу — це рамка навколо товару. Нейтральні поверхні, стриманий колір,
+            жодних декоративних градієнтів поруч із фотографіями.</p>
+        </div>
+        <div class="card">
+          <strong>2. AI видно, але він не кричить</strong>
+          <p style="margin-top:6px;color:var(--text-secondary);font-size:var(--t-sm)">
+            Усе, що згенеровано AI, має однаковий візуальний маркер — фіолетово-бірюзовий акцент.
+            Користувач завжди знає, що написала машина, а що людина.</p>
+        </div>
+        <div class="card">
+          <strong>3. Рішення — за людиною</strong>
+          <p style="margin-top:6px;color:var(--text-secondary);font-size:var(--t-sm)">
+            Кожне AI-поле редаговане, кожна рекомендація має кнопку «змінити».
+            AI пропонує — людина підтверджує. Це і етика, і UX.</p>
+        </div>
+        <div class="card">
+          <strong>4. Число — з поясненням</strong>
+          <p style="margin-top:6px;color:var(--text-secondary);font-size:var(--t-sm)">
+            Ціна, ймовірність продажу, health score ніколи не показуються самі по собі.
+            Поруч — одне речення «чому». Інакше це магія, а магії не довіряють.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ КОЛІР ═══ -->
+    <section id="color">
+      <div class="sec-head">
+        <h2>Колір</h2>
+        <p>Фіолетово-індиговий бренд + бірюзовий AI-акцент на холодних нейтралях.
+           Обидві теми — першокласні, не «інверсія».</p>
+      </div>
+
+      <h4 style="margin-bottom:var(--s-3)">Brand</h4>
+      <div class="swatches" id="sw-brand"></div>
+
+      <h4 style="margin:var(--s-6) 0 var(--s-3)">Accent — AI</h4>
+      <div class="swatches" id="sw-accent"></div>
+
+      <h4 style="margin:var(--s-6) 0 var(--s-3)">Neutral</h4>
+      <div class="swatches" id="sw-neutral"></div>
+
+      <h4 style="margin:var(--s-6) 0 var(--s-3)">Semantic</h4>
+      <div class="swatches" id="sw-semantic"></div>
+
+      <div class="note">
+        <strong>Чому саме фіолетовий.</strong> Синій — колір банків і корпоративного софту,
+        зелений зайнятий «еко» і «успіхом», помаранчевий — це OLX. Фіолетово-індиговий вільний
+        в українському e-commerce і читається як «технологічність» без агресії.
+        Бірюзовий акцент використовується <em>виключно</em> для AI-функцій — так користувач
+        за пів секунди відрізняє AI-блок від звичайного.
+      </div>
+
+      <h4 style="margin:var(--s-8) 0 var(--s-3)">Семантичні аліаси</h4>
+      <table class="spec-table">
+        <tr><th>Токен</th><th>Світла</th><th>Темна</th><th>Використання</th></tr>
+        <tr><td><code>--bg</code></td><td>#FFFFFF</td><td>#0A0C11</td><td>Тло сторінки</td></tr>
+        <tr><td><code>--surface</code></td><td>#FFFFFF</td><td>#12151C</td><td>Картки, панелі</td></tr>
+        <tr><td><code>--surface-raised</code></td><td>#FFFFFF</td><td>#181C25</td><td>Модалки, дропдауни</td></tr>
+        <tr><td><code>--border</code></td><td>#E4E7EE</td><td>#242935</td><td>Роздільники</td></tr>
+        <tr><td><code>--text</code></td><td>#101219</td><td>#F2F4F8</td><td>Основний текст</td></tr>
+        <tr><td><code>--text-secondary</code></td><td>#545C6B</td><td>#A2AABB</td><td>Опис, підписи</td></tr>
+        <tr><td><code>--primary</code></td><td>#6E5BE8</td><td>#8C7DF1</td><td>Дії, посилання</td></tr>
+      </table>
+      <div class="note">
+        У темній темі <code>--primary</code> <strong>світліший</strong>, а не той самий.
+        #6E5BE8 на тлі #0A0C11 дає контраст 4.1:1 — нижче за AA. #8C7DF1 дає 6.8:1.
+        Це найчастіша помилка при додаванні dark mode постфактум.
+      </div>
+    </section>
+
+    <!-- ═══ ТИПОГРАФІКА ═══ -->
+    <section id="type">
+      <div class="sec-head">
+        <h2>Типографіка</h2>
+        <p>Inter з фолбеком на системний стек (SF Pro на Apple). Заголовки — щільний трекінг,
+           текст — 15px як база: щільніше за 16px, читабельніше за 14px.</p>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:var(--s-5)">
+        <div><div class="hint">display · clamp(2.6–4.5rem) · 680 · −.03em</div>
+          <div style="font-size:var(--t-display);font-weight:680;letter-spacing:-.035em;line-height:1.03">Продайте за 30 секунд</div></div>
+        <div><div class="hint">h1 · clamp(2–3rem) · 640</div>
+          <div style="font-size:var(--t-h1);font-weight:640;letter-spacing:-.028em">Як це працює</div></div>
+        <div><div class="hint">h2 · clamp(1.5–2.125rem) · 640</div>
+          <div style="font-size:var(--t-h2);font-weight:640;letter-spacing:-.024em">Оберіть свій тариф</div></div>
+        <div><div class="hint">h3 · 1.375rem · 620</div>
+          <div style="font-size:var(--t-h3);font-weight:620">AI-аналіз оголошення</div></div>
+        <div><div class="hint">body-lg · 1.0625rem · 400 · 1.65</div>
+          <div style="font-size:var(--t-lg);line-height:1.65;color:var(--text-secondary)">AI створить оголошення, оцінить товар, покращить фото та допоможе знайти покупця.</div></div>
+        <div><div class="hint">body · 0.9375rem · 400 · 1.6 ← база</div>
+          <div>Завантажте фото товару — решту зробить штучний інтелект.</div></div>
+        <div><div class="hint">sm · 0.8125rem · 400</div>
+          <div style="font-size:var(--t-sm);color:var(--text-secondary)">Київ · опубліковано 2 години тому</div></div>
+        <div><div class="hint">xs · 0.75rem · 600 · uppercase</div>
+          <div style="font-size:var(--t-xs);font-weight:640;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)">Рекомендовано</div></div>
+      </div>
+      <div class="note">
+        Максимальна ширина рядка тексту — <strong>68 символів</strong> (~640px).
+        Опис товару в дві колонки не робимо: на мобільному він однаково схлопнеться,
+        а на десктопі довгий рядок гірше читається за короткий.
+      </div>
+    </section>
+
+    <!-- ═══ ПРОСТІР ═══ -->
+    <section id="space">
+      <div class="sec-head"><h2>Простір і радіуси</h2><p>Сітка 4pt. Радіус зростає разом із розміром елемента.</p></div>
+      <div class="card">
+        <div class="hint" style="margin-bottom:var(--s-3)">Spacing scale</div>
+        <div id="space-scale" style="display:flex;flex-direction:column;gap:7px"></div>
+        <div class="hint" style="margin:var(--s-6) 0 var(--s-3)">Radius scale</div>
+        <div class="stack" id="radius-scale"></div>
+      </div>
+      <div class="note">
+        Правило радіусів: <code>--r-sm</code> для чіпів і бейджів, <code>--r-md</code> для кнопок
+        та інпутів, <code>--r-lg</code> для карток, <code>--r-xl</code>/<code>--r-2xl</code> для
+        великих секцій і модалок. Вкладені елементи завжди мають менший радіус за контейнер —
+        інакше кути виглядають «зламаними».
+      </div>
+    </section>
+
+    <!-- ═══ ТІНІ ═══ -->
+    <section id="elevation">
+      <div class="sec-head"><h2>Тіні</h2><p>У темній темі тіні не працюють — там ієрархію тримає світлішання поверхні.</p></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+        <div class="card" style="box-shadow:var(--sh-xs)"><code>--sh-xs</code><div class="hint">інпути, бейджі</div></div>
+        <div class="card" style="box-shadow:var(--sh-sm)"><code>--sh-sm</code><div class="hint">кнопки</div></div>
+        <div class="card" style="box-shadow:var(--sh-md)"><code>--sh-md</code><div class="hint">картки hover</div></div>
+        <div class="card" style="box-shadow:var(--sh-lg)"><code>--sh-lg</code><div class="hint">дропдауни</div></div>
+        <div class="card" style="box-shadow:var(--sh-xl)"><code>--sh-xl</code><div class="hint">модалки</div></div>
+        <div class="card" style="box-shadow:var(--sh-brand)"><code>--sh-brand</code><div class="hint">головна дія</div></div>
+      </div>
+    </section>
+
+    <!-- ═══ РУХ ═══ -->
+    <section id="motion">
+      <div class="sec-head"><h2>Рух</h2><p>Швидко і майже непомітно. Анімація підтверджує дію, а не розважає.</p></div>
+      <table class="spec-table">
+        <tr><th>Токен</th><th>Значення</th><th>Де</th></tr>
+        <tr><td><code>--d-fast</code></td><td>120 мс</td><td>hover, focus, натискання</td></tr>
+        <tr><td><code>--d-base</code></td><td>200 мс</td><td>поява карток, зміна теми</td></tr>
+        <tr><td><code>--d-slow</code></td><td>320 мс</td><td>модалки, прогрес AI-аналізу</td></tr>
+        <tr><td><code>--e-out</code></td><td>cubic-bezier(.32,.72,0,1)</td><td>усе за замовчуванням</td></tr>
+        <tr><td><code>--e-spring</code></td><td>cubic-bezier(.34,1.56,.64,1)</td><td>перемикачі, чекбокси</td></tr>
+      </table>
+      <div class="note">
+        <code>prefers-reduced-motion</code> вимикає всі переходи глобально. Це не опція —
+        для частини користувачів анімація викликає фізичну нудоту.
+      </div>
+    </section>
+
+    <!-- ═══ КНОПКИ ═══ -->
+    <section id="buttons">
+      <div class="sec-head"><h2>Кнопки</h2><p>Одна головна дія на екран. <code>.btn-ai</code> — тільки для AI-функцій.</p></div>
+      <div class="card">
+        <div class="stack">
+          <button class="btn btn-primary">Опублікувати</button>
+          <button class="btn btn-secondary">Скасувати</button>
+          <button class="btn btn-ghost">Пропустити</button>
+          <button class="btn btn-danger">Видалити</button>
+          <button class="btn btn-ai">✨ Створити з фото</button>
+          <button class="btn btn-primary" disabled>Недоступно</button>
+        </div>
+        <div class="stack" style="margin-top:var(--s-5)">
+          <button class="btn btn-primary btn-sm">Small · 32</button>
+          <button class="btn btn-primary">Base · 40</button>
+          <button class="btn btn-primary btn-lg">Large · 50</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ФОРМИ ═══ -->
+    <section id="forms">
+      <div class="sec-head"><h2>Форми</h2><p>Мітка завжди зверху. Плейсхолдер — приклад, а не заміна мітки.</p></div>
+      <div class="card" style="display:flex;flex-wrap:wrap;gap:var(--s-6)">
+        <div class="field">
+          <label class="label">Заголовок оголошення</label>
+          <input class="input" value="iPhone 13 Pro 128GB Graphite">
+          <span class="hint">42 / 70 символів</span>
+        </div>
+        <div class="field">
+          <label class="label">Ціна, ₴</label>
+          <input class="input is-error" value="0">
+          <span class="hint error">Ціна має бути більшою за 0</span>
+        </div>
+        <div class="field">
+          <label class="label">Категорія</label>
+          <select class="select"><option>Електроніка → Смартфони</option><option>Електроніка → Ноутбуки</option></select>
+        </div>
+        <div class="field" style="max-width:100%;flex:1;min-width:280px">
+          <label class="label">Опис</label>
+          <textarea class="textarea" rows="3">Продаю iPhone 13 Pro у кольорі Graphite. Стан гарний…</textarea>
+        </div>
+        <label class="switch"><input type="checkbox" checked><span class="switch-track"></span><span class="switch-thumb"></span>
+          <span style="font-size:var(--t-sm)">Покращити фото за допомогою AI</span></label>
+      </div>
+    </section>
+
+    <!-- ═══ БЕЙДЖІ ═══ -->
+    <section id="badges">
+      <div class="sec-head"><h2>Бейджі та чіпси</h2><p>Бейдж — стан (не клікається). Чіп — фільтр (клікається).</p></div>
+      <div class="card">
+        <div class="stack">
+          <span class="badge badge-brand">✨ AI</span>
+          <span class="badge badge-success">Активне</span>
+          <span class="badge badge-warning">На модерації</span>
+          <span class="badge badge-danger">Відхилено</span>
+          <span class="badge badge-neutral">Чернетка</span>
+          <span class="badge badge-vip">VIP</span>
+        </div>
+        <div class="stack" style="margin-top:var(--s-5)">
+          <span class="chip is-active">Смартфони <span class="x">×</span></span>
+          <span class="chip is-active">до 30 000 ₴ <span class="x">×</span></span>
+          <span class="chip">Apple</span>
+          <span class="chip">Samsung</span>
+          <span class="chip">Київ</span>
+        </div>
+        <div class="hint" style="margin-top:var(--s-3)">
+          Активні чіпи в пошуку — це те, як AI зрозумів запит. Користувач може прибрати будь-який.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ КАРТКИ ═══ -->
+    <section id="cards">
+      <div class="sec-head"><h2>Картки</h2></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+        <div class="card"><strong>Звичайна</strong><p class="hint" style="margin-top:6px">Контейнер контенту</p></div>
+        <div class="card card-hover"><strong>Інтерактивна</strong><p class="hint" style="margin-top:6px">Наведіть — підіймається</p></div>
+        <div class="card card-glow"><strong>Виділена</strong><p class="hint" style="margin-top:6px">Premium-тариф, AI-блок</p></div>
+      </div>
+    </section>
+
+    <!-- ═══ КАРТКА ТОВАРУ ═══ -->
+    <section id="listing">
+      <div class="sec-head"><h2>Картка товару</h2><p>Найважливіший компонент продукту — його бачать частіше за всі інші разом.</p></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))">
+        <article class="lcard">
+          <div class="lcard-img">📱<div class="tags"><span class="badge badge-brand">✨ AI</span></div></div>
+          <div class="lcard-body">
+            <div class="lcard-price">24 490 ₴</div>
+            <div class="lcard-title">iPhone 13 Pro 128GB Graphite, батарея 89%</div>
+            <div class="lcard-meta"><span>Київ</span><span>2 год тому</span></div>
+          </div>
+        </article>
+        <article class="lcard">
+          <div class="lcard-img">💻<div class="tags"><span class="badge badge-vip">VIP</span></div></div>
+          <div class="lcard-body">
+            <div class="lcard-price">31 900 ₴</div>
+            <div class="lcard-title">ASUS TUF Gaming F15, RTX 4060, 16 ГБ</div>
+            <div class="lcard-meta"><span>Львів</span><span>вчора</span></div>
+          </div>
+        </article>
+        <article class="lcard">
+          <div class="lcard-img">🛞</div>
+          <div class="lcard-body">
+            <div class="lcard-price">8 200 ₴</div>
+            <div class="lcard-title">Зимові шини Michelin R18, комплект 4 шт.</div>
+            <div class="lcard-meta"><span>Одеса</span><span>3 дні тому</span></div>
+          </div>
+        </article>
+        <article class="lcard">
+          <div class="lcard-img">🪑</div>
+          <div class="lcard-body">
+            <div class="lcard-price">6 500 ₴</div>
+            <div class="lcard-title">Диван розкладний, тканина, стан як новий</div>
+            <div class="lcard-meta"><span>Дніпро</span><span>5 днів тому</span></div>
+          </div>
+        </article>
+      </div>
+      <div class="note">
+        Співвідношення фото — <strong>4:3</strong>, не квадрат: більшість фото з телефона
+        горизонтальні або вертикальні, і 4:3 обрізає їх найменш болісно.
+        Заголовок обмежений двома рядками, щоб картки в сітці мали однакову висоту.
+      </div>
+    </section>
+
+    <!-- ═══ AI-КОМПОНЕНТИ ═══ -->
+    <section id="ai">
+      <div class="sec-head"><h2>AI-компоненти</h2><p>Візуально відокремлені від решти інтерфейсу — це і є головна цінність продукту.</p></div>
+
+      <div class="ai-panel">
+        <div class="ai-label"><span class="ai-dot"></span>AI-рекомендація ціни</div>
+        <div class="price-tiers">
+          <div class="tier"><div class="tier-name">Швидкий продаж</div><div class="tier-val">21 000 ₴</div></div>
+          <div class="tier is-picked"><div class="tier-name">Оптимальна</div><div class="tier-val">24 500 ₴</div></div>
+          <div class="tier"><div class="tier-name">Максимум</div><div class="tier-val">27 900 ₴</div></div>
+        </div>
+        <p style="margin-top:var(--s-4);font-size:var(--t-sm);color:var(--text-secondary);line-height:1.6">
+          Близько до медіани по <strong>43 схожих оголошеннях</strong> за останні 60 днів.
+          Медіанний час продажу в цій категорії — 11 днів.
+        </p>
+        <div style="margin-top:var(--s-4);display:flex;align-items:center;gap:var(--s-4)">
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;font-size:var(--t-xs);margin-bottom:5px">
+              <span style="color:var(--text-muted)">Ймовірність продажу за 14 днів</span>
+              <strong>78%</strong>
+            </div>
+            <div class="meter"><div class="meter-fill ok" style="width:78%"></div></div>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:var(--s-3)">
+          Рекомендація базується на ринкових даних і не є експертною оцінкою майна.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:var(--s-4)">
+        <div class="ai-label" style="margin-bottom:var(--s-3)"><span class="ai-dot"></span>Прогрес AI-аналізу</div>
+        <div style="display:flex;justify-content:space-between;font-size:var(--t-sm);margin-bottom:7px">
+          <span>Аналізую ринок…</span><span style="color:var(--text-muted)">крок 6 з 8</span>
+        </div>
+        <div class="meter"><div class="meter-fill" style="width:75%"></div></div>
+      </div>
+
+      <div class="card" style="margin-top:var(--s-4)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--s-3)">
+          <strong>Чому не продається</strong>
+          <span class="badge badge-warning">Health 54 / 100</span>
+        </div>
+        <div style="display:flex;gap:11px;padding:12px;background:var(--bg-subtle);border-radius:var(--r-md)">
+          <span style="font-size:18px">💰</span>
+          <div style="flex:1">
+            <div style="font-size:var(--t-sm);font-weight:560">Ціна на 15% вище медіани по 43 схожих оголошеннях</div>
+            <div class="hint" style="margin-top:3px;color:var(--success-600)">−12% ціни → +65% ймовірності продажу за 14 днів</div>
+          </div>
+          <button class="btn btn-secondary btn-sm">Знизити до 24 800 ₴</button>
+        </div>
+        <div style="display:flex;gap:11px;padding:12px;background:var(--bg-subtle);border-radius:var(--r-md);margin-top:var(--s-2)">
+          <span style="font-size:18px">📷</span>
+          <div style="flex:1">
+            <div style="font-size:var(--t-sm);font-weight:560">3 фото проти 7 у топ-оголошень категорії</div>
+            <div class="hint" style="margin-top:3px;color:var(--success-600)">+22% переглядів</div>
+          </div>
+          <button class="btn btn-secondary btn-sm">Додати фото</button>
+        </div>
+      </div>
+
+      <div class="note">
+        Кожна знахідка має три частини: <strong>що</strong> не так, <strong>чому це видно</strong>
+        (конкретні числа) і <strong>що зробити</strong> в один клік.
+        Порада без кнопки — це просто критика, і вона не працює.
+      </div>
+    </section>
+
+    <!-- ═══ СТАНИ ═══ -->
+    <section id="feedback">
+      <div class="sec-head"><h2>Стани та фідбек</h2></div>
+      <div class="card" style="display:flex;flex-direction:column;gap:var(--s-3)">
+        <div class="alert alert-info"><span>ℹ️</span><div><strong>AI працює в обмеженому режимі.</strong> Деякі функції тимчасово недоступні — ми вже виправляємо.</div></div>
+        <div class="alert alert-warn"><span>⚠️</span><div><strong>Не вдалося точно визначити товар.</strong> Додайте фото з іншого ракурсу або вкажіть модель вручну.</div></div>
+        <div class="alert alert-danger"><span>⛔</span><div><strong>Ліміт вичерпано.</strong> Тариф FREE дозволяє 5 AI-створень на місяць.</div></div>
+      </div>
+
+      <h4 style="margin:var(--s-6) 0 var(--s-3)">Скелетон завантаження</h4>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(190px,1fr))">
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="skel" style="height:140px;border-radius:0"></div>
+          <div style="padding:var(--s-3) var(--s-4) var(--s-4)">
+            <div class="skel" style="height:17px;width:55%"></div>
+            <div class="skel" style="height:12px;width:90%;margin-top:9px"></div>
+            <div class="skel" style="height:12px;width:65%;margin-top:6px"></div>
+          </div>
+        </div>
+      </div>
+
+      <h4 style="margin:var(--s-6) 0 var(--s-3)">Порожній стан</h4>
+      <div class="card" style="text-align:center;padding:var(--s-12)">
+        <div style="font-size:40px">📦</div>
+        <h3 style="margin-top:var(--s-3);font-size:var(--t-h4)">Тут поки що порожньо</h3>
+        <p style="margin-top:6px;color:var(--text-secondary);font-size:var(--t-sm)">Завантажте фото — AI створить оголошення за вас.</p>
+        <button class="btn btn-ai" style="margin-top:var(--s-4)">✨ Створити оголошення</button>
+      </div>
+    </section>
+
+    <!-- ═══ A11Y ═══ -->
+    <section id="a11y">
+      <div class="sec-head"><h2>Доступність</h2><p>WCAG 2.1 AA — вимога, а не побажання.</p></div>
+      <table class="spec-table">
+        <tr><th>Правило</th><th>Реалізація</th></tr>
+        <tr><td>Контраст тексту</td><td>≥ 4.5:1 звичайний, ≥ 3:1 великий. Перевірено в обох темах.</td></tr>
+        <tr><td>Фокус</td><td><code>:focus-visible</code> — 2px кільце кольору <code>--primary</code> з відступом 2px. Ніколи не <code>outline:none</code>.</td></tr>
+        <tr><td>Розмір цілі</td><td>Мінімум 44×44 px на дотик. Кнопки 32px мають прозорий padding до 44.</td></tr>
+        <tr><td>Колір не єдиний носій сенсу</td><td>Статуси мають і колір, і текст. «Активне» ≠ просто зелена крапка.</td></tr>
+        <tr><td>Рух</td><td><code>prefers-reduced-motion</code> вимикає всі переходи.</td></tr>
+        <tr><td>AI-контент</td><td>Блоки з AI-виводом мають <code>aria-label="Згенеровано штучним інтелектом"</code>.</td></tr>
+        <tr><td>Форми</td><td>Кожен інпут має <code>&lt;label for&gt;</code>. Помилки зв'язані через <code>aria-describedby</code>.</td></tr>
+        <tr><td>Зображення товарів</td><td><code>alt</code> = заголовок оголошення, а не «фото».</td></tr>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* ── Тема ─────────────────────────────────────────────────────────────── */
+function toggleTheme(){
+  const r = document.documentElement;
+  const dark = r.dataset.theme === 'dark';
+  r.dataset.theme = dark ? 'light' : 'dark';
+  document.getElementById('ticon').textContent = dark ? '🌙' : '☀️';
+  document.getElementById('tlabel').textContent = dark ? 'Темна тема' : 'Світла тема';
+}
+if (window.matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
+
+/* ── Свотчі ───────────────────────────────────────────────────────────── */
+const groups = {
+  'sw-brand':   ['brand-50','brand-100','brand-200','brand-300','brand-400','brand-500','brand-600','brand-700','brand-800','brand-900','brand-950'],
+  'sw-accent':  ['accent-100','accent-300','accent-400','accent-500','accent-600'],
+  'sw-neutral': ['n-0','n-50','n-100','n-200','n-300','n-400','n-500','n-600','n-700','n-800','n-900','n-950','n-1000'],
+  'sw-semantic':['success-500','success-600','warning-500','warning-600','danger-500','danger-600','info-500','info-600']
+};
+const cs = getComputedStyle(document.documentElement);
+for (const [id, names] of Object.entries(groups)) {
+  const host = document.getElementById(id);
+  host.innerHTML = names.map(n => {
+    const hex = cs.getPropertyValue('--' + n).trim();
+    return `<div class="sw"><div class="sw-chip" style="background:${hex}"></div>
+      <div class="sw-meta"><div class="sw-name">${n}</div><div class="sw-hex">${hex}</div></div></div>`;
+  }).join('');
+}
+
+/* ── Шкали ────────────────────────────────────────────────────────────── */
+document.getElementById('space-scale').innerHTML =
+  [1,2,3,4,5,6,8,10,12,16,20,24,32].map(k => {
+    const px = cs.getPropertyValue('--s-' + k).trim();
+    return `<div style="display:flex;align-items:center;gap:12px">
+      <code style="min-width:64px;font-size:11px">--s-${k}</code>
+      <div style="height:12px;width:${px};background:var(--primary);border-radius:3px"></div>
+      <span class="hint">${px}</span></div>`;
+  }).join('');
+
+document.getElementById('radius-scale').innerHTML =
+  ['xs','sm','md','lg','xl','2xl'].map(k => {
+    const v = cs.getPropertyValue('--r-' + k).trim();
+    return `<div style="text-align:center">
+      <div style="width:66px;height:66px;background:var(--primary-soft);border:1px solid var(--primary);border-radius:${v}"></div>
+      <div class="hint" style="margin-top:5px">--r-${k}<br>${v}</div></div>`;
+  }).join('');
+
+/* ── Тарифні тіри в AI-панелі ─────────────────────────────────────────── */
+document.querySelectorAll('.tier').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tier').forEach(x => x.classList.remove('is-picked'));
+  t.classList.add('is-picked');
+}));
+</script>
+</body>
+</html>

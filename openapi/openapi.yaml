@@ -1,0 +1,1964 @@
+openapi: 3.1.0
+info:
+  title: AI Trade API
+  version: 2.0.0
+  description: |
+    REST API платформи AI Trade.
+
+    **Конвенції**
+    * Усі грошові поля — цілі числа в **копійках** з суфіксом `Kop`.
+    * Часові поля — ISO-8601 UTC (`2026-08-17T09:30:00Z`).
+    * Пагінація — курсорна (`cursor` + `limit`), окрім адмінських списків.
+    * Помилки — RFC 9457 (`application/problem+json`).
+    * AI-ендпоінти повертають `202 Accepted` + `jobId`; результат — через
+      `GET /ai/jobs/{jobId}` або WebSocket-подію `ai.job.completed`.
+    * Заголовок `X-Ai-Degraded: true` означає, що відповідь згенеровано
+      фолбек-провайдером (OpenAI недоступний).
+  contact:
+    name: AI Trade Engineering
+    email: dev@aitrade.ua
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.aitrade.ua/v1
+    description: Production
+  - url: https://api-staging.aitrade.ua/v1
+    description: Staging
+  - url: http://localhost:4000/v1
+    description: Local
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+  - name: Users
+  - name: Listings
+  - name: Categories
+  - name: Media
+  - name: AI Seller
+  - name: AI Advisor
+  - name: Search
+  - name: Recommendations
+  - name: Chat
+  - name: Billing
+  - name: Promotions
+  - name: Valuations
+  - name: Bulk Import
+  - name: Reviews
+  - name: Admin
+
+# ============================================================================
+paths:
+# ============================================================================
+
+  # ── AUTH ──────────────────────────────────────────────────────────────────
+  /auth/google:
+    post:
+      operationId: postAuthGoogle
+      tags: [Auth]
+      summary: Вхід через Google OAuth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [idToken]
+              properties:
+                idToken: { type: string, description: Google ID token з клієнта }
+      responses:
+        "200": { $ref: "#/components/responses/AuthSuccess" }
+        "401": { $ref: "#/components/responses/Problem" }
+
+  /auth/magic-link:
+    post:
+      operationId: postAuthMagicLink
+      tags: [Auth]
+      summary: Надіслати magic-link на email
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        "204": { description: Лист надіслано (відповідь однакова і для неіснуючого email — щоб не розкривати базу користувачів) }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /auth/magic-link/verify:
+    post:
+      operationId: postAuthMagicLinkVerify
+      tags: [Auth]
+      summary: Підтвердити magic-link
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/AuthSuccess" }
+        "400": { $ref: "#/components/responses/Problem" }
+
+  /auth/refresh:
+    post:
+      operationId: postAuthRefresh
+      tags: [Auth]
+      summary: Оновити access-токен (refresh-токен у httpOnly cookie, з ротацією)
+      security: []
+      responses:
+        "200": { $ref: "#/components/responses/AuthSuccess" }
+        "401": { $ref: "#/components/responses/Problem" }
+
+  /auth/logout:
+    post:
+      operationId: postAuthLogout
+      tags: [Auth]
+      summary: Вийти (відкликати поточну сесію)
+      responses:
+        "204": { description: OK }
+
+  /auth/phone/request:
+    post:
+      operationId: postAuthPhoneRequest
+      tags: [Auth]
+      summary: Надіслати SMS-код верифікації телефону
+      description: Верифікація телефону обов'язкова перед першою публікацією оголошення.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, pattern: '^\+380\d{9}$' }
+      responses:
+        "204": { description: Код надіслано }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /auth/phone/verify:
+    post:
+      operationId: postAuthPhoneVerify
+      tags: [Auth]
+      summary: Підтвердити телефон кодом
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone: { type: string }
+                code: { type: string, minLength: 6, maxLength: 6 }
+      responses:
+        "200":
+          description: Телефон підтверджено
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+        "400": { $ref: "#/components/responses/Problem" }
+
+  # ── USERS ─────────────────────────────────────────────────────────────────
+  /users/me:
+    get:
+      operationId: getUsersMe
+      tags: [Users]
+      summary: Поточний користувач з тарифом і лімітами
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+    patch:
+      operationId: patchUsersMe
+      tags: [Users]
+      summary: Оновити профіль
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateProfileInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+
+  /users/me/stats:
+    get:
+      operationId: getUsersMeStats
+      tags: [Users]
+      summary: Зведена статистика продавця
+      parameters:
+        - { name: period, in: query, schema: { type: string, enum: [7d, 30d, 90d], default: 30d } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SellerStats" }
+
+  /users/{id}:
+    get:
+      operationId: getUsersById
+      tags: [Users]
+      summary: Публічний профіль продавця
+      security: []
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PublicProfile" }
+        "404": { $ref: "#/components/responses/Problem" }
+
+  /users/me/delete:
+    post:
+      operationId: postUsersMeDelete
+      tags: [Users]
+      summary: Видалити акаунт (GDPR — анонімізація, не фізичне видалення)
+      responses:
+        "202": { description: "Видалення заплановано, PII анонімізовано" }
+
+  # ── CATEGORIES ────────────────────────────────────────────────────────────
+  /categories:
+    get:
+      operationId: getCategories
+      tags: [Categories]
+      summary: Дерево категорій з attributeSchema
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Category" }
+
+  # ── MEDIA ─────────────────────────────────────────────────────────────────
+  /media/presign:
+    post:
+      operationId: postMediaPresign
+      tags: [Media]
+      summary: Отримати presigned URL для прямого завантаження фото в S3
+      description: |
+        Фото завантажуються **напряму в S3**, минаючи API — вони важать 3–8 МБ
+        і проксувати їх через Node означає марно палити пам'ять і смугу.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [files]
+              properties:
+                files:
+                  type: array
+                  maxItems: 10
+                  items:
+                    type: object
+                    required: [mimeType, sizeBytes]
+                    properties:
+                      mimeType: { type: string, enum: [image/jpeg, image/png, image/webp, image/heic] }
+                      sizeBytes: { type: integer, maximum: 15728640 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    mediaId:   { type: string }
+                    uploadUrl: { type: string, format: uri }
+                    expiresIn: { type: integer, example: 900 }
+
+  /media/{id}/confirm:
+    post:
+      operationId: postMediaByIdConfirm
+      tags: [Media]
+      summary: Підтвердити завантаження — запускає обробку (варіанти, blurhash, EXIF-strip)
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "202":
+          description: Обробка поставлена в чергу
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Media" }
+
+  /media/{id}:
+    get:
+      operationId: getMediaById
+      tags: [Media]
+      summary: Стан обробки медіа
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Media" }
+    delete:
+      operationId: deleteMediaById
+      tags: [Media]
+      summary: Видалити фото
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "204": { description: OK }
+
+  # ── AI SELLER (ядро продукту) ─────────────────────────────────────────────
+  /ai/seller/analyze:
+    post:
+      operationId: postAiSellerAnalyze
+      tags: [AI Seller]
+      summary: ⭐ «Продай за мене» — повний AI-аналіз товару за фото
+      description: |
+        Запускає пайплайн: розпізнавання → характеристики → стан → текст →
+        обробка фото → аналіз ринку → ціна → прогноз продажу.
+
+        Асинхронний: повертає `jobId`. Прогрес — через WebSocket `ai.job.progress`
+        або поллінг `GET /ai/jobs/{jobId}`. Типовий час — 12–25 с.
+
+        **Ліміти:** FREE — 5/міс, PREMIUM — 100/міс, BUSINESS — без обмежень.
+        При перевищенні — `403` з `type: "limit-exceeded"`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mediaIds]
+              properties:
+                mediaIds:
+                  type: array
+                  minItems: 1
+                  maxItems: 10
+                  items: { type: string }
+                hint:
+                  type: string
+                  maxLength: 300
+                  description: Необов'язкова підказка від користувача («iPhone 13 Pro, 128 ГБ, є подряпина на корпусі»)
+                cityId: { type: string }
+                enhancePhotos:
+                  type: boolean
+                  default: true
+                  description: Видалити фон і покращити якість
+      responses:
+        "202": { $ref: "#/components/responses/JobAccepted" }
+        "403": { $ref: "#/components/responses/Problem" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /ai/jobs/{id}:
+    get:
+      operationId: getAiJobsById
+      tags: [AI Seller]
+      summary: Стан і результат AI-задачі
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AiJob" }
+        "404": { $ref: "#/components/responses/Problem" }
+
+  /ai/seller/price:
+    post:
+      operationId: postAiSellerPrice
+      tags: [AI Seller]
+      summary: Перерахувати рекомендацію ціни (синхронно, з кешу ринку)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [categoryId, attributes, condition]
+              properties:
+                categoryId: { type: string }
+                attributes: { type: object, additionalProperties: true }
+                condition:  { $ref: "#/components/schemas/ItemCondition" }
+                cityId:     { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PriceRecommendation" }
+
+  /ai/seller/copy:
+    post:
+      operationId: postAiSellerCopy
+      tags: [AI Seller]
+      summary: Перегенерувати заголовок/опис (наприклад, іншим тоном)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [categoryId, attributes]
+              properties:
+                categoryId: { type: string }
+                attributes: { type: object, additionalProperties: true }
+                tone:
+                  type: string
+                  enum: [neutral, friendly, business, concise]
+                  default: neutral
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingCopy" }
+
+  /ai/feedback:
+    post:
+      operationId: postAiFeedback
+      tags: [AI Seller]
+      summary: Фідбек на AI-вивід (використовується для покращення промптів)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jobId, field, verdict]
+              properties:
+                jobId:   { type: string }
+                field:   { type: string, example: title }
+                verdict: { type: string, enum: [accepted, edited, rejected] }
+                correctedValue: { type: string }
+      responses:
+        "204": { description: OK }
+
+  # ── AI ADVISOR ────────────────────────────────────────────────────────────
+  /listings/{id}/advice:
+    get:
+      operationId: getListingsByIdAdvice
+      tags: [AI Advisor]
+      summary: «Чому не продається» — останній аналіз
+      description: |
+        **FREE:** повертає лише `healthScore` і одну знахідку з `severity: high`.
+        **PREMIUM/BUSINESS:** повний розбір по 5 осях із діями в один клік.
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SellerAdvice" }
+        "404": { description: Аналіз ще не проводився }
+    post:
+      operationId: postListingsByIdAdvice
+      tags: [AI Advisor]
+      summary: Запустити аналіз оголошення
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "202": { $ref: "#/components/responses/JobAccepted" }
+        "403": { $ref: "#/components/responses/Problem" }
+
+  /listings/{id}/advice/apply:
+    post:
+      operationId: postListingsByIdAdviceApply
+      tags: [AI Advisor]
+      summary: Застосувати рекомендацію в один клік
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [adviceId, actionIds]
+              properties:
+                adviceId:  { type: string }
+                actionIds: { type: array, items: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Listing" }
+
+  # ── LISTINGS ──────────────────────────────────────────────────────────────
+  /listings:
+    get:
+      operationId: getListings
+      tags: [Listings]
+      summary: Каталог оголошень (фільтри + сортування)
+      security: []
+      parameters:
+        - { name: categoryId, in: query, schema: { type: string } }
+        - { name: cityId,     in: query, schema: { type: string } }
+        - { name: priceMinKop, in: query, schema: { type: integer } }
+        - { name: priceMaxKop, in: query, schema: { type: integer } }
+        - { name: condition,  in: query, schema: { type: array, items: { $ref: "#/components/schemas/ItemCondition" } } }
+        - name: attributes
+          in: query
+          description: 'JSON-фільтр по характеристиках, напр. {"brand":"Apple","storage":{"gte":128}}'
+          schema: { type: string }
+        - { name: sort, in: query, schema: { type: string, enum: [relevance, newest, price_asc, price_desc], default: newest } }
+        - { $ref: "#/components/parameters/Cursor" }
+        - { $ref: "#/components/parameters/Limit" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingPage" }
+    post:
+      operationId: postListings
+      tags: [Listings]
+      summary: Створити оголошення (зазвичай — з AI-чернетки)
+      description: |
+        `aiJobId` зв'язує оголошення з AI-аналізом, а `aiAcceptedFields`
+        фіксує, які згенеровані поля користувач залишив без правок —
+        це ключова метрика якості AI.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateListingInput" }
+      responses:
+        "201":
+          description: Створено
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Listing" }
+        "403":
+          description: Перевищено ліміт активних оголошень або телефон не верифіковано
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/Problem" }
+        "422": { $ref: "#/components/responses/Problem" }
+
+  /listings/{idOrSlug}:
+    get:
+      operationId: getListingsByIdOrSlug
+      tags: [Listings]
+      summary: Оголошення за id або slug
+      security: []
+      parameters:
+        - { name: idOrSlug, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingDetail" }
+        "404": { $ref: "#/components/responses/Problem" }
+    patch:
+      operationId: patchListingsByIdOrSlug
+      tags: [Listings]
+      summary: Оновити оголошення
+      parameters:
+        - { name: idOrSlug, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateListingInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Listing" }
+    delete:
+      operationId: deleteListingsByIdOrSlug
+      tags: [Listings]
+      summary: Видалити (архівувати) оголошення
+      parameters:
+        - { name: idOrSlug, in: path, required: true, schema: { type: string } }
+      responses:
+        "204": { description: OK }
+
+  /listings/{id}/publish:
+    post:
+      operationId: postListingsByIdPublish
+      tags: [Listings]
+      summary: Опублікувати чернетку
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: Опубліковано або відправлено на модерацію
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Listing" }
+        "403": { $ref: "#/components/responses/Problem" }
+
+  /listings/{id}/status:
+    post:
+      operationId: postListingsByIdStatus
+      tags: [Listings]
+      summary: Змінити статус (продано / архівувати / відновити)
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [SOLD, ARCHIVED, ACTIVE] }
+                soldToUserId: { type: string, description: Кому продано — відкриває можливість взаємного відгуку }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Listing" }
+
+  /listings/{id}/stats:
+    get:
+      operationId: getListingsByIdStats
+      tags: [Listings]
+      summary: Статистика оголошення по днях
+      parameters:
+        - { $ref: "#/components/parameters/PathId" }
+        - { name: period, in: query, schema: { type: string, enum: [7d, 30d, 90d], default: 30d } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingStats" }
+
+  /listings/{id}/save:
+    put:
+      operationId: putListingsByIdSave
+      tags: [Listings]
+      summary: Зберегти в обране
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses: { "204": { description: OK } }
+    delete:
+      operationId: deleteListingsByIdSave
+      tags: [Listings]
+      summary: Прибрати з обраного
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses: { "204": { description: OK } }
+
+  # ── SEARCH ────────────────────────────────────────────────────────────────
+  /search:
+    get:
+      operationId: getSearch
+      tags: [Search]
+      summary: ⭐ AI-пошук природною мовою
+      description: |
+        Приклади: `Ноутбук для ігор до 30000 грн`, `Знайди зимові шини R18`,
+        `Телефон до 15000 грн з хорошою камерою`.
+
+        Гібрид: LLM-парсинг у структурований запит + повнотекстовий пошук + векторний.
+        Якщо LLM недоступний — деградує до FTS, поле `parsed.usedAi = false`.
+        **Пошук не падає ніколи.**
+      security: []
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string, maxLength: 200 } }
+        - { name: cityId, in: query, schema: { type: string } }
+        - { $ref: "#/components/parameters/Cursor" }
+        - { $ref: "#/components/parameters/Limit" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SearchResult" }
+
+  /search/suggest:
+    get:
+      operationId: getSearchSuggest
+      tags: [Search]
+      summary: Підказки під час набору
+      security: []
+      parameters:
+        - { name: q, in: query, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    text: { type: string }
+                    type: { type: string, enum: [query, category, brand] }
+                    count: { type: integer }
+
+  /search/saved:
+    get:
+      operationId: getSearchSaved
+      tags: [Search]
+      summary: Збережені пошуки
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/SavedSearch" } }
+    post:
+      operationId: postSearchSaved
+      tags: [Search]
+      summary: Зберегти пошук із сповіщеннями про нові збіги
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, rawQuery]
+              properties:
+                name: { type: string }
+                rawQuery: { type: string }
+                notifyEmail: { type: boolean, default: true }
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SavedSearch" }
+
+  # ── RECOMMENDATIONS ───────────────────────────────────────────────────────
+  /recommendations/feed:
+    get:
+      operationId: getRecommendationsFeed
+      tags: [Recommendations]
+      summary: Персональна стрічка
+      parameters:
+        - { $ref: "#/components/parameters/Cursor" }
+        - { $ref: "#/components/parameters/Limit" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingPage" }
+
+  /recommendations/similar/{listingId}:
+    get:
+      operationId: getRecommendationsSimilarByListingId
+      tags: [Recommendations]
+      summary: Схожі товари (за ембеддингом)
+      security: []
+      parameters:
+        - { name: listingId, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/ListingCard" } }
+
+  # ── CHAT ──────────────────────────────────────────────────────────────────
+  /chat/threads:
+    get:
+      operationId: getChatThreads
+      tags: [Chat]
+      summary: Список діалогів
+      parameters:
+        - { name: role, in: query, schema: { type: string, enum: [buyer, seller, all], default: all } }
+        - { $ref: "#/components/parameters/Cursor" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/ChatThread" } }
+                  nextCursor: { type: [string, "null"] }
+    post:
+      operationId: postChatThreads
+      tags: [Chat]
+      summary: Почати діалог за оголошенням
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [listingId]
+              properties:
+                listingId: { type: string }
+                firstMessage: { type: string, maxLength: 2000 }
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatThread" }
+
+  /chat/threads/{id}/messages:
+    get:
+      operationId: getChatThreadsByIdMessages
+      tags: [Chat]
+      summary: Повідомлення треда
+      parameters:
+        - { $ref: "#/components/parameters/PathId" }
+        - { $ref: "#/components/parameters/Cursor" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/ChatMessage" } }
+                  nextCursor: { type: [string, "null"] }
+    post:
+      operationId: postChatThreadsByIdMessages
+      tags: [Chat]
+      summary: Надіслати повідомлення
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type: { type: string, enum: [TEXT, IMAGE, OFFER] }
+                body: { type: string, maxLength: 2000 }
+                mediaId: { type: string }
+                offerAmountKop: { type: integer }
+                aiGenerated:
+                  type: boolean
+                  default: false
+                  description: Користувач надіслав AI-підказку без правок
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ChatMessage" }
+
+  /chat/threads/{id}/ai-suggestions:
+    get:
+      operationId: getChatThreadsByIdAiSuggestions
+      tags: [Chat]
+      summary: AI-варіанти відповіді на останнє повідомлення
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    maxItems: 3
+                    items:
+                      type: object
+                      properties:
+                        text:  { type: string }
+                        label: { type: string, example: Погодитись на торг }
+                  negotiationHint:
+                    type: [object, "null"]
+                    description: Показується продавцю при вхідній пропозиції ціни
+                    properties:
+                      medianDealKop: { type: integer }
+                      sampleSize:    { type: integer }
+                      advice:        { type: string }
+
+  # ── BILLING ───────────────────────────────────────────────────────────────
+  /billing/plans:
+    get:
+      operationId: getBillingPlans
+      tags: [Billing]
+      summary: Доступні тарифи
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Plan" } }
+
+  /billing/subscription:
+    get:
+      operationId: getBillingSubscription
+      tags: [Billing]
+      summary: Поточна підписка й використані ліміти
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SubscriptionState" }
+
+  /billing/checkout:
+    post:
+      operationId: postBillingCheckout
+      tags: [Billing]
+      summary: Створити платіж (підписка / просування / оцінка)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [purpose]
+              properties:
+                purpose: { type: string, enum: [SUBSCRIPTION, PROMOTION, VALUATION] }
+                planCode: { type: string, enum: [PREMIUM, BUSINESS] }
+                promotionTier: { type: string, enum: [START, PREMIUM, VIP] }
+                listingId: { type: string }
+                valuationTier: { type: string, enum: [STANDARD, ADVANCED, EXPERT] }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentId:   { type: string }
+                  redirectUrl: { type: string, format: uri }
+                  amountKop:   { type: integer }
+
+  /billing/subscription/cancel:
+    post:
+      operationId: postBillingSubscriptionCancel
+      tags: [Billing]
+      summary: Скасувати підписку (діє до кінця періоду)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SubscriptionState" }
+
+  /billing/webhook/{provider}:
+    post:
+      operationId: postBillingWebhookByProvider
+      tags: [Billing]
+      summary: Вебхук платіжного провайдера
+      security: []
+      parameters:
+        - { name: provider, in: path, required: true, schema: { type: string, enum: [liqpay, fondy] } }
+      responses:
+        "204": { description: OK }
+
+  # ── PROMOTIONS ────────────────────────────────────────────────────────────
+  /promotions:
+    get:
+      operationId: getPromotions
+      tags: [Promotions]
+      summary: Активні просування користувача з ефектом
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Promotion" } }
+
+  # ── VALUATIONS ────────────────────────────────────────────────────────────
+  /valuations/quote:
+    post:
+      operationId: postValuationsQuote
+      tags: [Valuations]
+      summary: Дізнатись вартість AI-оцінки для очікуваної ціни товару
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [expectedPriceKop]
+              properties:
+                expectedPriceKop: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tier:     { type: string, enum: [FREE, STANDARD, ADVANCED, EXPERT] }
+                  priceKop: { type: integer, example: 9900 }
+
+  /valuations:
+    post:
+      operationId: postValuations
+      tags: [Valuations]
+      summary: Замовити поглиблену AI-оцінку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [listingId]
+              properties:
+                listingId: { type: string }
+      responses:
+        "202": { $ref: "#/components/responses/JobAccepted" }
+
+  /valuations/{id}:
+    get:
+      operationId: getValuationsById
+      tags: [Valuations]
+      summary: Звіт оцінки
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Valuation" }
+
+  # ── BULK IMPORT (BUSINESS) ────────────────────────────────────────────────
+  /bulk-imports:
+    get:
+      operationId: getBulkImports
+      tags: [Bulk Import]
+      summary: Історія імпортів
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/BulkImport" } }
+    post:
+      operationId: postBulkImports
+      tags: [Bulk Import]
+      summary: Завантажити прайс (Excel/CSV) і архів фото
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:   { type: string, format: binary }
+                photos: { type: string, format: binary, description: ZIP-архів }
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BulkImport" }
+        "403": { description: Доступно тільки для тарифу BUSINESS }
+
+  /bulk-imports/{id}/mapping:
+    get:
+      operationId: getBulkImportsByIdMapping
+      tags: [Bulk Import]
+      summary: Запропонований AI мапінг колонок + прев'ю 20 рядків
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestedMapping: { type: object, additionalProperties: { type: string } }
+                  detectedColumns:  { type: array, items: { type: string } }
+                  preview:          { type: array, items: { type: object, additionalProperties: true } }
+    put:
+      operationId: putBulkImportsByIdMapping
+      tags: [Bulk Import]
+      summary: Підтвердити мапінг і запустити AI-збагачення
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mapping]
+              properties:
+                mapping: { type: object, additionalProperties: { type: string } }
+                autoPublish: { type: boolean, default: false }
+      responses:
+        "202": { $ref: "#/components/responses/JobAccepted" }
+
+  /bulk-imports/{id}:
+    get:
+      operationId: getBulkImportsById
+      tags: [Bulk Import]
+      summary: Прогрес і звіт про помилки
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BulkImport" }
+
+  # ── REVIEWS ───────────────────────────────────────────────────────────────
+  /reviews:
+    post:
+      operationId: postReviews
+      tags: [Reviews]
+      summary: Залишити відгук
+      description: Дозволено лише після взаємного контакту в чаті — антинакрутка.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetId, listingId, rating]
+              properties:
+                targetId:  { type: string }
+                listingId: { type: string }
+                rating:    { type: integer, minimum: 1, maximum: 5 }
+                comment:   { type: string, maxLength: 1000 }
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Review" }
+        "403": { description: Взаємного контакту не було }
+
+  /users/{id}/reviews:
+    get:
+      operationId: getUsersByIdReviews
+      tags: [Reviews]
+      summary: Відгуки про користувача
+      security: []
+      parameters:
+        - { $ref: "#/components/parameters/PathId" }
+        - { $ref: "#/components/parameters/Cursor" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/Review" } }
+                  nextCursor: { type: [string, "null"] }
+
+  /reports:
+    post:
+      operationId: postReports
+      tags: [Reviews]
+      summary: Поскаржитись на оголошення або повідомлення
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                listingId: { type: string }
+                messageId: { type: string }
+                reason:
+                  type: string
+                  enum: [PROHIBITED_ITEM, FRAUD, SPAM, WRONG_CATEGORY, OFFENSIVE, DUPLICATE, AI_INACCURACY, OTHER]
+                comment: { type: string, maxLength: 1000 }
+      responses:
+        "201": { description: Скаргу прийнято }
+
+  # ── ADMIN ─────────────────────────────────────────────────────────────────
+  /admin/moderation/queue:
+    get:
+      operationId: getAdminModerationQueue
+      tags: [Admin]
+      summary: Черга модерації (відсортована за riskScore)
+      parameters:
+        - { name: minRisk, in: query, schema: { type: number, default: 0.2 } }
+        - { $ref: "#/components/parameters/Cursor" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ListingPage" }
+
+  /admin/listings/{id}/moderate:
+    post:
+      operationId: postAdminListingsByIdModerate
+      tags: [Admin]
+      summary: Рішення модератора
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action: { type: string, enum: [approve, reject] }
+                reason: { type: string }
+      responses:
+        "200": { description: OK }
+
+  /admin/users/{id}/status:
+    post:
+      operationId: postAdminUsersByIdStatus
+      tags: [Admin]
+      summary: Заблокувати / розблокувати користувача
+      parameters: [{ $ref: "#/components/parameters/PathId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [ACTIVE, SUSPENDED, BANNED] }
+                reason: { type: string }
+      responses:
+        "200": { description: OK }
+
+  /admin/metrics:
+    get:
+      operationId: getAdminMetrics
+      tags: [Admin]
+      summary: Дашборд платформи
+      parameters:
+        - { name: period, in: query, schema: { type: string, enum: [24h, 7d, 30d], default: 7d } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminMetrics" }
+
+  /admin/ai/metrics:
+    get:
+      operationId: getAdminAiMetrics
+      tags: [Admin]
+      summary: AI-дашборд — витрати, латентність, фолбеки, якість
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AiMetrics" }
+
+  /admin/categories:
+    post:
+      operationId: postAdminCategories
+      tags: [Admin]
+      summary: Створити категорію з attributeSchema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Category" }
+      responses:
+        "201": { description: OK }
+
+  /admin/feature-flags:
+    get:
+      operationId: getAdminFeatureFlags
+      tags: [Admin]
+      summary: Стан feature flags
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key: { type: string }
+                    enabled: { type: boolean }
+                    rolloutPercent: { type: integer }
+
+# ============================================================================
+components:
+# ============================================================================
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PathId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+    Cursor:
+      name: cursor
+      in: query
+      schema: { type: string }
+    Limit:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 60, default: 24 }
+
+  responses:
+    AuthSuccess:
+      description: Успішна автентифікація
+      headers:
+        Set-Cookie:
+          description: refresh-токен (httpOnly, Secure, SameSite=Lax)
+          schema: { type: string }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              accessToken: { type: string }
+              expiresIn:   { type: integer, example: 900 }
+              user:        { $ref: "#/components/schemas/CurrentUser" }
+    JobAccepted:
+      description: Задачу поставлено в чергу
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jobId: { type: string }
+              status: { type: string, example: QUEUED }
+              estimatedSeconds: { type: integer, example: 18 }
+    Problem:
+      description: Помилка
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+    RateLimited:
+      description: Забагато запитів
+      headers:
+        Retry-After: { schema: { type: integer } }
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/Problem" }
+
+  schemas:
+
+    Problem:
+      type: object
+      description: RFC 9457
+      properties:
+        type:     { type: string, example: "https://aitrade.ua/errors/limit-exceeded" }
+        title:    { type: string, example: "Вичерпано ліміт AI-створень" }
+        status:   { type: integer, example: 403 }
+        detail:   { type: string, example: "Тариф FREE дозволяє 5 AI-створень на місяць. Використано 5." }
+        instance: { type: string }
+        errors:
+          type: array
+          description: Помилки валідації по полях
+          items:
+            type: object
+            properties:
+              field:   { type: string }
+              message: { type: string }
+
+    ItemCondition:
+      type: string
+      enum: [NEW, LIKE_NEW, GOOD, ACCEPTABLE, FOR_PARTS]
+
+    ListingStatus:
+      type: string
+      enum: [DRAFT, PENDING_MODERATION, ACTIVE, REJECTED, SOLD, ARCHIVED, EXPIRED]
+
+    User:
+      type: object
+      properties:
+        id:        { type: string }
+        name:      { type: [string, "null"] }
+        avatarUrl: { type: [string, "null"] }
+        city:      { $ref: "#/components/schemas/City" }
+        ratingAvg:   { type: number, example: 4.8 }
+        ratingCount: { type: integer }
+        successfulSales: { type: integer }
+        phoneVerified:   { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    CurrentUser:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            email: { type: string, format: email }
+            role:  { type: string, enum: [USER, BUSINESS, MODERATOR, ADMIN] }
+            plan:  { $ref: "#/components/schemas/SubscriptionState" }
+
+    PublicProfile:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            bio: { type: [string, "null"] }
+            badges:
+              type: array
+              items: { type: string, example: "Відповідає за 15 хв" }
+            activeListingsCount: { type: integer }
+            businessProfile:
+              type: [object, "null"]
+              properties:
+                slug: { type: string }
+                companyName: { type: string }
+                logoUrl: { type: [string, "null"] }
+                verified: { type: boolean }
+
+    UpdateProfileInput:
+      type: object
+      properties:
+        name:   { type: string, maxLength: 80 }
+        bio:    { type: string, maxLength: 500 }
+        cityId: { type: string }
+        avatarMediaId: { type: string }
+
+    City:
+      type: object
+      properties:
+        id:   { type: string }
+        name: { type: string }
+        slug: { type: string }
+        regionName: { type: string }
+
+    Category:
+      type: object
+      properties:
+        id:       { type: string }
+        parentId: { type: [string, "null"] }
+        slug:     { type: string }
+        name:     { type: string }
+        icon:     { type: [string, "null"] }
+        attributeSchema:
+          type: [object, "null"]
+          description: JSON Schema характеристик — керує і AI-виводом, і фільтрами в UI
+          additionalProperties: true
+        children:
+          type: array
+          items: { $ref: "#/components/schemas/Category" }
+
+    Media:
+      type: object
+      properties:
+        id:     { type: string }
+        status: { type: string, enum: [UPLOADING, PROCESSING, READY, FAILED] }
+        url:      { type: string, format: uri }
+        blurhash: { type: [string, "null"] }
+        width:    { type: [integer, "null"] }
+        height:   { type: [integer, "null"] }
+        variants:
+          type: object
+          additionalProperties: { type: string, format: uri }
+        bgRemovedUrl: { type: [string, "null"] }
+        enhancedUrl:  { type: [string, "null"] }
+        qualityScore: { type: [number, "null"], description: "0–1; < 0.4 → пропонуємо перезняти" }
+        position: { type: integer }
+
+    ListingCard:
+      type: object
+      properties:
+        id:       { type: string }
+        slug:     { type: string }
+        title:    { type: string }
+        priceKop: { type: integer }
+        currency: { type: string, example: UAH }
+        condition: { $ref: "#/components/schemas/ItemCondition" }
+        coverUrl:  { type: string, format: uri }
+        blurhash:  { type: [string, "null"] }
+        city:      { type: [string, "null"] }
+        promotionTier: { type: [string, "null"], enum: [START, PREMIUM, VIP, null] }
+        aiGenerated: { type: boolean }
+        publishedAt: { type: [string, "null"], format: date-time }
+        isSaved: { type: boolean }
+
+    Listing:
+      allOf:
+        - $ref: "#/components/schemas/ListingCard"
+        - type: object
+          properties:
+            description: { type: string }
+            categoryId:  { type: string }
+            attributes:  { type: object, additionalProperties: true }
+            priceType:   { type: string, enum: [FIXED, NEGOTIABLE, FREE, EXCHANGE] }
+            status:      { $ref: "#/components/schemas/ListingStatus" }
+            media:       { type: array, items: { $ref: "#/components/schemas/Media" } }
+            viewsCount:  { type: integer }
+            savesCount:  { type: integer }
+            contactsCount: { type: integer }
+            aiConfidence: { type: [number, "null"] }
+            aiSellProbability: { type: [integer, "null"] }
+            aiPriceSuggestion: { $ref: "#/components/schemas/PriceRecommendation" }
+
+    ListingDetail:
+      allOf:
+        - $ref: "#/components/schemas/Listing"
+        - type: object
+          properties:
+            seller: { $ref: "#/components/schemas/PublicProfile" }
+            category:
+              type: array
+              description: Хлібні крихти від кореня
+              items: { $ref: "#/components/schemas/Category" }
+            similar: { type: array, items: { $ref: "#/components/schemas/ListingCard" } }
+
+    ListingPage:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/ListingCard" } }
+        nextCursor: { type: [string, "null"] }
+        total: { type: [integer, "null"], description: Приблизна кількість; null для великих вибірок }
+        facets:
+          type: object
+          description: Доступні фільтри з кількостями
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                value: { type: string }
+                count: { type: integer }
+
+    CreateListingInput:
+      type: object
+      required: [title, description, priceKop, categoryId, condition, mediaIds]
+      properties:
+        title:       { type: string, minLength: 10, maxLength: 70 }
+        description: { type: string, minLength: 50, maxLength: 5000 }
+        priceKop:    { type: integer, minimum: 0 }
+        priceType:   { type: string, enum: [FIXED, NEGOTIABLE, FREE], default: FIXED }
+        categoryId:  { type: string }
+        condition:   { $ref: "#/components/schemas/ItemCondition" }
+        attributes:  { type: object, additionalProperties: true }
+        mediaIds:    { type: array, minItems: 1, maxItems: 10, items: { type: string } }
+        cityId:      { type: string }
+        aiJobId:
+          type: string
+          description: Зв'язок з AI-аналізом, з якого створено оголошення
+        aiAcceptedFields:
+          type: array
+          description: Які AI-поля користувач залишив без правок — метрика якості AI
+          items: { type: string, enum: [title, description, price, category, condition, attributes, keywords] }
+        publishNow: { type: boolean, default: false }
+
+    UpdateListingInput:
+      type: object
+      properties:
+        title:       { type: string, minLength: 10, maxLength: 70 }
+        description: { type: string, minLength: 50, maxLength: 5000 }
+        priceKop:    { type: integer, minimum: 0 }
+        condition:   { $ref: "#/components/schemas/ItemCondition" }
+        attributes:  { type: object, additionalProperties: true }
+        mediaIds:    { type: array, items: { type: string } }
+        cityId:      { type: string }
+
+    # ── AI-схеми ──────────────────────────────────────────────────────────
+    AiJob:
+      type: object
+      properties:
+        id: { type: string }
+        type:
+          type: string
+          enum: [VISION_RECOGNIZE, COPY_GENERATE, PRICE_SUGGEST, IMAGE_ENHANCE,
+                 LISTING_DIAGNOSE, SEARCH_PARSE, CHAT_SUGGEST, CHAT_AUTOREPLY,
+                 EMBEDDING, BULK_ENRICH, VALUATION_REPORT, MODERATION_SCORE]
+        status: { type: string, enum: [QUEUED, RUNNING, COMPLETED, FAILED, DEGRADED] }
+        progress:
+          type: object
+          properties:
+            step:   { type: string, example: "Аналізую ринок" }
+            index:  { type: integer, example: 6 }
+            total:  { type: integer, example: 8 }
+            percent: { type: integer, example: 75 }
+        result: { $ref: "#/components/schemas/SellerAnalysisResult" }
+        error:  { type: [string, "null"] }
+        degraded:
+          type: boolean
+          description: true → результат згенеровано фолбеком, якість нижча
+        latencyMs: { type: [integer, "null"] }
+        createdAt: { type: string, format: date-time }
+
+    SellerAnalysisResult:
+      type: object
+      description: Результат «Продай за мене» — готова чернетка оголошення
+      properties:
+        recognition:
+          type: object
+          properties:
+            productType: { type: string, example: "Смартфон" }
+            brand:       { type: [string, "null"], example: "Apple" }
+            model:       { type: [string, "null"], example: "iPhone 13 Pro" }
+            categoryId:  { type: string }
+            categoryPath: { type: array, items: { type: string } }
+            confidence:  { type: number, example: 0.93 }
+            uncertainFields:
+              type: array
+              description: Поля, у яких AI не впевнений — підсвічуються в UI
+              items: { type: string }
+        condition:
+          type: object
+          properties:
+            value:     { $ref: "#/components/schemas/ItemCondition" }
+            reasoning: { type: string, example: "Легкі потертості на рамці, екран без подряпин" }
+            evidence:
+              type: array
+              description: Прив'язка висновку до конкретних фото
+              items:
+                type: object
+                properties:
+                  mediaId: { type: string }
+                  note:    { type: string }
+        copy: { $ref: "#/components/schemas/ListingCopy" }
+        attributes:
+          type: object
+          description: Заповнено за attributeSchema категорії
+          additionalProperties: true
+        price: { $ref: "#/components/schemas/PriceRecommendation" }
+        forecast:
+          type: object
+          properties:
+            sellProbability: { type: integer, minimum: 0, maximum: 100, example: 78 }
+            estimatedDays:   { type: integer, example: 9 }
+            explanation:     { type: string }
+        photoAdvice:
+          type: object
+          properties:
+            missingAngles:
+              type: array
+              description: Яких ракурсів бракує
+              items:
+                type: object
+                properties:
+                  angle: { type: string, example: "back" }
+                  label: { type: string, example: "Фото зворотного боку" }
+                  impact: { type: string, example: "+18% до довіри покупців" }
+            lowQualityMediaIds: { type: array, items: { type: string } }
+
+    ListingCopy:
+      type: object
+      properties:
+        title:       { type: string, maxLength: 70 }
+        description: { type: string }
+        keywords:    { type: array, items: { type: string } }
+        alternativeTitles: { type: array, maxItems: 2, items: { type: string } }
+
+    PriceRecommendation:
+      type: object
+      properties:
+        quickSaleKop: { type: integer, example: 2100000 }
+        optimalKop:   { type: integer, example: 2450000 }
+        maximumKop:   { type: integer, example: 2790000 }
+        currency:     { type: string, example: UAH }
+        market:
+          type: object
+          properties:
+            medianKop:  { type: integer }
+            p25Kop:     { type: integer }
+            p75Kop:     { type: integer }
+            sampleSize: { type: integer, example: 43 }
+            medianSellDays: { type: integer }
+        reasoning:
+          type: object
+          properties:
+            quickSale: { type: string, example: "На 14% нижче медіани — типово продається за 3–5 днів" }
+            optimal:   { type: string }
+            maximum:   { type: string }
+        confidence: { type: number, example: 0.81 }
+        disclaimer:
+          type: string
+          example: "Рекомендація базується на ринкових даних і не є експертною оцінкою майна."
+
+    SellerAdvice:
+      type: object
+      properties:
+        id: { type: string }
+        healthScore: { type: integer, minimum: 0, maximum: 100, example: 54 }
+        findings:
+          type: array
+          items:
+            type: object
+            properties:
+              axis:     { type: string, enum: [price, photos, description, title, timing] }
+              severity: { type: string, enum: [high, medium, low] }
+              finding:  { type: string, example: "Ціна на 15% вище медіани по 43 схожих оголошеннях" }
+              evidence: { type: object, additionalProperties: true }
+              action:
+                type: object
+                properties:
+                  id:    { type: string }
+                  type:  { type: string, enum: [set_price, add_photos, rewrite_description, rewrite_title, wait, promote] }
+                  label: { type: string, example: "Знизити до 23 800 ₴" }
+                  payload: { type: object, additionalProperties: true }
+              expectedEffect: { type: string, example: "+65% ймовірності продажу за 14 днів" }
+        locked:
+          type: boolean
+          description: true для FREE — показуємо тільки healthScore і одну знахідку
+        createdAt: { type: string, format: date-time }
+
+    SearchResult:
+      allOf:
+        - $ref: "#/components/schemas/ListingPage"
+        - type: object
+          properties:
+            parsed:
+              type: object
+              description: Як AI зрозумів запит — показуємо користувачу як редаговані чіпси
+              properties:
+                usedAi: { type: boolean }
+                categoryId: { type: [string, "null"] }
+                priceMinKop: { type: [integer, "null"] }
+                priceMaxKop: { type: [integer, "null"] }
+                attributes: { type: object, additionalProperties: true }
+                semanticQuery: { type: string }
+            didYouMean: { type: [string, "null"] }
+
+    SavedSearch:
+      type: object
+      properties:
+        id:   { type: string }
+        name: { type: string }
+        rawQuery: { type: [string, "null"] }
+        notifyEmail: { type: boolean }
+        newMatchesCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    ChatThread:
+      type: object
+      properties:
+        id: { type: string }
+        listing: { $ref: "#/components/schemas/ListingCard" }
+        counterparty: { $ref: "#/components/schemas/User" }
+        myRole: { type: string, enum: [buyer, seller] }
+        lastMessagePreview: { type: [string, "null"] }
+        lastMessageAt: { type: [string, "null"], format: date-time }
+        unread: { type: integer }
+        canReview: { type: boolean, description: Взаємний контакт відбувся }
+
+    ChatMessage:
+      type: object
+      properties:
+        id: { type: string }
+        threadId: { type: string }
+        senderId: { type: string }
+        type: { type: string, enum: [TEXT, IMAGE, OFFER, SYSTEM, AI_AUTOREPLY] }
+        body: { type: string }
+        mediaUrl: { type: [string, "null"] }
+        offer:
+          type: [object, "null"]
+          properties:
+            amountKop: { type: integer }
+            status: { type: string, enum: [pending, accepted, declined] }
+        aiGenerated: { type: boolean }
+        readAt: { type: [string, "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+
+    Plan:
+      type: object
+      properties:
+        code: { type: string, enum: [FREE, PREMIUM, BUSINESS] }
+        name: { type: string }
+        priceKop: { type: integer, example: 19900 }
+        maxActiveListings: { type: [integer, "null"] }
+        maxAiGenerations:  { type: [integer, "null"] }
+        features: { type: object, additionalProperties: true }
+
+    SubscriptionState:
+      type: object
+      properties:
+        plan: { $ref: "#/components/schemas/Plan" }
+        status: { type: string, enum: [ACTIVE, PAST_DUE, CANCELED, EXPIRED] }
+        currentPeriodEnd: { type: [string, "null"], format: date-time }
+        cancelAtPeriodEnd: { type: boolean }
+        usage:
+          type: object
+          properties:
+            activeListings:  { type: integer }
+            aiGenerations:   { type: integer }
+            aiDiagnoses:     { type: integer }
+        limits:
+          type: object
+          properties:
+            activeListings: { type: [integer, "null"] }
+            aiGenerations:  { type: [integer, "null"] }
+
+    Promotion:
+      type: object
+      properties:
+        id: { type: string }
+        listing: { $ref: "#/components/schemas/ListingCard" }
+        tier: { type: string, enum: [START, PREMIUM, VIP] }
+        startsAt: { type: string, format: date-time }
+        endsAt:   { type: string, format: date-time }
+        impressionsGained: { type: integer }
+        viewsGained: { type: integer }
+
+    Valuation:
+      type: object
+      properties:
+        id: { type: string }
+        tier: { type: string, enum: [FREE, STANDARD, ADVANCED, EXPERT] }
+        status: { type: string, enum: [PENDING, READY, FAILED] }
+        report:
+          type: [object, "null"]
+          properties:
+            estimateKop: { type: integer }
+            rangeKop: { type: array, items: { type: integer }, minItems: 2, maxItems: 2 }
+            comparables:
+              type: array
+              items:
+                type: object
+                properties:
+                  title: { type: string }
+                  priceKop: { type: integer }
+                  soldAt: { type: [string, "null"], format: date-time }
+            priceTrend6m:
+              type: array
+              items:
+                type: object
+                properties:
+                  month: { type: string, example: "2026-03" }
+                  medianKop: { type: integer }
+            depreciationForecast: { type: array, items: { type: object, additionalProperties: true } }
+            bestSellWindow: { type: string, example: "жовтень — листопад" }
+            confidence: { type: number }
+        reportPdfUrl: { type: [string, "null"], format: uri }
+
+    BulkImport:
+      type: object
+      properties:
+        id: { type: string }
+        fileName: { type: string }
+        status: { type: string, enum: [UPLOADED, MAPPING, PROCESSING, COMPLETED, COMPLETED_WITH_ERRORS, FAILED] }
+        totalRows: { type: integer }
+        processedRows: { type: integer }
+        successRows: { type: integer }
+        errorRows: { type: integer }
+        errorReport:
+          type: array
+          items:
+            type: object
+            properties:
+              row: { type: integer }
+              field: { type: string }
+              message: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    Review:
+      type: object
+      properties:
+        id: { type: string }
+        author: { $ref: "#/components/schemas/User" }
+        rating: { type: integer }
+        comment: { type: [string, "null"] }
+        authorRole: { type: string, enum: [buyer, seller] }
+        isVerified: { type: boolean }
+        reply: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+
+    SellerStats:
+      type: object
+      properties:
+        activeListings: { type: integer }
+        totalViews: { type: integer }
+        totalContacts: { type: integer }
+        soldCount: { type: integer }
+        avgSellDays: { type: [number, "null"] }
+        conversionRate: { type: number, description: контакти / перегляди }
+        series:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date }
+              views: { type: integer }
+              contacts: { type: integer }
+
+    ListingStats:
+      type: object
+      properties:
+        views: { type: integer }
+        uniqueViews: { type: integer }
+        impressions: { type: integer }
+        ctr: { type: number }
+        saves: { type: integer }
+        contacts: { type: integer }
+        categoryRank: { type: [integer, "null"], description: Позиція серед схожих оголошень }
+        vsCategoryAvg:
+          type: object
+          properties:
+            viewsPercent: { type: number, example: -32.5 }
+            contactsPercent: { type: number }
+        series:
+          type: array
+          items:
+            type: object
+            properties:
+              date: { type: string, format: date }
+              views: { type: integer }
+              impressions: { type: integer }
+              contacts: { type: integer }
+
+    AdminMetrics:
+      type: object
+      properties:
+        newUsers: { type: integer }
+        newListings: { type: integer }
+        aiGeneratedShare: { type: number, description: "Частка оголошень, створених AI" }
+        publishConversion: { type: number, description: почав AI-флоу → опублікував }
+        activeSubscriptions: { type: object, additionalProperties: { type: integer } }
+        revenueKop: { type: integer }
+        moderationQueueSize: { type: integer }
+        openReports: { type: integer }
+
+    AiMetrics:
+      type: object
+      properties:
+        totalCostKop: { type: integer }
+        costPerActiveUserKop: { type: integer }
+        byType:
+          type: array
+          items:
+            type: object
+            properties:
+              type: { type: string }
+              calls: { type: integer }
+              costKop: { type: integer }
+              p50LatencyMs: { type: integer }
+              p95LatencyMs: { type: integer }
+              errorRate: { type: number }
+              cacheHitRate: { type: number }
+        degradedShare: { type: number, description: Частка відповідей від фолбеку }
+        categoryAccuracy: { type: number, description: "Частка, де користувач не змінив категорію" }
+        fieldAcceptanceRate:
+          type: object
+          description: Частка AI-полів, залишених без правок
+          additionalProperties: { type: number }
+        promptVersions:
+          type: array
+          items:
+            type: object
+            properties:
+              version: { type: string, example: "vision.recognize@v3" }
+              share: { type: number }
+              acceptanceRate: { type: number }
