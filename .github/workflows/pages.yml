@@ -35,7 +35,11 @@ jobs:
           cp .nojekyll _site/
           cp -R design _site/design
 
+      # enablement: true — вмикає Pages із джерелом "GitHub Actions" через API,
+      # щоб деплой не залежав від ручного перемикача в Settings → Pages.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
