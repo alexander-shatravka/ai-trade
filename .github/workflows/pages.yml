@@ -1,4 +1,4 @@
-# Publishes the static mockups to GitHub Pages via the gh-pages branch.
+# Publishes the prerendered Nuxt app to GitHub Pages via the gh-pages branch.
 #
 # The Pages API path (actions/configure-pages + deploy-pages) is deliberately
 # not used: this repository's GITHUB_TOKEN is not granted pages: write, so
@@ -25,8 +25,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
       - name: Build _site
-        run: ./scripts/build-site.sh
+        # A project site lives at /<repo>/, so the app is generated with that
+        # prefix. Reading it from GITHUB_REPOSITORY survives a repo rename.
+        run: NUXT_APP_BASE_URL="/${GITHUB_REPOSITORY#*/}/" ./scripts/build-site.sh
 
       - name: Push to gh-pages
         run: |
