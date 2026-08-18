@@ -17,6 +17,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@ai-trade/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@ai-trade/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -45,6 +48,19 @@ importers:
       vue-tsc:
         specifier: ^3.3.10
         version: 3.3.10(typescript@5.9.3)
+
+  packages/ai:
+    dependencies:
+      '@ai-trade/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+    devDependencies:
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.11
+        version: 4.1.11(@types/node@26.2.0)(vite@8.2.1(@types/node@26.2.0)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.50.0)(yaml@2.9.0))
 
   packages/contracts:
     dependencies:

@@ -12,6 +12,7 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@ai-trade/ai": "workspace:*",
     "@ai-trade/contracts": "workspace:*",
     "@ai-trade/utils": "workspace:*",
     "nuxt": "^4.5.2",
