@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseButton from '~/components/BaseButton.vue';
 
-defineProps<{ hiddenCount: number }>();
+defineProps<{ hiddenCount: number; reason?: string }>();
 </script>
 
 <template>
@@ -14,6 +14,7 @@ defineProps<{ hiddenCount: number }>();
       AI знайшов ще {{ hiddenCount }}
       {{ hiddenCount === 1 ? 'причину' : hiddenCount < 5 ? 'причини' : 'причин' }}
     </h2>
+    <p v-if="reason" class="mt-2 text-[var(--t-sm)] font-medium text-primary">{{ reason }}</p>
     <p class="mt-2 text-[var(--t-sm)] leading-relaxed text-text-secondary">
       На тарифі Premium видно всі знахідки з числами, доказами й кнопкою «застосувати»:
       наскільки ваша ціна відрізняється від медіани, яких фото бракує та що виправити

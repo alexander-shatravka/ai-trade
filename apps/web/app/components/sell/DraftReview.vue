@@ -6,6 +6,7 @@ import type {
   ItemCondition,
   SellerAnalysisResult,
 } from '@ai-trade/contracts';
+import { remaining } from '@ai-trade/utils';
 import AiField from './AiField.vue';
 import PriceScenarios from './PriceScenarios.vue';
 import BaseButton from '~/components/BaseButton.vue';
@@ -87,6 +88,22 @@ const evidenceFor = (id: string) =>
   generated.condition.evidence.find((item) => item.mediaId === id)?.note;
 
 const conditionOptions = itemConditionSchema.options;
+
+const { user } = useAuth();
+
+/** Real usage from the session, replacing the copy that used to be hardcoded. */
+const quotaLine = computed(() => {
+  const plan = user.value?.plan;
+  if (!plan) return null;
+  const left = remaining(plan.usage.aiGenerations, plan.limits.aiGenerations);
+  return left === null
+    ? `Тариф ${plan.planName} · AI-створення без обмежень`
+    : `Тариф ${plan.planName} · використано ${plan.usage.aiGenerations} з ${plan.limits.aiGenerations} AI-створень`;
+});
+
+/** Publishing is blocked before the phone is verified — the anti-fraud barrier. */
+const needsPhone = computed(() => user.value !== null && !user.value.phoneVerified);
+const canPublish = computed(() => user.value !== null && !needsPhone.value);
 const seconds = computed(() => Math.max(1, Math.round(props.elapsedMs / 1000)));
 </script>
 
@@ -292,18 +309,39 @@ const seconds = computed(() => Math.max(1, Math.round(props.elapsedMs / 1000)));
         Ця цифра показує, наскільки AI влучив.
       </p>
 
+      <ClientOnly>
+        <p
+          v-if="!user"
+          class="mt-4 rounded-[var(--r-md)] border border-border bg-bg-subtle p-4 text-[var(--t-sm)]"
+        >
+          Щоб опублікувати оголошення, потрібно
+          <NuxtLink
+            to="/login?redirect=/sell"
+            class="font-semibold text-primary underline"
+          >увійти в акаунт</NuxtLink>.
+        </p>
+        <p
+          v-else-if="needsPhone"
+          class="mt-4 rounded-[var(--r-md)] border border-warning-500 bg-warning-500/10 p-4 text-[var(--t-sm)]"
+        >
+          Підтвердьте номер телефону перед першою публікацією — це захищає покупців
+          від шахраїв.
+        </p>
+      </ClientOnly>
+
       <div class="mt-5 flex flex-wrap gap-3">
         <BaseButton
           variant="ai"
           size="lg"
+          :disabled="!canPublish"
           @click="emit('publish', { priceKop, aiAcceptedFields })"
         >Опублікувати оголошення</BaseButton>
         <BaseButton variant="secondary" size="lg">Зберегти як чернетку</BaseButton>
       </div>
 
-      <p class="mt-4 text-[var(--t-xs)] text-text-muted">
-        Тариф Free · використано 3 з 5 AI-створень цього місяця
-      </p>
+      <ClientOnly>
+        <p v-if="quotaLine" class="mt-4 text-[var(--t-xs)] text-text-muted">{{ quotaLine }}</p>
+      </ClientOnly>
     </section>
   </div>
 </template>

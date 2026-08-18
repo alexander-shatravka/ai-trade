@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import AppLogo from '~/components/AppLogo.vue';
 import BaseButton from '~/components/BaseButton.vue';
+import UserMenu from '~/components/UserMenu.vue';
 
 const { theme, toggle } = useTheme();
+const { isAuthenticated, user } = useAuth();
 const route = useRoute();
 
 const links = [
@@ -73,8 +75,17 @@ onBeforeUnmount(() => {
 
         <!-- Desktop actions -->
         <div class="hidden items-center gap-2 lg:flex">
-          <BaseButton variant="ghost" size="sm" to="/login">Увійти</BaseButton>
-          <BaseButton size="sm" to="/sell">Почати безкоштовно</BaseButton>
+          <ClientOnly>
+            <UserMenu v-if="isAuthenticated" />
+            <template v-else>
+              <BaseButton variant="ghost" size="sm" to="/login">Увійти</BaseButton>
+              <BaseButton size="sm" to="/sell">Почати безкоштовно</BaseButton>
+            </template>
+            <template #fallback>
+              <BaseButton variant="ghost" size="sm" to="/login">Увійти</BaseButton>
+              <BaseButton size="sm" to="/sell">Почати безкоштовно</BaseButton>
+            </template>
+          </ClientOnly>
         </div>
 
         <!-- Mobile menu trigger -->
@@ -106,8 +117,25 @@ onBeforeUnmount(() => {
         >{{ link.label }}</NuxtLink>
 
         <div class="mt-3 flex flex-col gap-2">
-          <BaseButton variant="secondary" to="/login">Увійти</BaseButton>
-          <BaseButton to="/sell">Почати безкоштовно</BaseButton>
+          <ClientOnly>
+            <template v-if="isAuthenticated && user">
+              <p class="px-3 text-[var(--t-xs)] text-text-muted">
+                {{ user.email }} · тариф {{ user.plan.planName }}
+              </p>
+              <BaseButton variant="secondary" to="/dashboard/listings/lst_88/advice">
+                Мої оголошення
+              </BaseButton>
+              <BaseButton to="/sell">Створити оголошення</BaseButton>
+            </template>
+            <template v-else>
+              <BaseButton variant="secondary" to="/login">Увійти</BaseButton>
+              <BaseButton to="/sell">Почати безкоштовно</BaseButton>
+            </template>
+            <template #fallback>
+              <BaseButton variant="secondary" to="/login">Увійти</BaseButton>
+              <BaseButton to="/sell">Почати безкоштовно</BaseButton>
+            </template>
+          </ClientOnly>
         </div>
       </div>
     </div>

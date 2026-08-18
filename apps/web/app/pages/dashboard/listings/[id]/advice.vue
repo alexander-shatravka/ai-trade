@@ -13,6 +13,9 @@ import UpgradePrompt from '~/components/advisor/UpgradePrompt.vue';
 import BaseButton from '~/components/BaseButton.vue';
 
 const route = useRoute();
+const { allows, ready } = useAuth();
+
+definePageMeta({ middleware: 'auth' });
 
 useHead({ title: 'Чому не продається — AI Trade' });
 
@@ -23,14 +26,11 @@ useHead({ title: 'Чому не продається — AI Trade' });
  */
 const input = demoDiagnoseInput;
 
-// The plan will come from the session. Until auth exists, ?plan=free previews
-// the locked view. It is read after mount rather than during render: the page
-// is prerendered without a query string, so deciding this on the server would
-// make the static HTML disagree with the hydrated client.
-const isFree = ref(false);
-onMounted(() => {
-  isFree.value = route.query.plan === 'free';
-});
+// The lock now follows the signed-in plan rather than a query parameter. The
+// session is restored on the client, so `ready` gates the first render — until
+// then we must not decide, or the page would flash the wrong version.
+const adviceEntitlement = computed(() => allows('ai.advice'));
+const isFree = computed(() => !adviceEntitlement.value.allowed);
 
 // The timestamp is fixed so the prerendered page and the hydrated one agree.
 const fullAdvice = diagnoseListing(input, new Date('2026-08-18T09:00:00.000Z'));
@@ -69,7 +69,11 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div class="container-page py-12">
+  <div v-if="!ready" class="container-page py-12">
+    <p class="text-text-muted">Завантаження…</p>
+  </div>
+
+  <div v-else class="container-page py-12">
     <p class="text-[var(--t-sm)] text-text-muted">
       Оголошення {{ route.params.id }} · аналіз «чому не продається»
     </p>
@@ -99,7 +103,11 @@ const summary = computed(() => {
           @apply="apply"
         />
 
-        <UpgradePrompt v-if="advice.locked && hiddenCount > 0" :hidden-count="hiddenCount" />
+        <UpgradePrompt
+          v-if="advice.locked && hiddenCount > 0"
+          :hidden-count="hiddenCount"
+          :reason="adviceEntitlement.reason"
+        />
 
         <div v-if="!advice.locked" class="pt-2">
           <BaseButton v-if="!allApplied" variant="ai" size="lg" @click="applyAll">

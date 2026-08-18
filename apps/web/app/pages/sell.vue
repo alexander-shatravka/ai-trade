@@ -20,7 +20,23 @@ const {
   restart,
 } = useAiSeller();
 
+const { allows, isAuthenticated } = useAuth();
+
 useHead({ title: 'Створити оголошення — AI Trade' });
+
+/**
+ * Rule: the limit is checked BEFORE the AI call, and quota is charged only
+ * after it succeeds — a failed or degraded job must not cost a generation.
+ * Signed-out visitors may still try the flow; publishing is what needs an
+ * account.
+ */
+const quota = computed(() => allows('ai.generation'));
+const blocked = computed(() => isAuthenticated.value && !quota.value.allowed);
+
+async function startAnalysis() {
+  if (blocked.value) return;
+  await analyze();
+}
 
 const published = ref<{ priceKop: number; aiAcceptedFields: string[] } | null>(null);
 
@@ -33,15 +49,29 @@ function publish(payload: { priceKop: number; aiAcceptedFields: string[] }) {
 
 <template>
   <div class="container-page py-14">
-    <PhotoUpload
-      v-if="stage === 'upload'"
-      :photos="photos"
-      :hint="hint"
-      @add="addPhotos"
-      @remove="removePhoto"
-      @update:hint="hint = $event"
-      @analyze="analyze"
-    />
+    <template v-if="stage === 'upload'">
+      <PhotoUpload
+        :photos="photos"
+        :hint="hint"
+        @add="addPhotos"
+        @remove="removePhoto"
+        @update:hint="hint = $event"
+        @analyze="startAnalysis"
+      />
+
+      <ClientOnly>
+        <p
+          v-if="blocked"
+          class="mx-auto mt-6 max-w-2xl rounded-[var(--r-md)] border border-warning-500 bg-warning-500/10 p-4 text-[var(--t-sm)]"
+          role="status"
+        >
+          {{ quota.reason }}.
+          <NuxtLink to="/#pricing" class="font-semibold text-primary underline">
+            Порівняти тарифи
+          </NuxtLink>
+        </p>
+      </ClientOnly>
+    </template>
 
     <AnalyzingProgress
       v-else-if="stage === 'analyzing'"
