@@ -273,7 +273,7 @@ Namespace `/ws`, автентифікація через `access_token` у hands
 | Ендпоінт | Стратегія |
 |---|---|
 | `GET /categories` | `Cache-Control: public, max-age=3600` + ETag |
-| `GET /listings/{slug}` | ISR на Next.js, ревалідація 60 с; інвалідація вебхуком при редагуванні |
+| `GET /listings/{slug}` | ISR на Nitro (routeRules), ревалідація 60 с; інвалідація вебхуком при редагуванні |
 | `GET /listings` (каталог) | `s-maxage=60, stale-while-revalidate=300` |
 | `GET /search` | Redis 5 хв на нормалізований запит (економить і LLM-виклики) |
 | `GET /users/me` | `no-store` |

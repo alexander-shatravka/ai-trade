@@ -7,7 +7,7 @@
    Продавець ─────────▶│                              │◀──── Покупець
    (веб, мобільний веб)│         AI TRADE             │      (веб, SEO-трафік)
                        │                              │
-   Бізнес ────────────▶│  Next.js  ·  NestJS  ·  PG   │◀──── Адміністратор
+   Бізнес ────────────▶│   Nuxt   ·  NestJS  ·  PG    │◀──── Адміністратор
    (масовий імпорт)    │                              │
                        └───────┬──────────┬───────────┘
                                │          │
@@ -28,8 +28,8 @@
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│  apps/web · Next.js 15 (App Router) · Vercel                           │
-│  SSR/ISR для SEO · React Server Components · Tailwind · shadcn/ui      │
+│  apps/web · Nuxt 4 · Vercel                                            │
+│  SSR/ISR для SEO · Vue 3 SFC · Tailwind 4 · власні компоненти          │
 └──────────────┬─────────────────────────────────────────┬───────────────┘
                │ REST (JSON) + WebSocket                 │ прямий upload
                ▼                                          ▼
@@ -68,7 +68,7 @@
 ```
 ai-trade/
 ├── apps/
-│   ├── web/                     Next.js 15 — публічний фронтенд
+│   ├── web/                     Nuxt 4 — публічний фронтенд
 │   │   ├── app/
 │   │   │   ├── (marketing)/     landing, для бізнесу, правила, політика, контакти
 │   │   │   ├── (shop)/          каталог, /listing/[slug], /category/[...slug], /seller/[id]
@@ -76,7 +76,7 @@ ai-trade/
 │   │   │   ├── (admin)/         адмін-панель
 │   │   │   └── api/             BFF-роути: auth callback, revalidate, webhooks
 │   │   ├── components/
-│   │   │   ├── ui/              примітиви дизайн-системи (shadcn/ui-стиль)
+│   │   │   ├── ui/              примітиви дизайн-системи (Vue SFC)
 │   │   │   ├── listing/         ListingCard, Gallery, PriceBlock, AttributeTable
 │   │   │   ├── ai/              AiSellerWizard, PriceRecommendation, AdvisorPanel
 │   │   │   └── chat/            ChatWindow, MessageList, AiSuggestions
@@ -236,7 +236,7 @@ Entitlement-guard перевіряє ліміти тарифу (`@RequiresEntitl
 |---|---|
 | Брутфорс / DoS | Rate limiting на Redis: 100 req/min per IP, 20/min для AI-ендпоінтів, 5/год для реєстрації |
 | Зловживання AI (дорого!) | Ліміти по тарифу + per-user квоти + аномалія-детектор + hard cap на добові витрати |
-| XSS | React-екранування, CSP, санітизація AI-виводу (AI генерує текст — його не можна вставляти як HTML) |
+| XSS | Екранування Vue за замовчуванням, CSP, санітизація AI-виводу (AI генерує текст — його не можна вставляти як HTML) |
 | SQL-ін'єкції | Prisma (параметризовані запити); raw SQL тільки в пошуку, з `Prisma.sql` |
 | Витік персональних даних | EXIF-strip, приховані телефони до контакту, шифрування PII у спокої |
 | Prompt injection через фото/опис | Системні промпти з жорсткими межами, валідація виводу за JSON Schema, ніяких tool-calls з користувацького тексту |

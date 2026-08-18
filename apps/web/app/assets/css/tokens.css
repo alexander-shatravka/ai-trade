@@ -1,0 +1,104 @@
+/**
+ * Design tokens, copied from design/design-system.html, which stays the source
+ * of truth for values. Change a colour there and mirror it here.
+ *
+ * Themes: the light palette is defined on bare :root, dark overrides only the
+ * aliases. Both are needed — every screen must be checked in dark as well.
+ */
+:root {
+  color-scheme: light;
+
+  /* Brand (violet-indigo) */
+  --brand-50: #f2f1fe; --brand-100: #e5e2fd; --brand-200: #ccc6fb; --brand-300: #ada3f7;
+  --brand-400: #8c7df1; --brand-500: #6e5be8; --brand-600: #5b45d9; --brand-700: #4a36b8;
+  --brand-800: #3c2d93; --brand-900: #322876; --brand-950: #1e1747;
+
+  /* Accent (AI / teal) */
+  --accent-100: #d3f7f1; --accent-300: #7be5d6; --accent-400: #35d6c4;
+  --accent-500: #14b8a6; --accent-600: #0e9384;
+
+  /* Neutral (cool gray) */
+  --n-0: #ffffff; --n-25: #fcfcfd; --n-50: #f8f9fb; --n-100: #f1f3f7; --n-200: #e4e7ee;
+  --n-300: #cdd2de; --n-400: #9aa1b1; --n-500: #6e7789; --n-600: #545c6b; --n-700: #3f4653;
+  --n-800: #2a2f3a; --n-900: #1a1d26; --n-950: #101219; --n-1000: #0a0c11;
+
+  /* Semantic */
+  --success-50: #ecfdf5; --success-500: #10b981; --success-600: #059669;
+  --warning-50: #fffbeb; --warning-500: #f59e0b; --warning-600: #d97706;
+  --danger-50: #fef2f2; --danger-500: #ef4444; --danger-600: #dc2626;
+  --info-50: #eff6ff; --info-500: #3b82f6; --info-600: #2563eb;
+
+  /* Aliases — light */
+  --bg: var(--n-0); --bg-subtle: var(--n-50); --bg-inset: var(--n-100);
+  --surface: var(--n-0); --surface-raised: var(--n-0); --surface-hover: var(--n-50);
+  --border: var(--n-200); --border-strong: var(--n-300);
+  --text: var(--n-950); --text-secondary: var(--n-600); --text-muted: var(--n-500);
+  --text-inverse: var(--n-0);
+  --primary: var(--brand-500); --primary-hover: var(--brand-600); --primary-soft: var(--brand-50);
+  --ring: rgb(110 91 232 / 0.35);
+
+  /* Elevation */
+  --sh-xs: 0 1px 2px rgb(16 18 25 / 0.05);
+  --sh-sm: 0 1px 3px rgb(16 18 25 / 0.07), 0 1px 2px rgb(16 18 25 / 0.04);
+  --sh-md: 0 4px 12px rgb(16 18 25 / 0.07), 0 2px 4px rgb(16 18 25 / 0.04);
+  --sh-lg: 0 12px 32px rgb(16 18 25 / 0.1), 0 4px 8px rgb(16 18 25 / 0.04);
+  --sh-xl: 0 24px 64px rgb(16 18 25 / 0.14), 0 8px 16px rgb(16 18 25 / 0.05);
+  --sh-brand: 0 8px 24px rgb(110 91 232 / 0.28);
+
+  /* Radius */
+  --r-xs: 4px; --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
+  --r-xl: 20px; --r-2xl: 28px; --r-full: 999px;
+
+  /* Type */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'SF Mono', ui-monospace, 'JetBrains Mono', Menlo, monospace;
+  --t-display: clamp(2.6rem, 1.4rem + 3.6vw, 4.5rem);
+  --t-h1: clamp(2rem, 1.3rem + 2.2vw, 3rem);
+  --t-h2: clamp(1.5rem, 1.15rem + 1.1vw, 2.125rem);
+  --t-h3: 1.375rem; --t-h4: 1.125rem;
+  --t-lg: 1.0625rem; --t-base: 0.9375rem; --t-sm: 0.8125rem; --t-xs: 0.75rem;
+
+  /* Motion */
+  --e-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --e-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --d-fast: 120ms; --d-base: 200ms; --d-slow: 320ms;
+
+  --container: 1180px;
+}
+
+/* Dark aliases: system preference first, then the explicit toggle, which wins. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: var(--n-1000); --bg-subtle: #0e1117; --bg-inset: #161a22;
+    --surface: #12151c; --surface-raised: #181c25; --surface-hover: #1c212b;
+    --border: #242935; --border-strong: #333a48;
+    --text: #f2f4f8; --text-secondary: #a2aabb; --text-muted: #6e7789;
+    --text-inverse: var(--n-950);
+    --primary: #8c7df1; --primary-hover: #a093f5; --primary-soft: rgb(140 125 241 / 0.14);
+    --ring: rgb(140 125 241 / 0.35);
+    --sh-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+    --sh-sm: 0 1px 3px rgb(0 0 0 / 0.5);
+    --sh-md: 0 4px 12px rgb(0 0 0 / 0.5);
+    --sh-lg: 0 12px 32px rgb(0 0 0 / 0.55);
+    --sh-xl: 0 24px 64px rgb(0 0 0 / 0.6);
+    --sh-brand: 0 8px 28px rgb(110 91 232 / 0.4);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--n-1000); --bg-subtle: #0e1117; --bg-inset: #161a22;
+  --surface: #12151c; --surface-raised: #181c25; --surface-hover: #1c212b;
+  --border: #242935; --border-strong: #333a48;
+  --text: #f2f4f8; --text-secondary: #a2aabb; --text-muted: #6e7789;
+  --text-inverse: var(--n-950);
+  --primary: #8c7df1; --primary-hover: #a093f5; --primary-soft: rgb(140 125 241 / 0.14);
+  --ring: rgb(140 125 241 / 0.35);
+  --sh-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --sh-sm: 0 1px 3px rgb(0 0 0 / 0.5);
+  --sh-md: 0 4px 12px rgb(0 0 0 / 0.5);
+  --sh-lg: 0 12px 32px rgb(0 0 0 / 0.55);
+  --sh-xl: 0 24px 64px rgb(0 0 0 / 0.6);
+  --sh-brand: 0 8px 28px rgb(110 91 232 / 0.4);
+}

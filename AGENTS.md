@@ -24,19 +24,22 @@
 
 | | |
 |---|---|
-| **Етап** | 1 з 4 — **архітектура та дизайн завершені, коду ще немає** |
-| **Що є** | 7 документів специфікації, Prisma-схема, OpenAPI 3.1, 4 HTML-макети |
-| **Що далі** | Реалізація за `docs/09-implementation-guide.md` |
+| **Етап** | 2 з 4 — **почалася реалізація фронтенду** |
+| **Що є** | Специфікація, Prisma-схема, OpenAPI 3.1, 4 HTML-макети, монорепо з `apps/web` (Nuxt), `packages/contracts`, `packages/utils` |
+| **Що далі** | AI Seller flow за `docs/09-implementation-guide.md`; `apps/api` ще не створено |
 
-**Важливо для агента:** якщо в репозиторії ще немає `apps/` і `packages/` — це нормально.
-Спочатку прочитай `docs/09-implementation-guide.md` і створюй структуру звідти, а не з нуля.
+**Важливо для агента:** `apps/api`, `apps/worker`, `packages/db`, `packages/ui` ще не створені.
+Перед тим як їх додавати, прочитай `docs/09-implementation-guide.md` і йди за ним, а не з нуля.
+
+Локально: `pnpm install`, далі `pnpm dev` (Nuxt на http://localhost:3000).
+Статичні макети публікуються на GitHub Pages скриптом `scripts/build-site.sh`.
 
 ---
 
 ## 3. Технологічний стек
 
 ```
-Frontend   Next.js 15 (App Router) · React · TypeScript · Tailwind CSS · shadcn/ui + Radix
+Frontend   Nuxt 4 · Vue 3 · TypeScript · Tailwind CSS 4 (токени з дизайн-системи)
 Backend    NestJS 11 · Node.js · TypeScript
 БД         PostgreSQL 16 + pgvector · Prisma 6
 Черги      BullMQ + Redis
@@ -54,7 +57,7 @@ Auth       Google OAuth · magic-link email · JWT + refresh з ротацією
 
 ```
 apps/
-  web/       Next.js — публічний фронтенд + кабінет + адмінка
+  web/       Nuxt 4 — публічний фронтенд + кабінет + адмінка
   api/       NestJS — REST + WebSocket
   worker/    BullMQ-процесори (той самий код, інший entrypoint)
 packages/

@@ -44,7 +44,7 @@ PENDING_MODERATION  // enum — SCREAMING_SNAKE
 ```
 
 Файли: `kebab-case.ts` для модулів NestJS (`ai-provider.interface.ts`),
-`PascalCase.tsx` для React-компонентів (`ListingCard.tsx`).
+`PascalCase.vue` для Vue-компонентів (`ListingCard.vue`).
 
 ---
 

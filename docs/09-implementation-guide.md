@@ -16,7 +16,7 @@
 | 3 | `packages/db` | Prisma-схема, міграції, seed | Дані — фундамент усього іншого |
 | 4 | Каркас NestJS | auth, users, categories, media. **Без AI** | Найнудніше, але без нього AI нема куди вбудовувати |
 | 5 | **AI-модуль на `MockProvider`** | Увесь пайплайн, жодного виклику OpenAI | ⭐ Ключовий крок — див. нижче |
-| 6 | Next.js: AI Seller flow | Головний екран продукту на мок-даних | Тут вилизується UX без витрат на токени |
+| 6 | Nuxt: AI Seller flow | Головний екран продукту на мок-даних | Тут вилизується UX без витрат на токени |
 | 7 | `OpenAiProvider` | Підміна провайдера, промпти, eval-тести | Змінюється один рядок конфігурації |
 | 8 | Каталог, картка товару, пошук | Спершу FTS, потім гібридний з векторами | SEO-критичні сторінки |
 | 9 | Чат + WebSocket | | |
@@ -53,7 +53,7 @@ pnpm dev
 
 | Адреса | Що |
 |---|---|
-| http://localhost:3000 | Next.js |
+| http://localhost:3000 | Nuxt |
 | http://localhost:4000 | NestJS API |
 | http://localhost:4000/docs | Swagger UI з `openapi.yaml` |
 | http://localhost:9001 | MinIO console (локальна заміна S3) |

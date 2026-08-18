@@ -108,7 +108,7 @@
 | Поля БД / API | `camelCase` | `priceKop`, `aiConfidence` |
 | Таблиці | `snake_case`, множина, через `@@map` | `listings`, `ai_jobs` |
 | Ендпоінти | `kebab-case`, множина | `/bulk-imports`, `/saved-searches` |
-| React-компоненти | `PascalCase` | `ListingCard`, `AiPricePanel` |
+| Vue-компоненти | `PascalCase` | `ListingCard`, `AiPricePanel` |
 | CSS-токени | `--<група>-<ключ>` | `--brand-500`, `--sh-lg`, `--r-md` |
 
 ---
