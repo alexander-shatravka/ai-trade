@@ -1,7 +1,9 @@
 /**
- * Restores the stored session once, before the app renders on the client.
- * Client-only by design: the mock session lives in localStorage, so the server
- * render is always the signed-out view and hydration agrees with it.
+ * Restores the stored session on the client, before the app renders.
+ *
+ * Safe to do this early because every screen that depends on the session is
+ * wrapped in <ClientOnly>: the server renders the loading fallback and Vue
+ * does not try to hydrate the signed-in markup against it.
  */
 export default defineNuxtPlugin(() => {
   useAuth().restore();

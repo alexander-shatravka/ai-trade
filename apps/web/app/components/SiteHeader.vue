@@ -122,9 +122,7 @@ onBeforeUnmount(() => {
               <p class="px-3 text-[var(--t-xs)] text-text-muted">
                 {{ user.email }} · тариф {{ user.plan.planName }}
               </p>
-              <BaseButton variant="secondary" to="/dashboard/listings/lst_88/advice">
-                Мої оголошення
-              </BaseButton>
+              <BaseButton variant="secondary" to="/dashboard">Мої оголошення</BaseButton>
               <BaseButton to="/sell">Створити оголошення</BaseButton>
             </template>
             <template v-else>

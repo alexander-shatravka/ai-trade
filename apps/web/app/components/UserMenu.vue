@@ -86,7 +86,7 @@ function leave() {
       </div>
 
       <NuxtLink
-        to="/dashboard/listings/lst_88/advice"
+        to="/dashboard"
         role="menuitem"
         class="mt-1 block rounded-[var(--r-md)] px-3 py-2 text-[var(--t-sm)] transition-colors hover:bg-surface-hover"
         @click="open = false"
