@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Trade — Продайте будь-яку річ за 30 секунд за допомогою AI</title>
+<meta name="description" content="AI створить оголошення, оцінить товар, покращить фото та допоможе знайти покупця. Українська AI-платформа для продажу речей.">
+<style>
+:root{
+  color-scheme:light;
+  --brand-50:#F2F1FE;--brand-100:#E5E2FD;--brand-200:#CCC6FB;--brand-300:#ADA3F7;
+  --brand-400:#8C7DF1;--brand-500:#6E5BE8;--brand-600:#5B45D9;--brand-700:#4A36B8;
+  --brand-800:#3C2D93;--brand-900:#322876;--brand-950:#1E1747;
+  --accent-100:#D3F7F1;--accent-300:#7BE5D6;--accent-400:#35D6C4;--accent-500:#14B8A6;--accent-600:#0E9384;
+  --n-0:#FFFFFF;--n-50:#F8F9FB;--n-100:#F1F3F7;--n-200:#E4E7EE;--n-300:#CDD2DE;--n-400:#9AA1B1;
+  --n-500:#6E7789;--n-600:#545C6B;--n-700:#3F4653;--n-800:#2A2F3A;--n-900:#1A1D26;--n-950:#101219;--n-1000:#0A0C11;
+  --success-50:#ECFDF5;--success-500:#10B981;--success-600:#059669;
+  --warning-50:#FFFBEB;--warning-500:#F59E0B;--warning-600:#D97706;
+  --danger-500:#EF4444;
+
+  --bg:var(--n-0);--bg-subtle:var(--n-50);--bg-inset:var(--n-100);
+  --surface:var(--n-0);--surface-raised:var(--n-0);--surface-hover:var(--n-50);
+  --border:var(--n-200);--border-strong:var(--n-300);
+  --text:var(--n-950);--text-secondary:var(--n-600);--text-muted:var(--n-500);
+  --primary:var(--brand-500);--primary-hover:var(--brand-600);--primary-soft:var(--brand-50);
+  --ring:rgba(110,91,232,.35);
+  --sh-xs:0 1px 2px rgba(16,18,25,.05);
+  --sh-sm:0 1px 3px rgba(16,18,25,.07),0 1px 2px rgba(16,18,25,.04);
+  --sh-md:0 4px 12px rgba(16,18,25,.07),0 2px 4px rgba(16,18,25,.04);
+  --sh-lg:0 12px 32px rgba(16,18,25,.10),0 4px 8px rgba(16,18,25,.04);
+  --sh-xl:0 24px 64px rgba(16,18,25,.14),0 8px 16px rgba(16,18,25,.05);
+  --sh-brand:0 8px 24px rgba(110,91,232,.28);
+  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:20px;--r-2xl:28px;--r-full:999px;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:20px;--s-6:24px;--s-8:32px;
+  --s-10:40px;--s-12:48px;--s-16:64px;--s-20:80px;--s-24:96px;--s-32:128px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono',ui-monospace,Menlo,monospace;
+  --t-display:clamp(2.5rem,1.2rem + 4vw,4.5rem);
+  --t-h1:clamp(2rem,1.3rem + 2.2vw,3rem);
+  --t-h2:clamp(1.6rem,1.2rem + 1.4vw,2.375rem);
+  --t-h3:1.375rem;--t-h4:1.125rem;
+  --t-lg:1.0625rem;--t-base:0.9375rem;--t-sm:0.8125rem;--t-xs:0.75rem;
+  --e-out:cubic-bezier(.32,.72,0,1);--e-spring:cubic-bezier(.34,1.56,.64,1);
+  --d-fast:120ms;--d-base:200ms;--d-slow:320ms;
+  --container:1180px;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:var(--n-1000);--bg-subtle:#0E1117;--bg-inset:#161A22;
+  --surface:#12151C;--surface-raised:#181C25;--surface-hover:#1C212B;
+  --border:#242935;--border-strong:#333A48;
+  --text:#F2F4F8;--text-secondary:#A2AABB;--text-muted:#6E7789;
+  --primary:#8C7DF1;--primary-hover:#A093F5;--primary-soft:rgba(140,125,241,.14);
+  --ring:rgba(140,125,241,.35);
+  --success-50:rgba(16,185,129,.14);--warning-50:rgba(245,158,11,.14);
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);--sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 4px 12px rgba(0,0,0,.5);--sh-lg:0 12px 32px rgba(0,0,0,.55);
+  --sh-xl:0 24px 64px rgba(0,0,0,.6);--sh-brand:0 8px 28px rgba(110,91,232,.42);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:var(--t-base);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.006em;
+  transition:background var(--d-base) var(--e-out),color var(--d-base) var(--e-out)}
+h1,h2,h3,h4{margin:0;font-weight:640;letter-spacing:-.026em;line-height:1.14}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:var(--r-xs)}
+.wrap{max-width:var(--container);margin:0 auto;padding:0 var(--s-6)}
+
+/* ═══ Nav ═══ */
+.nav{position:sticky;top:0;z-index:60;height:64px;display:flex;align-items:center;
+  border-bottom:1px solid transparent;transition:all var(--d-base) var(--e-out)}
+.nav.scrolled{border-color:var(--border);background:color-mix(in srgb,var(--bg) 80%,transparent);
+  backdrop-filter:saturate(180%) blur(18px)}
+.nav .wrap{display:flex;align-items:center;gap:var(--s-6);width:100%}
+.logo{display:flex;align-items:center;gap:10px;font-weight:680;letter-spacing:-.03em;font-size:1.0625rem}
+.logo-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--brand-400),var(--brand-600) 55%,var(--accent-500));
+  box-shadow:var(--sh-brand);color:#fff;font-weight:800;font-size:13px}
+.nav-links{display:flex;gap:var(--s-1);margin-left:var(--s-4)}
+.nav-links a{padding:7px 12px;border-radius:var(--r-sm);font-size:var(--t-sm);font-weight:520;
+  color:var(--text-secondary);transition:all var(--d-fast) var(--e-out)}
+.nav-links a:hover{background:var(--surface-hover);color:var(--text)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:var(--s-2)}
+
+.btn{--btn-h:40px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:var(--btn-h);padding:0 18px;border:1px solid transparent;border-radius:var(--r-md);
+  font-family:inherit;font-size:var(--t-base);font-weight:560;letter-spacing:-.01em;
+  cursor:pointer;white-space:nowrap;
+  transition:transform var(--d-fast) var(--e-out),background var(--d-fast) var(--e-out),
+             border-color var(--d-fast) var(--e-out),box-shadow var(--d-fast) var(--e-out),filter var(--d-fast)}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:var(--sh-sm)}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:var(--sh-brand)}
+.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border-strong);box-shadow:var(--sh-xs)}
+.btn-secondary:hover{background:var(--surface-hover);border-color:var(--text-muted)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--surface-hover);color:var(--text)}
+.btn-ai{background:linear-gradient(135deg,var(--brand-500),var(--brand-600) 58%,var(--accent-600));
+  color:#fff;box-shadow:var(--sh-brand)}
+.btn-ai:hover{filter:brightness(1.09)}
+.btn-sm{--btn-h:32px;padding:0 13px;font-size:var(--t-sm)}
+.btn-lg{--btn-h:52px;padding:0 28px;font-size:var(--t-lg);border-radius:var(--r-lg)}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--surface);color:var(--text-secondary);cursor:pointer;
+  font-size:15px;transition:all var(--d-fast) var(--e-out)}
+.icon-btn:hover{border-color:var(--border-strong);color:var(--text)}
+
+/* ═══ Hero ═══ */
+.hero{position:relative;padding:var(--s-24) 0 var(--s-20);overflow:hidden}
+.hero::before{content:'';position:absolute;top:-320px;left:50%;transform:translateX(-50%);
+  width:1100px;height:750px;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(110,91,232,.18),transparent 62%);filter:blur(50px)}
+.hero::after{content:'';position:absolute;top:-140px;right:-8%;width:520px;height:520px;pointer-events:none;
+  background:radial-gradient(circle,rgba(20,184,166,.15),transparent 65%);filter:blur(60px)}
+.hero .wrap{position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 14px;
+  border:1px solid var(--border);border-radius:var(--r-full);background:var(--surface);
+  font-size:var(--t-sm);font-weight:520;color:var(--text-secondary);box-shadow:var(--sh-xs)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent-500);
+  box-shadow:0 0 0 3px rgba(20,184,166,.22);animation:pulse 2.4s var(--e-out) infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.hero h1{margin-top:var(--s-6);font-size:var(--t-display);font-weight:690;letter-spacing:-.038em;
+  line-height:1.02;max-width:16ch}
+.hero h1 .grad{background:linear-gradient(115deg,var(--brand-500),var(--accent-500));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.lede{margin-top:var(--s-5);font-size:clamp(1rem,.9rem + .4vw,1.1875rem);
+  color:var(--text-secondary);max-width:56ch;line-height:1.6}
+.hero-cta{margin-top:var(--s-8);display:flex;flex-wrap:wrap;gap:var(--s-3)}
+.hero-trust{margin-top:var(--s-5);display:flex;flex-wrap:wrap;gap:var(--s-5);
+  font-size:var(--t-sm);color:var(--text-muted)}
+.hero-trust span{display:inline-flex;align-items:center;gap:6px}
+
+/* ═══ Demo ═══ */
+.demo{margin-top:var(--s-16);border-radius:var(--r-2xl);border:1px solid var(--border);
+  background:var(--surface);box-shadow:var(--sh-xl);overflow:hidden}
+.demo-bar{display:flex;align-items:center;gap:var(--s-3);height:44px;padding:0 var(--s-4);
+  border-bottom:1px solid var(--border);background:var(--bg-subtle)}
+.demo-dots{display:flex;gap:6px}
+.demo-dots i{width:10px;height:10px;border-radius:50%;background:var(--border-strong)}
+.demo-url{flex:1;text-align:center;font-size:var(--t-xs);color:var(--text-muted);font-family:var(--mono)}
+.demo-grid{display:grid;grid-template-columns:1fr 1.15fr 1.25fr;min-height:380px}
+.demo-col{padding:var(--s-6);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.demo-col:last-child{border-right:none}
+.demo-step{display:inline-flex;align-items:center;gap:7px;font-size:var(--t-xs);font-weight:640;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted);margin-bottom:var(--s-4)}
+.demo-step b{width:19px;height:19px;border-radius:50%;display:grid;place-items:center;
+  background:var(--bg-inset);color:var(--text-secondary);font-size:10px}
+.demo-step.on b{background:var(--primary);color:#fff}
+.demo-step.on{color:var(--primary)}
+
+.photo-frame{flex:1;border-radius:var(--r-lg);border:1.5px dashed var(--border-strong);
+  background:var(--bg-subtle);display:grid;place-items:center;position:relative;overflow:hidden;min-height:200px}
+.photo-frame .emoji{font-size:66px;filter:drop-shadow(0 8px 18px rgba(0,0,0,.14));
+  transition:transform var(--d-slow) var(--e-spring)}
+.photo-frame.active{border-style:solid;border-color:var(--primary);background:var(--primary-soft)}
+.photo-frame.active .emoji{transform:scale(1.06)}
+.scanline{position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent-400),transparent);opacity:0}
+.photo-frame.scanning .scanline{opacity:1;animation:scan 1.6s var(--e-out) infinite}
+@keyframes scan{0%{top:0}100%{top:100%}}
+.photo-thumbs{display:flex;gap:7px;margin-top:var(--s-3)}
+.photo-thumbs i{flex:1;aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);
+  display:grid;place-items:center;font-size:17px;font-style:normal}
+
+.ai-steps{display:flex;flex-direction:column;gap:2px;flex:1}
+.ai-step{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);
+  font-size:var(--t-sm);color:var(--text-muted);transition:all var(--d-base) var(--e-out)}
+.ai-step .tick{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border-strong);
+  display:grid;place-items:center;font-size:10px;color:transparent;flex:none;
+  transition:all var(--d-base) var(--e-out)}
+.ai-step.done{color:var(--text)}
+.ai-step.done .tick{background:var(--success-500);border-color:var(--success-500);color:#fff}
+.ai-step.run{color:var(--primary);background:var(--primary-soft);font-weight:560}
+.ai-step.run .tick{border-color:var(--primary);border-right-color:transparent;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.meter{height:6px;border-radius:var(--r-full);background:var(--bg-inset);overflow:hidden;margin-top:var(--s-4)}
+.meter-fill{height:100%;border-radius:var(--r-full);width:0;
+  background:linear-gradient(90deg,var(--brand-500),var(--accent-500));transition:width .5s var(--e-out)}
+.meter-fill.ok{background:linear-gradient(90deg,var(--success-500),var(--accent-500))}
+
+.result{flex:1;opacity:0;transform:translateY(10px);transition:all var(--d-slow) var(--e-out)}
+.result.show{opacity:1;transform:none}
+.res-title{font-size:var(--t-lg);font-weight:640;letter-spacing:-.02em;line-height:1.3}
+.res-badges{display:flex;gap:6px;margin-top:var(--s-2);flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;
+  border-radius:var(--r-full);font-size:var(--t-xs);font-weight:600}
+.badge-brand{background:var(--primary-soft);color:var(--primary)}
+.badge-success{background:var(--success-50);color:var(--success-600)}
+.badge-warning{background:var(--warning-50);color:var(--warning-600)}
+.badge-neutral{background:var(--bg-inset);color:var(--text-secondary)}
+.badge-vip{background:linear-gradient(135deg,#F59E0B,#EA580C);color:#fff}
+.res-desc{margin-top:var(--s-3);font-size:var(--t-sm);color:var(--text-secondary);line-height:1.55}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:var(--s-4)}
+.tier{padding:9px 6px;border:1px solid var(--border);border-radius:var(--r-md);
+  background:var(--bg-subtle);text-align:center}
+.tier.pick{border-color:var(--primary);background:var(--primary-soft);box-shadow:0 0 0 3px var(--ring)}
+.tier small{display:block;font-size:10px;color:var(--text-muted);font-weight:560}
+.tier b{display:block;margin-top:3px;font-size:var(--t-base);letter-spacing:-.02em}
+
+/* ═══ Sections ═══ */
+section.band{padding:var(--s-24) 0}
+section.band.tint{background:var(--bg-subtle);border-block:1px solid var(--border)}
+.sec-title{text-align:center;max-width:640px;margin:0 auto var(--s-12)}
+.sec-title .kicker{display:inline-block;font-size:var(--t-xs);font-weight:640;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--primary);margin-bottom:var(--s-3)}
+.sec-title h2{font-size:var(--t-h2)}
+.sec-title p{margin-top:var(--s-3);color:var(--text-secondary);font-size:var(--t-lg)}
+
+/* ═══ Feature cards ═══ */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s-4)}
+.feature{position:relative;padding:var(--s-6);border:1px solid var(--border);border-radius:var(--r-xl);
+  background:var(--surface);overflow:hidden;
+  transition:transform var(--d-base) var(--e-out),box-shadow var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out)}
+.feature:hover{transform:translateY(-3px);box-shadow:var(--sh-lg);border-color:var(--border-strong)}
+.feature:hover .f-ico{transform:scale(1.08) rotate(-4deg)}
+.f-ico{width:44px;height:44px;border-radius:var(--r-md);display:grid;place-items:center;font-size:21px;
+  background:var(--primary-soft);transition:transform var(--d-base) var(--e-spring)}
+.feature h3{margin-top:var(--s-4);font-size:var(--t-h4);font-weight:620}
+.feature p{margin-top:var(--s-2);color:var(--text-secondary);font-size:var(--t-sm);line-height:1.6}
+.feature .f-tag{margin-top:var(--s-4);display:inline-block;font-size:var(--t-xs);font-weight:600;
+  color:var(--accent-600)}
+.feature.span2{grid-column:span 2}
+@media(max-width:760px){.feature.span2{grid-column:span 1}}
+
+/* ═══ Steps ═══ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-6);position:relative}
+.steps::before{content:'';position:absolute;top:30px;left:16%;right:16%;height:1.5px;
+  background:repeating-linear-gradient(90deg,var(--border-strong) 0 7px,transparent 7px 14px)}
+.step{position:relative;text-align:center}
+.step-num{width:60px;height:60px;margin:0 auto;border-radius:var(--r-xl);display:grid;place-items:center;
+  font-size:1.375rem;font-weight:700;background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--sh-md);position:relative;z-index:1;
+  transition:all var(--d-base) var(--e-out)}
+.step:hover .step-num{transform:translateY(-3px);border-color:var(--primary);color:var(--primary);box-shadow:var(--sh-brand)}
+.step h3{margin-top:var(--s-5);font-size:var(--t-h4)}
+.step p{margin-top:var(--s-2);color:var(--text-secondary);font-size:var(--t-sm);max-width:30ch;margin-inline:auto}
+@media(max-width:760px){.steps{grid-template-columns:1fr;gap:var(--s-8)}.steps::before{display:none}}
+
+/* ═══ Comparison ═══ */
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-4);max-width:820px;margin:0 auto}
+.vs-card{padding:var(--s-6);border-radius:var(--r-xl);border:1px solid var(--border);background:var(--surface)}
+.vs-card.us{border-color:transparent;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,
+             linear-gradient(135deg,var(--brand-400),var(--accent-500)) border-box;
+  border:1.5px solid transparent;box-shadow:var(--sh-lg)}
+.vs-card h4{font-size:var(--t-sm);text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);font-weight:640}
+.vs-card.us h4{color:var(--primary)}
+.vs-card ul{margin:var(--s-4) 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+.vs-card li{display:flex;gap:10px;font-size:var(--t-sm);line-height:1.5}
+.vs-card li span{flex:none;width:18px}
+@media(max-width:640px){.versus{grid-template-columns:1fr}}
+
+/* ═══ Pricing ═══ */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-4);align-items:start}
+.plan{position:relative;padding:var(--s-8) var(--s-6) var(--s-6);border:1px solid var(--border);
+  border-radius:var(--r-2xl);background:var(--surface);
+  transition:transform var(--d-base) var(--e-out),box-shadow var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out)}
+.plan:hover{transform:translateY(-4px);box-shadow:var(--sh-lg)}
+.plan.featured{border-color:transparent;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,
+             linear-gradient(150deg,var(--brand-400),var(--accent-500)) border-box;
+  border:1.5px solid transparent;box-shadow:var(--sh-xl);transform:scale(1.035)}
+.plan.featured:hover{transform:scale(1.035) translateY(-4px)}
+.plan-flag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);height:26px;padding:0 14px;
+  display:grid;place-items:center;border-radius:var(--r-full);
+  background:linear-gradient(135deg,var(--brand-500),var(--accent-600));color:#fff;
+  font-size:var(--t-xs);font-weight:640;letter-spacing:.02em;white-space:nowrap;box-shadow:var(--sh-brand)}
+.plan-name{font-size:var(--t-h4);font-weight:640}
+.plan-for{margin-top:5px;font-size:var(--t-sm);color:var(--text-muted)}
+.plan-price{margin-top:var(--s-5);display:flex;align-items:baseline;gap:5px}
+.plan-price b{font-size:2.75rem;font-weight:700;letter-spacing:-.04em;line-height:1}
+.plan-price span{color:var(--text-muted);font-size:var(--t-sm)}
+.plan ul{margin:var(--s-6) 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:11px}
+.plan li{display:flex;gap:10px;font-size:var(--t-sm);line-height:1.45;color:var(--text-secondary)}
+.plan li b{color:var(--text);font-weight:600}
+.plan li .ck{flex:none;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;
+  background:var(--success-50);color:var(--success-600);font-size:9px;margin-top:2px}
+.plan li.off{opacity:.42}
+.plan li.off .ck{background:var(--bg-inset);color:var(--text-muted)}
+.plan .btn{width:100%;margin-top:var(--s-6)}
+@media(max-width:900px){.plans{grid-template-columns:1fr;gap:var(--s-6)}.plan.featured{transform:none}
+  .plan.featured:hover{transform:translateY(-4px)}}
+
+/* ═══ Small price cards ═══ */
+.mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--s-3)}
+.mini{padding:var(--s-5);border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface);
+  transition:all var(--d-base) var(--e-out)}
+.mini:hover{border-color:var(--border-strong);transform:translateY(-2px);box-shadow:var(--sh-md)}
+.mini .m-top{display:flex;align-items:center;justify-content:space-between}
+.mini .m-name{font-weight:640;font-size:var(--t-base)}
+.mini .m-price{margin-top:var(--s-3);font-size:1.5rem;font-weight:700;letter-spacing:-.03em}
+.mini .m-price small{font-size:var(--t-sm);font-weight:500;color:var(--text-muted);letter-spacing:0}
+.mini ul{margin:var(--s-3) 0 0;padding-left:16px;color:var(--text-secondary);font-size:var(--t-sm);line-height:1.7}
+
+.table{width:100%;border-collapse:collapse;font-size:var(--t-sm);
+  border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.table th{text-align:left;padding:12px 16px;background:var(--bg-inset);font-weight:620;font-size:var(--t-xs);
+  text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+.table td{padding:13px 16px;border-top:1px solid var(--border)}
+.table td:last-child{font-weight:640;text-align:right}
+
+/* ═══ Roadmap ═══ */
+.road{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-4)}
+.road-item{position:relative;padding:var(--s-6) var(--s-5);border:1px solid var(--border);
+  border-radius:var(--r-xl);background:var(--surface);transition:all var(--d-base) var(--e-out)}
+.road-item:hover{border-color:var(--border-strong);transform:translateY(-3px);box-shadow:var(--sh-md)}
+.road-item.now{border-color:transparent;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,
+             linear-gradient(140deg,var(--brand-400),var(--accent-500)) border-box;
+  border:1.5px solid transparent}
+.road-phase{font-size:var(--t-xs);font-weight:640;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted)}
+.road-item.now .road-phase{color:var(--primary)}
+.road-item h4{margin-top:var(--s-3);font-size:var(--t-base);font-weight:620}
+.road-item p{margin-top:var(--s-2);font-size:var(--t-sm);color:var(--text-secondary);line-height:1.55}
+@media(max-width:900px){.road{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.road{grid-template-columns:1fr}}
+
+/* ═══ CTA ═══ */
+.cta{position:relative;padding:var(--s-20) var(--s-8);border-radius:var(--r-2xl);text-align:center;
+  background:linear-gradient(140deg,var(--brand-600),var(--brand-500) 45%,var(--accent-600));
+  color:#fff;overflow:hidden;box-shadow:var(--sh-xl)}
+.cta::before{content:'';position:absolute;top:-50%;left:-10%;width:60%;height:200%;
+  background:radial-gradient(ellipse,rgba(255,255,255,.16),transparent 60%)}
+.cta h2{position:relative;font-size:var(--t-h2);letter-spacing:-.03em}
+.cta p{position:relative;margin-top:var(--s-3);opacity:.9;font-size:var(--t-lg);max-width:44ch;margin-inline:auto}
+.cta .btn{position:relative;margin-top:var(--s-8);background:#fff;color:var(--brand-700);border:none}
+.cta .btn:hover{background:#fff;filter:brightness(.96);box-shadow:0 12px 32px rgba(0,0,0,.2)}
+
+/* ═══ Footer ═══ */
+footer{border-top:1px solid var(--border);background:var(--bg-subtle);padding:var(--s-16) 0 var(--s-8)}
+.f-grid{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:var(--s-8)}
+.f-about p{margin-top:var(--s-4);color:var(--text-secondary);font-size:var(--t-sm);line-height:1.65;max-width:34ch}
+.f-col h5{margin:0 0 var(--s-4);font-size:var(--t-xs);font-weight:640;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--text-muted)}
+.f-col a{display:block;padding:5px 0;font-size:var(--t-sm);color:var(--text-secondary);
+  transition:color var(--d-fast) var(--e-out)}
+.f-col a:hover{color:var(--primary)}
+.f-bottom{margin-top:var(--s-12);padding-top:var(--s-6);border-top:1px solid var(--border);
+  display:flex;flex-wrap:wrap;gap:var(--s-4);align-items:center;
+  font-size:var(--t-sm);color:var(--text-muted)}
+.f-bottom .sp{margin-left:auto}
+@media(max-width:900px){.f-grid{grid-template-columns:1fr 1fr;gap:var(--s-6)}}
+@media(max-width:560px){.f-grid{grid-template-columns:1fr}}
+
+/* ═══ Reveal ═══ */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s var(--e-out),transform .6s var(--e-out)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:980px){
+  .demo-grid{grid-template-columns:1fr}
+  .demo-col{border-right:none;border-bottom:1px solid var(--border)}
+  .nav-links{display:none}
+}
+@media(max-width:640px){
+  .hero{padding:var(--s-16) 0 var(--s-12)}
+  .hero-cta .btn{width:100%}
+  section.band{padding:var(--s-16) 0}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <a href="#" class="logo"><span class="logo-mark">AI</span>AI&nbsp;Trade</a>
+    <div class="nav-links">
+      <a href="#features">Можливості</a>
+      <a href="#how">Як це працює</a>
+      <a href="#pricing">Тарифи</a>
+      <a href="pages.html#business">Для бізнесу</a>
+      <a href="#roadmap">Розвиток</a>
+    </div>
+    <div class="nav-right">
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Змінити тему"><span id="ticon">🌙</span></button>
+      <a class="btn btn-ghost btn-sm" href="#">Увійти</a>
+      <a class="btn btn-primary btn-sm" href="#">Почати безкоштовно</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Штучний інтелект замість форми на 12 полів</span>
+
+    <h1>Продайте будь-яку річ за <span class="grad">30 секунд</span> за допомогою AI</h1>
+
+    <p class="lede">AI створить оголошення, оцінить товар, покращить фото
+      та допоможе знайти покупця. Ви лише завантажуєте фотографію.</p>
+
+    <div class="hero-cta">
+      <a class="btn btn-ai btn-lg" href="#">✨ Продати товар</a>
+      <a class="btn btn-secondary btn-lg" href="#">Знайти товар</a>
+    </div>
+
+    <div class="hero-trust">
+      <span>✓ Безкоштовний старт</span>
+      <span>✓ Без банківської картки</span>
+      <span>✓ Українська мова</span>
+    </div>
+
+    <!-- ── Демонстрація ── -->
+    <div class="demo rv" id="demo">
+      <div class="demo-bar">
+        <div class="demo-dots"><i></i><i></i><i></i></div>
+        <div class="demo-url">aitrade.ua / sell</div>
+        <button class="btn btn-ghost btn-sm" onclick="playDemo()">↻ Показати ще раз</button>
+      </div>
+      <div class="demo-grid">
+
+        <div class="demo-col">
+          <div class="demo-step" id="st1"><b>1</b>Фото товару</div>
+          <div class="photo-frame" id="frame">
+            <div class="scanline"></div>
+            <div class="emoji">📱</div>
+          </div>
+          <div class="photo-thumbs">
+            <i>📱</i><i>🔋</i><i>📦</i>
+          </div>
+        </div>
+
+        <div class="demo-col">
+          <div class="demo-step" id="st2"><b>2</b>AI аналізує</div>
+          <div class="ai-steps" id="steps"></div>
+          <div class="meter"><div class="meter-fill" id="bar"></div></div>
+        </div>
+
+        <div class="demo-col">
+          <div class="demo-step" id="st3"><b>3</b>Готове оголошення</div>
+          <div class="result" id="result">
+            <div class="res-title">iPhone 13 Pro 128GB Graphite, батарея 89%</div>
+            <div class="res-badges">
+              <span class="badge badge-brand">✨ Створено AI</span>
+              <span class="badge badge-neutral">Стан: гарний</span>
+              <span class="badge badge-success">Продаж за ~9 днів</span>
+            </div>
+            <p class="res-desc">Продаю iPhone 13 Pro у кольорі Graphite. Ємність акумулятора 89%,
+              екран без подряпин, легкі потертості на рамці. Комплект: телефон і кабель…</p>
+            <div class="tiers">
+              <div class="tier"><small>Швидко</small><b>21 000 ₴</b></div>
+              <div class="tier pick"><small>Оптимально</small><b>24 500 ₴</b></div>
+              <div class="tier"><small>Максимум</small><b>27 900 ₴</b></div>
+            </div>
+            <p style="margin-top:var(--s-3);font-size:var(--t-xs);color:var(--text-muted);line-height:1.5">
+              Медіана по 43 схожих оголошеннях за 60 днів. Ймовірність продажу за 14 днів — 78%.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════ VERSUS ═══════════════ -->
+<section class="band tint">
+  <div class="wrap">
+    <div class="sec-title rv">
+      <span class="kicker">У чому різниця</span>
+      <h2>Звичайна дошка оголошень просить. AI Trade робить.</h2>
+    </div>
+    <div class="versus rv">
+      <div class="vs-card">
+        <h4>Класичний маркетплейс</h4>
+        <ul>
+          <li><span>○</span>Заповніть 12 полів вручну</li>
+          <li><span>○</span>Придумайте заголовок і опис самі</li>
+          <li><span>○</span>Вгадайте ціну</li>
+          <li><span>○</span>Сфотографуйте як вийде</li>
+          <li><span>○</span>Не продається — розбирайтеся самі</li>
+          <li><span>○</span>8–15 хвилин на одне оголошення</li>
+        </ul>
+      </div>
+      <div class="vs-card us">
+        <h4>AI Trade</h4>
+        <ul>
+          <li><span>✓</span>Завантажте фото — решту заповнить AI</li>
+          <li><span>✓</span>Заголовок і опис пише AI</li>
+          <li><span>✓</span>Ціна з аналізу реального ринку</li>
+          <li><span>✓</span>AI прибирає фон і покращує якість</li>
+          <li><span>✓</span>AI пояснює, чому немає покупців</li>
+          <li><span>✓</span><b>30 секунд</b></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="band" id="features">
+  <div class="wrap">
+    <div class="sec-title rv">
+      <span class="kicker">Можливості</span>
+      <h2>П'ять речей, які AI робить замість вас</h2>
+      <p>Не «розумний пошук» поверх старої дошки оголошень, а продукт, побудований навколо AI.</p>
+    </div>
+    <div class="features rv">
+      <article class="feature">
+        <div class="f-ico">✨</div>
+        <h3>AI створення оголошень</h3>
+        <p>Розпізнає бренд, модель і категорію за фотографією, заповнює характеристики,
+           пише заголовок і опис українською.</p>
+        <span class="f-tag">Заповнює 12 полів за 15 секунд</span>
+      </article>
+      <article class="feature">
+        <div class="f-ico">📊</div>
+        <h3>AI оцінка ціни</h3>
+        <p>Аналізує реальні угоди в категорії й пропонує три сценарії: швидкий продаж,
+           оптимальна ціна, максимум — з поясненням кожного.</p>
+        <span class="f-tag">На основі медіани по ринку, не здогадок</span>
+      </article>
+      <article class="feature">
+        <div class="f-ico">🖼️</div>
+        <h3>Покращення фото</h3>
+        <p>Прибирає фон, підвищує різкість і яскравість, підказує, яких ракурсів бракує
+           і скільки це додасть до ціни.</p>
+        <span class="f-tag">+18% довіри за фото з увімкненим екраном</span>
+      </article>
+      <article class="feature">
+        <div class="f-ico">🔍</div>
+        <h3>AI аналіз продажу</h3>
+        <p>Оголошення висить тиждень без дзвінків? AI розбирає ціну, фото, опис, заголовок
+           і час публікації — і каже, що саме виправити.</p>
+        <span class="f-tag">Кожна порада — з кнопкою «застосувати»</span>
+      </article>
+      <article class="feature">
+        <div class="f-ico">💬</div>
+        <h3>AI допомога в чаті</h3>
+        <p>Пропонує варіанти відповіді покупцям, підказує, чи вигідна пропозиція торгу,
+           а для магазинів — відповідає на типові питання сам.</p>
+        <span class="f-tag">Швидка відповідь = вища позиція у видачі</span>
+      </article>
+      <article class="feature">
+        <div class="f-ico">🗣️</div>
+        <h3>Пошук звичайною мовою</h3>
+        <p>«Ноутбук для ігор до 30000 грн» або «зимові шини R18» — AI розуміє сенс запиту
+           і показує, як саме він його зрозумів.</p>
+        <span class="f-tag">Фільтри можна виправити в один клік</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ HOW ═══════════════ -->
+<section class="band tint" id="how">
+  <div class="wrap">
+    <div class="sec-title rv">
+      <span class="kicker">Як це працює</span>
+      <h2>Три кроки замість тридцяти хвилин</h2>
+    </div>
+    <div class="steps rv">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Завантажте фото</h3>
+        <p>Одна фотографія з телефона. Більше — точніша оцінка.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>AI створює оголошення</h3>
+        <p>Заголовок, опис, характеристики, ціна й покращені фото — за 15–25 секунд.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Публікуйте і продавайте</h3>
+        <p>Перевірте, змініть що завгодно й натисніть «Опублікувати».</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PRICING ═══════════════ -->
+<section class="band" id="pricing">
+  <div class="wrap">
+    <div class="sec-title rv">
+      <span class="kicker">Тарифи</span>
+      <h2>Оберіть свій тариф</h2>
+      <p>Почніть безкоштовно. Переходьте на платний, коли продажі стануть регулярними.</p>
+    </div>
+
+    <div class="plans rv">
+      <div class="plan">
+        <div class="plan-name">Free</div>
+        <div class="plan-for">Для разових продажів</div>
+        <div class="plan-price"><b>0</b><span>₴ / місяць</span></div>
+        <ul>
+          <li><span class="ck">✓</span><span><b>2</b> активні оголошення</span></li>
+          <li><span class="ck">✓</span><span><b>5</b> AI-створень на місяць</span></li>
+          <li><span class="ck">✓</span><span>AI опис і заголовок</span></li>
+          <li><span class="ck">✓</span><span>Базова оцінка ціни</span></li>
+          <li><span class="ck">✓</span><span>Чат із покупцями</span></li>
+          <li class="off"><span class="ck">✓</span><span>AI аналіз «чому не продається»</span></li>
+          <li class="off"><span class="ck">✓</span><span>Розширена статистика</span></li>
+        </ul>
+        <a class="btn btn-secondary" href="#">Почати безкоштовно</a>
+      </div>
+
+      <div class="plan featured">
+        <div class="plan-flag">★ Найпопулярніший</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-for">Для активних продавців</div>
+        <div class="plan-price"><b>199</b><span>₴ / місяць</span></div>
+        <ul>
+          <li><span class="ck">✓</span><span><b>50</b> активних оголошень</span></li>
+          <li><span class="ck">✓</span><span><b>100</b> AI-створень на місяць</span></li>
+          <li><span class="ck">✓</span><span><b>AI аналіз «чому не продається»</b></span></li>
+          <li><span class="ck">✓</span><span>Розширена статистика</span></li>
+          <li><span class="ck">✓</span><span>Аналіз конкурентів</span></li>
+          <li><span class="ck">✓</span><span>Пріоритет у AI-рекомендаціях</span></li>
+          <li><span class="ck">✓</span><span>Розширена оцінка ціни</span></li>
+        </ul>
+        <a class="btn btn-ai" href="#">Обрати Premium</a>
+      </div>
+
+      <div class="plan">
+        <div class="plan-name">AI Trade Business</div>
+        <div class="plan-for">Для магазинів</div>
+        <div class="plan-price"><b>499</b><span>₴ / місяць</span></div>
+        <ul>
+          <li><span class="ck">✓</span><span><b>Необмежені</b> оголошення</span></li>
+          <li><span class="ck">✓</span><span>Власна сторінка магазину</span></li>
+          <li><span class="ck">✓</span><span><b>Масове завантаження</b> Excel / CSV</span></li>
+          <li><span class="ck">✓</span><span>AI створення описів для каталогу</span></li>
+          <li><span class="ck">✓</span><span>AI відповіді клієнтам</span></li>
+          <li><span class="ck">✓</span><span>Аналітика продажів</span></li>
+          <li><span class="ck">✓</span><span>Усе з Premium</span></li>
+        </ul>
+        <a class="btn btn-secondary" href="pages.html#business">Дізнатися більше</a>
+      </div>
+    </div>
+
+    <!-- Просування -->
+    <div style="margin-top:var(--s-20)" class="rv">
+      <div class="sec-title" style="margin-bottom:var(--s-8)">
+        <span class="kicker">Платне просування</span>
+        <h2 style="font-size:var(--t-h3)">Підніміть оголошення у видачі</h2>
+      </div>
+      <div class="mini-grid">
+        <div class="mini">
+          <div class="m-top"><span class="m-name">Start</span><span class="badge badge-neutral">7 днів</span></div>
+          <div class="m-price">99 <small>₴</small></div>
+          <ul><li>Підняття оголошення у видачі</li></ul>
+        </div>
+        <div class="mini">
+          <div class="m-top"><span class="m-name">Premium</span><span class="badge badge-brand">7 днів</span></div>
+          <div class="m-price">299 <small>₴</small></div>
+          <ul><li>Візуальне виділення</li><li>Більше показів</li><li>Пріоритет у видачі</li></ul>
+        </div>
+        <div class="mini">
+          <div class="m-top"><span class="m-name">VIP</span><span class="badge badge-vip">30 днів</span></div>
+          <div class="m-price">599 <small>₴</small></div>
+          <ul><li>Максимальна видимість</li><li>Блок на головній сторінці</li><li>Пріоритет у рекомендаціях</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Оцінка -->
+    <div style="margin-top:var(--s-16);max-width:660px;margin-inline:auto" class="rv">
+      <div class="sec-title" style="margin-bottom:var(--s-6)">
+        <span class="kicker">AI-оцінка дорогих товарів</span>
+        <h2 style="font-size:var(--t-h3)">Поглиблений звіт перед продажем</h2>
+        <p style="font-size:var(--t-base)">Аналіз 50+ схожих угод, динаміка цін за 6 місяців,
+          прогноз зміни вартості й найкращий момент для продажу.</p>
+      </div>
+      <table class="table">
+        <tr><th>Орієнтовна вартість товару</th><th style="text-align:right">Ціна оцінки</th></tr>
+        <tr><td>до 5 000 ₴</td><td style="color:var(--success-600)">безкоштовно</td></tr>
+        <tr><td>5 000 – 50 000 ₴</td><td>99 ₴</td></tr>
+        <tr><td>50 000 – 200 000 ₴</td><td>299 ₴</td></tr>
+        <tr><td>понад 200 000 ₴</td><td>499 ₴</td></tr>
+      </table>
+      <p style="margin-top:var(--s-3);font-size:var(--t-xs);color:var(--text-muted);text-align:center">
+        Оцінка є інформаційною рекомендацією на основі ринкових даних і не є експертною оцінкою майна.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ROADMAP ═══════════════ -->
+<section class="band tint" id="roadmap">
+  <div class="wrap">
+    <div class="sec-title rv">
+      <span class="kicker">Розвиток</span>
+      <h2>Куди рухається AI Trade</h2>
+      <p>Ми будуємо платформу поетапно й розповідаємо, що буде далі.</p>
+    </div>
+    <div class="road rv">
+      <div class="road-item now">
+        <div class="road-phase">Етап 1 · зараз</div>
+        <h4>AI створення оголошень</h4>
+        <p>Розпізнавання товару, опис, оцінка ціни, покращення фото, публікація.</p>
+      </div>
+      <div class="road-item">
+        <div class="road-phase">Етап 2</div>
+        <h4>AI рекомендації та аналітика</h4>
+        <p>Персональна стрічка, аналіз «чому не продається», статистика продавця, аналіз конкурентів.</p>
+      </div>
+      <div class="road-item">
+        <div class="road-phase">Етап 3</div>
+        <h4>Інструменти для бізнесу</h4>
+        <p>Масовий імпорт каталогів, сторінки магазинів, AI-менеджер продажів, аналітика.</p>
+      </div>
+      <div class="road-item">
+        <div class="road-phase">Етап 4</div>
+        <h4>Безпечні угоди</h4>
+        <p>Захищена оплата, доставка, страхування угод і додаткові сервіси для покупців.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="band">
+  <div class="wrap">
+    <div class="cta rv">
+      <h2>Спробуйте прямо зараз — це безкоштовно</h2>
+      <p>Сфотографуйте будь-яку річ, яку хочете продати, і подивіться, що напише AI.</p>
+      <a class="btn btn-lg" href="#">✨ Створити перше оголошення</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-about">
+        <a href="#" class="logo"><span class="logo-mark">AI</span>AI&nbsp;Trade</a>
+        <p>AI Trade створений, щоб змінити спосіб продажу товарів. Ми використовуємо штучний
+           інтелект, щоб зробити створення оголошень простим, швидким і доступним для кожного.
+           Наша мета — побудувати нове покоління електронної комерції.</p>
+      </div>
+      <div class="f-col">
+        <h5>Продукт</h5>
+        <a href="#features">Можливості</a>
+        <a href="#how">Як це працює</a>
+        <a href="#pricing">Тарифи</a>
+        <a href="#roadmap">Розвиток</a>
+      </div>
+      <div class="f-col">
+        <h5>Компанія</h5>
+        <a href="pages.html#about">Про нас</a>
+        <a href="pages.html#business">Для бізнесу</a>
+        <a href="pages.html#contacts">Контакти</a>
+      </div>
+      <div class="f-col">
+        <h5>Правові</h5>
+        <a href="pages.html#terms">Правила користування</a>
+        <a href="pages.html#privacy">Політика конфіденційності</a>
+        <a href="pages.html#privacy">Використання AI</a>
+      </div>
+      <div class="f-col">
+        <h5>Підтримка</h5>
+        <a href="pages.html#contacts">Написати нам</a>
+        <a href="pages.html#contacts">Бізнес-звернення</a>
+        <a href="pages.html#contacts">Повідомити про порушення</a>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© 2026 AI Trade. Усі права захищено.</span>
+      <span class="sp">Зроблено в Україні 🇺🇦</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── Тема ── */
+function toggleTheme(){
+  const r=document.documentElement, dark=r.dataset.theme==='dark';
+  r.dataset.theme = dark ? 'light':'dark';
+  document.getElementById('ticon').textContent = dark ? '◐':'◑';
+}
+if (matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
+
+/* ── Nav shadow ── */
+const nav=document.getElementById('nav');
+addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>8),{passive:true});
+
+/* ── Reveal on scroll ── */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+}),{threshold:.12,rootMargin:'0px 0px -40px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ── Демонстрація AI-флоу ── */
+const STEPS=[
+  'Розпізнаю товар на фото',
+  'Визначаю бренд і модель',
+  'Витягую характеристики',
+  'Оцінюю стан товару',
+  'Пишу заголовок і опис',
+  'Прибираю фон і покращую фото',
+  'Аналізую ринок',
+  'Рахую рекомендовану ціну'
+];
+const stepsEl=document.getElementById('steps');
+stepsEl.innerHTML=STEPS.map((s,i)=>
+  `<div class="ai-step" data-i="${i}"><span class="tick">✓</span><span>${s}</span></div>`).join('');
+
+let timers=[];
+function playDemo(){
+  timers.forEach(clearTimeout); timers=[];
+  const frame=document.getElementById('frame'), bar=document.getElementById('bar'),
+        res=document.getElementById('result'), items=[...stepsEl.children];
+  items.forEach(n=>n.className='ai-step');
+  frame.className='photo-frame'; bar.className='meter-fill'; bar.style.width='0';
+  res.classList.remove('show');
+  ['st1','st2','st3'].forEach(id=>document.getElementById(id).classList.remove('on'));
+
+  timers.push(setTimeout(()=>{
+    frame.classList.add('active'); document.getElementById('st1').classList.add('on');
+  },300));
+  timers.push(setTimeout(()=>{
+    frame.classList.add('scanning'); document.getElementById('st2').classList.add('on');
+  },900));
+
+  STEPS.forEach((_,i)=>{
+    timers.push(setTimeout(()=>{
+      items.forEach((n,j)=>{ n.className = j<i ? 'ai-step done' : j===i ? 'ai-step run' : 'ai-step'; });
+      bar.style.width = Math.round((i+1)/STEPS.length*100)+'%';
+    }, 1100 + i*450));
+  });
+
+  timers.push(setTimeout(()=>{
+    items.forEach(n=>n.className='ai-step done');
+    document.getElementById('bar').classList.add('ok');
+    frame.classList.remove('scanning');
+    document.getElementById('st3').classList.add('on');
+    res.classList.add('show');
+  }, 1100 + STEPS.length*450));
+}
+new IntersectionObserver((es,ob)=>{
+  if(es[0].isIntersecting){ playDemo(); ob.disconnect(); }
+},{threshold:.35}).observe(document.getElementById('demo'));
+</script>
+</body>
+</html>

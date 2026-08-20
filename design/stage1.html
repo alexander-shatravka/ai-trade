@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Trade — Етап 1: архітектура та дизайн</title>
+<meta name="description" content="AI Trade — український маркетплейс, у якому оголошення створює AI. Макети, дизайн-система та специфікація Етапу 1.">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   Токени — підмножина design/design-system.html (джерело правди).
+   Змінюєш тут — звір із design-system.html.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  color-scheme:light;
+  --brand-50:#F2F1FE; --brand-400:#8C7DF1; --brand-500:#6E5BE8; --brand-600:#5B45D9;
+  --accent-500:#14B8A6;
+  --n-0:#FFFFFF; --n-50:#F8F9FB; --n-100:#F1F3F7; --n-200:#E4E7EE; --n-300:#CDD2DE;
+  --n-500:#6E7789; --n-600:#545C6B; --n-950:#101219;
+
+  --bg:var(--n-0); --bg-subtle:var(--n-50);
+  --surface:var(--n-0); --surface-hover:var(--n-50);
+  --border:var(--n-200); --border-strong:var(--n-300);
+  --text:var(--n-950); --text-secondary:var(--n-600); --text-muted:var(--n-500);
+  --primary:var(--brand-500); --primary-hover:var(--brand-600); --primary-soft:var(--brand-50);
+
+  --sh-sm:0 1px 3px rgba(16,18,25,.07), 0 1px 2px rgba(16,18,25,.04);
+  --sh-md:0 4px 12px rgba(16,18,25,.07), 0 2px 4px rgba(16,18,25,.04);
+  --sh-lg:0 12px 32px rgba(16,18,25,.10), 0 4px 8px rgba(16,18,25,.04);
+  --sh-brand:0 8px 24px rgba(110,91,232,.28);
+
+  --r-xs:4px; --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-full:999px;
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px;
+  --s-8:32px; --s-10:40px; --s-12:48px; --s-16:64px; --s-20:80px;
+
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono',ui-monospace,'JetBrains Mono',Menlo,monospace;
+  --t-display:clamp(2.2rem,1.4rem + 2.8vw,3.4rem);
+  --t-h2:clamp(1.5rem,1.15rem + 1.1vw,2.125rem);
+  --t-h4:1.125rem; --t-base:0.9375rem; --t-sm:0.8125rem; --t-xs:0.75rem;
+
+  --e-out:cubic-bezier(.32,.72,0,1); --d-fast:120ms; --d-base:200ms;
+  --container:1180px;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0A0C11; --bg-subtle:#0E1117;
+  --surface:#12151C; --surface-hover:#1C212B;
+  --border:#242935; --border-strong:#333A48;
+  --text:#F2F4F8; --text-secondary:#A2AABB; --text-muted:#6E7789;
+  --primary:#8C7DF1; --primary-hover:#A093F5; --primary-soft:rgba(140,125,241,.14);
+  --sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 4px 12px rgba(0,0,0,.5);
+  --sh-lg:0 12px 32px rgba(0,0,0,.55);
+  --sh-brand:0 8px 28px rgba(110,91,232,.4);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font); font-size:var(--t-base); line-height:1.6;
+  -webkit-font-smoothing:antialiased; letter-spacing:-.006em;
+  transition:background var(--d-base) var(--e-out), color var(--d-base) var(--e-out);
+}
+h1,h2,h3{margin:0; font-weight:640; letter-spacing:-.024em; line-height:1.15}
+p{margin:0}
+a{color:inherit; text-decoration:none}
+code{font-family:var(--mono); font-size:.85em}
+:focus-visible{outline:2px solid var(--primary); outline-offset:2px; border-radius:var(--r-xs)}
+.wrap{max-width:var(--container); margin:0 auto; padding:0 var(--s-6)}
+
+/* ── Шапка ─────────────────────────────────────────────────────────────── */
+.nav{
+  position:sticky; top:0; z-index:50; height:60px; display:flex; align-items:center;
+  border-bottom:1px solid var(--border);
+  background:color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter:saturate(180%) blur(16px);
+}
+.nav .wrap{display:flex; align-items:center; gap:var(--s-4); width:100%}
+.logo{display:flex; align-items:center; gap:10px; font-weight:680; letter-spacing:-.03em; font-size:1.0625rem}
+.logo-mark{
+  width:30px; height:30px; border-radius:9px; display:grid; place-items:center;
+  background:linear-gradient(135deg,var(--brand-500),var(--brand-400));
+  color:#fff; font-size:.75rem; font-weight:700; letter-spacing:-.02em;
+  box-shadow:var(--sh-brand);
+}
+.nav-right{margin-left:auto; display:flex; align-items:center; gap:var(--s-2)}
+.icon-btn{
+  width:36px; height:36px; display:grid; place-items:center; cursor:pointer;
+  border:1px solid var(--border); border-radius:var(--r-md);
+  background:var(--surface); color:var(--text); font-size:1rem;
+  transition:background var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out);
+}
+.icon-btn:hover{background:var(--surface-hover); border-color:var(--border-strong)}
+.btn{
+  display:inline-flex; align-items:center; gap:var(--s-2); cursor:pointer;
+  padding:var(--s-2) var(--s-4); min-height:36px;
+  border-radius:var(--r-md); border:1px solid transparent;
+  font-size:var(--t-sm); font-weight:600; white-space:nowrap;
+  transition:background var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out);
+}
+.btn-primary{background:var(--primary); color:#fff; box-shadow:var(--sh-brand)}
+.btn-primary:hover{background:var(--primary-hover)}
+.btn-ghost{border-color:var(--border); color:var(--text)}
+.btn-ghost:hover{background:var(--surface-hover); border-color:var(--border-strong)}
+
+/* ── Hero ──────────────────────────────────────────────────────────────── */
+.hero{padding:var(--s-20) 0 var(--s-16); border-bottom:1px solid var(--border)}
+.pill{
+  display:inline-flex; align-items:center; gap:var(--s-2);
+  padding:var(--s-1) var(--s-3); border-radius:var(--r-full);
+  background:var(--primary-soft); color:var(--primary);
+  font-size:var(--t-xs); font-weight:640; letter-spacing:.01em;
+}
+.pill .dot{width:6px; height:6px; border-radius:var(--r-full); background:currentColor}
+h1{font-size:var(--t-display); margin:var(--s-5) 0 var(--s-4); max-width:16ch}
+.lead{font-size:1.0625rem; color:var(--text-secondary); max-width:62ch}
+.hero-note{
+  margin-top:var(--s-6); padding:var(--s-4) var(--s-5);
+  border:1px solid var(--border); border-left:3px solid var(--primary);
+  border-radius:var(--r-md); background:var(--bg-subtle);
+  color:var(--text-secondary); font-size:var(--t-sm); max-width:70ch;
+}
+
+/* ── Секції ────────────────────────────────────────────────────────────── */
+section{padding:var(--s-16) 0}
+.sec-head{margin-bottom:var(--s-8); max-width:70ch}
+.sec-head h2{font-size:var(--t-h2)}
+.sec-head p{margin-top:var(--s-3); color:var(--text-secondary)}
+
+/* ── Картки макетів ────────────────────────────────────────────────────── */
+.grid{display:grid; gap:var(--s-5); grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{
+  display:flex; flex-direction:column; gap:var(--s-3);
+  padding:var(--s-6); border:1px solid var(--border); border-radius:var(--r-lg);
+  background:var(--surface); box-shadow:var(--sh-sm);
+  transition:transform var(--d-base) var(--e-out), box-shadow var(--d-base) var(--e-out),
+             border-color var(--d-base) var(--e-out);
+}
+a.card:hover{transform:translateY(-2px); box-shadow:var(--sh-lg); border-color:var(--border-strong)}
+.card h3{font-size:var(--t-h4)}
+.card p{color:var(--text-secondary); font-size:var(--t-sm)}
+.card .meta{
+  margin-top:auto; padding-top:var(--s-3); border-top:1px solid var(--border);
+  color:var(--text-muted); font-size:var(--t-xs); font-family:var(--mono);
+}
+.card-icon{
+  width:38px; height:38px; border-radius:var(--r-md); display:grid; place-items:center;
+  background:var(--primary-soft); color:var(--primary); font-size:1.05rem;
+}
+
+/* ── Таблиця документів ────────────────────────────────────────────────── */
+.doc-list{
+  border:1px solid var(--border); border-radius:var(--r-lg);
+  background:var(--surface); overflow:hidden;
+}
+.doc{
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center;
+  gap:var(--s-4); padding:var(--s-4) var(--s-5);
+  border-bottom:1px solid var(--border);
+  transition:background var(--d-fast) var(--e-out);
+}
+.doc:last-child{border-bottom:0}
+.doc:hover{background:var(--surface-hover)}
+.doc-num{
+  font-family:var(--mono); font-size:var(--t-xs); color:var(--text-muted);
+  min-width:2.5ch; text-align:right;
+}
+.doc-name{font-weight:600}
+.doc-desc{display:block; font-weight:400; color:var(--text-secondary); font-size:var(--t-sm); margin-top:2px}
+.doc-tag{
+  font-size:var(--t-xs); font-family:var(--mono); color:var(--text-muted);
+  padding:var(--s-1) var(--s-2); border:1px solid var(--border); border-radius:var(--r-sm);
+  white-space:nowrap;
+}
+.doc-tag.key{color:var(--primary); border-color:var(--primary); background:var(--primary-soft)}
+
+/* ── Правила ───────────────────────────────────────────────────────────── */
+.rules{display:grid; gap:var(--s-4); grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.rule{
+  padding:var(--s-5); border:1px solid var(--border); border-radius:var(--r-lg);
+  background:var(--bg-subtle);
+}
+.rule h3{font-size:var(--t-base); margin-bottom:var(--s-2)}
+.rule p{color:var(--text-secondary); font-size:var(--t-sm)}
+.rule code{
+  background:var(--surface); padding:1px 5px; border-radius:var(--r-xs);
+  border:1px solid var(--border);
+}
+
+/* ── Футер ─────────────────────────────────────────────────────────────── */
+footer{
+  padding:var(--s-10) 0 var(--s-16); border-top:1px solid var(--border);
+  color:var(--text-muted); font-size:var(--t-sm);
+}
+footer .wrap{display:flex; flex-wrap:wrap; gap:var(--s-4); justify-content:space-between}
+footer a{color:var(--text-secondary); text-decoration:underline; text-underline-offset:3px}
+footer a:hover{color:var(--primary)}
+
+@media (max-width:640px){
+  .hero{padding:var(--s-12) 0 var(--s-10)}
+  section{padding:var(--s-12) 0}
+  .doc{grid-template-columns:auto 1fr; }
+  .doc-tag{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms !important; animation-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a href="#" class="logo"><span class="logo-mark">AI</span>AI&nbsp;Trade</a>
+    <div class="nav-right">
+      <button class="icon-btn" onclick="toggleTheme()" aria-label="Змінити тему"><span id="ticon">🌙</span></button>
+      <a class="btn btn-ghost" href="https://github.com/alexander-shatravka/ai-trade">GitHub</a>
+      <a class="btn btn-primary" href="landing.html">Відкрити макет</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span>Етап 1 з 4 · архітектура та дизайн</span>
+    <h1>Маркетплейс, де оголошення пише AI</h1>
+    <p class="lead">
+      <strong>AI Trade</strong> — український маркетплейс із однією обіцянкою: «продайте будь-яку річ
+      за 30 секунд за допомогою AI». Користувач завантажує фото, а AI розпізнає товар, пише заголовок
+      і опис, витягує характеристики, оцінює стан, аналізує ринок і пропонує три цінові сценарії.
+      Різниця з класичними дошками в одному рядку: OLX каже «створи оголошення сам», AI Trade каже
+      «AI створить за тебе».
+    </p>
+    <p class="hero-note">
+      Це не застосунок, а <strong>пакет специфікації</strong>: 11 документів, схема БД на 33 моделі,
+      OpenAPI на 58 шляхів і 4 інтерактивні макети. Коду ще немає — він пишеться з цього фундаменту
+      за <code>docs/09-implementation-guide.md</code>.
+    </p>
+  </div>
+</header>
+
+<section id="mockups">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Макети</h2>
+      <p>Живі HTML-сторінки, а не картинки: відкриваються без збірки, мають перемикач світлої й темної теми у шапці.</p>
+    </div>
+    <div class="grid">
+
+      <a class="card" href="landing.html">
+        <div class="card-icon" aria-hidden="true">◆</div>
+        <h3>Головна сторінка</h3>
+        <p>Hero з живою демонстрацією AI-флоу, переваги, тарифи, roadmap, футер.</p>
+        <span class="meta">design/landing.html</span>
+      </a>
+
+      <a class="card" href="app-screens.html">
+        <div class="card-icon" aria-hidden="true">▤</div>
+        <h3>Екрани застосунку</h3>
+        <p>Вісім екранів: AI Seller, Advisor, кабінет, AI-пошук, картка товару, чат, масовий імпорт, адмінка.</p>
+        <span class="meta">design/app-screens.html</span>
+      </a>
+
+      <a class="card" href="design-system.html">
+        <div class="card-icon" aria-hidden="true">◑</div>
+        <h3>Дизайн-система</h3>
+        <p>Живі токени й компоненти. Джерело правди для <code>packages/ui/tokens.css</code>.</p>
+        <span class="meta">design/design-system.html</span>
+      </a>
+
+      <a class="card" href="pages.html">
+        <div class="card-icon" aria-hidden="true">▦</div>
+        <h3>Статичні сторінки</h3>
+        <p>Про нас · Для бізнесу · Контакти · Правила користування · Політика конфіденційності.</p>
+        <span class="meta">design/pages.html</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section id="rules" style="background:var(--bg-subtle); border-block:1px solid var(--border)">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Чотири рішення, які визначають систему</h2>
+      <p>Повний перелік залізних правил — у <code>AGENTS.md</code>, розділ 5. Порушення будь-якого з них вважається багом, навіть якщо код працює.</p>
+    </div>
+    <div class="rules">
+
+      <div class="rule">
+        <h3>Гроші — цілі копійки</h3>
+        <p>Будь-яка сума — <code>Int</code> із суфіксом <code>Kop</code>: <code>priceKop: 2449000</code> = 24 490 ₴.
+        Витрати на AI — у мікрокопійках, бо один виклик коштує частки копійки. Float у грошах — це загублені копійки у звірці.</p>
+      </div>
+
+      <div class="rule">
+        <h3>AI не називає число, яке можна порахувати</h3>
+        <p>Медіана, перцентилі, час продажу — це SQL по власній базі. LLM отримує готові числа
+        і лише формулює пояснення навколо них. Це прибирає ~90% ризику галюцинацій у ціноутворенні.</p>
+      </div>
+
+      <div class="rule">
+        <h3>AI пропонує — людина вирішує</h3>
+        <p>Жодне AI-поле не публікується без явного підтвердження, кожне редаговане.
+        Якщо <code>confidence &lt; 0.6</code> — не вигадуємо, а просимо уточнення.</p>
+      </div>
+
+      <div class="rule">
+        <h3>Мок дає повністю робочий продукт</h3>
+        <p>Бізнес-логіка знає інтерфейс <code>AiProvider</code>, а не слово «OpenAI».
+        <code>AI_PROVIDER=mock</code> — це вимога, а не зручність: розробка без ключів, детерміновані e2e-тести й аварійний фолбек.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Документація</h2>
+      <p>Відкривається на GitHub, де Markdown рендериться з таблицями й схемами. Навігація під конкретну задачу — у файлі <code>docs/00-index.md</code>.</p>
+    </div>
+    <div class="doc-list">
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/AGENTS.md">
+        <span class="doc-num">—</span>
+        <span class="doc-name">AGENTS.md<span class="doc-desc">Контекст проєкту та залізні правила. Читати першим</span></span>
+        <span class="doc-tag key">старт</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/01-product-spec.md">
+        <span class="doc-num">01</span>
+        <span class="doc-name">Продуктова специфікація<span class="doc-desc">Позиціонування, персони, функціональні вимоги, монетизація, метрики</span></span>
+        <span class="doc-tag">продукт</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/02-architecture.md">
+        <span class="doc-num">02</span>
+        <span class="doc-name">Архітектура системи<span class="doc-desc">C4-схеми, монорепо, модулі, безпека, спостережуваність, деплой</span></span>
+        <span class="doc-tag">система</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/03-database.md">
+        <span class="doc-num">03</span>
+        <span class="doc-name">Модель даних<span class="doc-desc">Обґрунтування рішень, індексна стратегія, SQL-міграції поза Prisma</span></span>
+        <span class="doc-tag">дані</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/04-api-contracts.md">
+        <span class="doc-num">04</span>
+        <span class="doc-name">API-контракти<span class="doc-desc">Конвенції, наскрізні сценарії з прикладами, WebSocket, ліміти, кеш</span></span>
+        <span class="doc-tag">api</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/05-ai-architecture.md">
+        <span class="doc-num">05</span>
+        <span class="doc-name">AI-архітектура<span class="doc-desc">Ядро продукту: пайплайни, промпти, деградація, вартість, метрики якості</span></span>
+        <span class="doc-tag key">ядро</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/06-design-system.md">
+        <span class="doc-num">06</span>
+        <span class="doc-name">Дизайн-система<span class="doc-desc">Принципи, токени, типографіка, компоненти, доступність</span></span>
+        <span class="doc-tag">ui</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/07-roadmap.md">
+        <span class="doc-num">07</span>
+        <span class="doc-name">Roadmap і економіка<span class="doc-desc">Чотири етапи, юніт-економіка, реєстр ризиків</span></span>
+        <span class="doc-tag">план</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/08-conventions.md">
+        <span class="doc-num">08</span>
+        <span class="doc-name">Конвенції розробки<span class="doc-desc">Стиль коду, іменування, git, тести, code review</span></span>
+        <span class="doc-tag">процес</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/09-implementation-guide.md">
+        <span class="doc-num">09</span>
+        <span class="doc-name">Інструкція реалізації<span class="doc-desc">Порядок збірки, env-змінні, docker-compose, скрипти, типові пастки</span></span>
+        <span class="doc-tag key">код</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/10-glossary.md">
+        <span class="doc-num">10</span>
+        <span class="doc-name">Глосарій<span class="doc-desc">Доменні терміни uk↔en, правила іменування, слова, яких уникаємо</span></span>
+        <span class="doc-tag">терміни</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/prisma/schema.prisma">
+        <span class="doc-num">◆</span>
+        <span class="doc-name">prisma/schema.prisma<span class="doc-desc">33 моделі, 18 enum'ів. PostgreSQL 16 + pgvector, валідовано Prisma 6</span></span>
+        <span class="doc-tag">схема</span>
+      </a>
+
+      <a class="doc" href="https://github.com/alexander-shatravka/ai-trade/blob/main/openapi/openapi.yaml">
+        <span class="doc-num">◆</span>
+        <span class="doc-name">openapi/openapi.yaml<span class="doc-desc">OpenAPI 3.1, 58 шляхів. Джерело для кодогенерації клієнта</span></span>
+        <span class="doc-tag">контракт</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>AI Trade v2.0 · Етап 1 з 4. Наступний крок — реалізація за <a href="https://github.com/alexander-shatravka/ai-trade/blob/main/docs/09-implementation-guide.md">інструкцією реалізації</a>.</p>
+    <p><a href="https://github.com/alexander-shatravka/ai-trade">github.com/alexander-shatravka/ai-trade</a></p>
+  </div>
+</footer>
+
+<script>
+/* ── Тема ── */
+function toggleTheme(){
+  const r=document.documentElement, dark=r.dataset.theme==='dark';
+  r.dataset.theme = dark ? 'light':'dark';
+  document.getElementById('ticon').textContent = dark ? '🌙':'☀️';
+}
+if (matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
+</script>
+
+</body>
+</html>

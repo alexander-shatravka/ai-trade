@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Trade — Макети екранів застосунку</title>
+<style>
+:root{
+  color-scheme:light;
+  --brand-400:#8C7DF1;--brand-500:#6E5BE8;--brand-600:#5B45D9;--brand-700:#4A36B8;
+  --accent-400:#35D6C4;--accent-500:#14B8A6;--accent-600:#0E9384;
+  --n-0:#FFFFFF;--n-50:#F8F9FB;--n-100:#F1F3F7;--n-200:#E4E7EE;--n-300:#CDD2DE;--n-400:#9AA1B1;
+  --n-500:#6E7789;--n-600:#545C6B;--n-700:#3F4653;--n-950:#101219;--n-1000:#0A0C11;
+  --success-50:#ECFDF5;--success-500:#10B981;--success-600:#059669;
+  --warning-50:#FFFBEB;--warning-500:#F59E0B;--warning-600:#D97706;
+  --danger-50:#FEF2F2;--danger-500:#EF4444;--danger-600:#DC2626;
+  --info-50:#EFF6FF;--info-600:#2563EB;
+  --bg:var(--n-0);--bg-subtle:var(--n-50);--bg-inset:var(--n-100);
+  --surface:var(--n-0);--surface-raised:var(--n-0);--surface-hover:var(--n-50);
+  --border:var(--n-200);--border-strong:var(--n-300);
+  --text:var(--n-950);--text-secondary:var(--n-600);--text-muted:var(--n-500);
+  --primary:var(--brand-500);--primary-hover:var(--brand-600);--primary-soft:#F2F1FE;
+  --ring:rgba(110,91,232,.35);
+  --sh-xs:0 1px 2px rgba(16,18,25,.05);
+  --sh-sm:0 1px 3px rgba(16,18,25,.07),0 1px 2px rgba(16,18,25,.04);
+  --sh-md:0 4px 12px rgba(16,18,25,.07),0 2px 4px rgba(16,18,25,.04);
+  --sh-lg:0 12px 32px rgba(16,18,25,.10),0 4px 8px rgba(16,18,25,.04);
+  --sh-xl:0 24px 64px rgba(16,18,25,.14),0 8px 16px rgba(16,18,25,.05);
+  --sh-brand:0 8px 24px rgba(110,91,232,.28);
+  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:20px;--r-2xl:28px;--r-full:999px;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:20px;--s-6:24px;--s-8:32px;
+  --s-10:40px;--s-12:48px;--s-16:64px;--s-20:80px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;
+  --mono:'SF Mono',ui-monospace,Menlo,monospace;
+  --t-h2:1.5rem;--t-h3:1.1875rem;--t-h4:1.0625rem;
+  --t-lg:1.0625rem;--t-base:0.9375rem;--t-sm:0.8125rem;--t-xs:0.75rem;
+  --e-out:cubic-bezier(.32,.72,0,1);--e-spring:cubic-bezier(.34,1.56,.64,1);
+  --d-fast:120ms;--d-base:200ms;--d-slow:320ms;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:var(--n-1000);--bg-subtle:#0E1117;--bg-inset:#161A22;
+  --surface:#12151C;--surface-raised:#181C25;--surface-hover:#1C212B;
+  --border:#242935;--border-strong:#333A48;
+  --text:#F2F4F8;--text-secondary:#A2AABB;--text-muted:#6E7789;
+  --primary:#8C7DF1;--primary-hover:#A093F5;--primary-soft:rgba(140,125,241,.14);
+  --success-50:rgba(16,185,129,.14);--success-600:#34D399;
+  --warning-50:rgba(245,158,11,.14);--warning-600:#FCD34D;
+  --danger-50:rgba(239,68,68,.14);--danger-600:#FCA5A5;
+  --info-50:rgba(59,130,246,.12);--info-600:#93C5FD;
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);--sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 4px 12px rgba(0,0,0,.5);--sh-lg:0 12px 32px rgba(0,0,0,.55);
+  --sh-xl:0 24px 64px rgba(0,0,0,.6);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-subtle);color:var(--text);font-family:var(--font);
+  font-size:var(--t-base);line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:-.006em;
+  transition:background var(--d-base) var(--e-out),color var(--d-base) var(--e-out)}
+h1,h2,h3,h4{margin:0;font-weight:640;letter-spacing:-.024em;line-height:1.2}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+/* ═══ Chrome ═══ */
+.topbar{position:sticky;top:0;z-index:60;height:60px;display:flex;align-items:center;gap:var(--s-4);
+  padding:0 var(--s-6);border-bottom:1px solid var(--border);background:var(--bg);
+  }
+.logo{display:flex;align-items:center;gap:10px;font-weight:680;letter-spacing:-.03em;font-size:1.0625rem}
+.logo-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--brand-400),var(--brand-600) 55%,var(--accent-500));
+  box-shadow:var(--sh-brand);color:#fff;font-weight:800;font-size:13px}
+.badge-ver{margin-left:6px;padding:2px 7px;border-radius:var(--r-full);background:var(--primary-soft);
+  color:var(--primary);font-size:11px;font-weight:640}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--surface);color:var(--text-secondary);cursor:pointer;font-size:15px}
+.icon-btn:hover{border-color:var(--border-strong);color:var(--text)}
+
+.layout{display:grid;grid-template-columns:250px 1fr;max-width:1500px;margin:0 auto}
+.screens-nav{position:sticky;top:60px;align-self:start;height:calc(100vh - 60px);overflow-y:auto;
+  padding:var(--s-6) var(--s-4);border-right:1px solid var(--border);background:var(--bg)}
+.screens-nav .grp{margin:var(--s-4) 0 var(--s-2);padding-left:var(--s-3);font-size:var(--t-xs);
+  font-weight:640;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+.screens-nav button{display:flex;align-items:center;gap:10px;width:100%;padding:9px var(--s-3);
+  border:none;border-radius:var(--r-sm);background:transparent;color:var(--text-secondary);
+  font-family:inherit;font-size:var(--t-sm);font-weight:520;text-align:left;cursor:pointer;
+  transition:all var(--d-fast) var(--e-out)}
+.screens-nav button:hover{background:var(--surface-hover);color:var(--text)}
+.screens-nav button.on{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.screens-nav button i{font-style:normal;font-size:15px}
+
+.stage{padding:var(--s-8) var(--s-8) var(--s-20)}
+.stage-head{margin-bottom:var(--s-5);max-width:900px}
+.stage-head h2{font-size:var(--t-h2)}
+.stage-head p{margin-top:var(--s-2);color:var(--text-secondary);font-size:var(--t-sm)}
+.frame{border:1px solid var(--border);border-radius:var(--r-xl);background:var(--bg);
+  box-shadow:var(--sh-xl);overflow:hidden}
+.frame-bar{display:flex;align-items:center;gap:var(--s-3);height:40px;padding:0 var(--s-4);
+  border-bottom:1px solid var(--border);background:var(--bg-subtle)}
+.frame-bar .dots{display:flex;gap:6px}
+.frame-bar .dots i{width:9px;height:9px;border-radius:50%;background:var(--border-strong)}
+.frame-bar .url{flex:1;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-muted)}
+.screen{display:none}
+.screen.on{display:block}
+
+/* ═══ App shell inside frames ═══ */
+.appbar{display:flex;align-items:center;gap:var(--s-4);padding:var(--s-3) var(--s-5);
+  border-bottom:1px solid var(--border);background:var(--surface)}
+.searchbar{flex:1;display:flex;align-items:center;gap:9px;height:38px;padding:0 13px;max-width:520px;
+  border:1px solid var(--border-strong);border-radius:var(--r-full);background:var(--bg-subtle);
+  font-size:var(--t-sm);color:var(--text-secondary)}
+.searchbar .sp{margin-left:auto;font-size:11px;color:var(--primary);font-weight:600}
+.appbar .right{margin-left:auto;display:flex;align-items:center;gap:var(--s-3)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 16px;
+  border:1px solid transparent;border-radius:var(--r-md);font-family:inherit;font-size:var(--t-sm);
+  font-weight:560;cursor:pointer;white-space:nowrap;transition:all var(--d-fast) var(--e-out)}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:var(--sh-sm)}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:var(--sh-brand)}
+.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border-strong)}
+.btn-secondary:hover{background:var(--surface-hover)}
+.btn-ghost{background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{background:var(--surface-hover);color:var(--text)}
+.btn-ai{background:linear-gradient(135deg,var(--brand-500),var(--brand-600) 58%,var(--accent-600));
+  color:#fff;box-shadow:var(--sh-brand)}
+.btn-ai:hover{filter:brightness(1.08)}
+.btn-sm{height:31px;padding:0 12px;font-size:var(--t-xs)}
+.btn-block{width:100%}
+
+.badge{display:inline-flex;align-items:center;gap:5px;height:21px;padding:0 8px;border-radius:var(--r-full);
+  font-size:11px;font-weight:640;white-space:nowrap}
+.badge-brand{background:var(--primary-soft);color:var(--primary)}
+.badge-success{background:var(--success-50);color:var(--success-600)}
+.badge-warning{background:var(--warning-50);color:var(--warning-600)}
+.badge-danger{background:var(--danger-50);color:var(--danger-600)}
+.badge-neutral{background:var(--bg-inset);color:var(--text-secondary)}
+.badge-vip{background:linear-gradient(135deg,#F59E0B,#EA580C);color:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;height:29px;padding:0 11px;border:1px solid var(--border);
+  border-radius:var(--r-full);background:var(--surface);font-size:var(--t-xs);font-weight:520;cursor:pointer}
+.chip.on{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}
+.chip .x{opacity:.6;font-size:14px;line-height:1}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--s-5)}
+.meter{height:6px;border-radius:var(--r-full);background:var(--bg-inset);overflow:hidden}
+.meter-fill{height:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--brand-500),var(--accent-500))}
+.meter-fill.ok{background:linear-gradient(90deg,var(--success-500),var(--accent-500))}
+.meter-fill.warn{background:linear-gradient(90deg,var(--warning-500),#FB923C)}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:linear-gradient(135deg,var(--brand-400),var(--brand-600));color:#fff;font-weight:640;font-size:var(--t-xs)}
+.ai-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:640;
+  letter-spacing:.04em;text-transform:uppercase;color:var(--primary)}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--accent-500);box-shadow:0 0 0 3px rgba(20,184,166,.2)}
+.label{font-size:var(--t-xs);font-weight:560;color:var(--text-secondary);display:block;margin-bottom:5px}
+.input,.textarea,.select{width:100%;height:38px;padding:0 12px;border:1px solid var(--border-strong);
+  border-radius:var(--r-md);background:var(--surface);color:var(--text);font-family:inherit;font-size:var(--t-sm)}
+.textarea{height:auto;padding:10px 12px;resize:vertical;line-height:1.55}
+.input:focus,.textarea:focus,.select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
+.ai-field{position:relative}
+.ai-field .input,.ai-field .textarea{border-color:var(--primary);background:linear-gradient(var(--surface),var(--surface)) padding-box}
+.ai-field::after{content:'✨ AI';position:absolute;top:-9px;right:9px;padding:1px 7px;border-radius:var(--r-full);
+  background:var(--primary);color:#fff;font-size:10px;font-weight:640}
+
+/* ── Listing cards ── */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:var(--s-3)}
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;
+  transition:transform var(--d-base) var(--e-out),box-shadow var(--d-base) var(--e-out)}
+.lcard:hover{transform:translateY(-3px);box-shadow:var(--sh-lg)}
+.lcard .img{position:relative;aspect-ratio:4/3;display:grid;place-items:center;font-size:34px;
+  background:linear-gradient(135deg,var(--n-100),var(--n-200));color:var(--n-400)}
+[data-theme="dark"] .lcard .img{background:linear-gradient(135deg,#1A1E27,#232833)}
+.lcard .img .tags{position:absolute;top:8px;left:8px;display:flex;gap:4px}
+.lcard .b{padding:10px 12px 13px}
+.lcard .p{font-size:var(--t-base);font-weight:680;letter-spacing:-.02em}
+.lcard .t{margin-top:2px;font-size:var(--t-xs);color:var(--text-secondary);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lcard .m{margin-top:7px;display:flex;gap:9px;font-size:11px;color:var(--text-muted)}
+
+.split{display:grid;gap:var(--s-4)}
+.tabs{display:flex;gap:2px;padding:3px;background:var(--bg-inset);border-radius:var(--r-md);width:fit-content}
+.tab{padding:6px 13px;border:none;border-radius:7px;background:transparent;font-family:inherit;
+  font-size:var(--t-xs);font-weight:560;color:var(--text-secondary);cursor:pointer}
+.tab.on{background:var(--surface);color:var(--text);box-shadow:var(--sh-xs)}
+
+.table{width:100%;border-collapse:collapse;font-size:var(--t-sm)}
+.table th{text-align:left;padding:9px 12px;font-size:11px;font-weight:620;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+
+.kpi{padding:var(--s-4);border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface)}
+.kpi .k{font-size:var(--t-xs);color:var(--text-muted)}
+.kpi .v{margin-top:4px;font-size:1.5rem;font-weight:700;letter-spacing:-.03em;line-height:1.1}
+.kpi .d{margin-top:3px;font-size:11px;font-weight:600}
+.up{color:var(--success-600)} .down{color:var(--danger-600)}
+
+/* ── Sparkline bars ── */
+.bars{display:flex;align-items:flex-end;gap:3px;height:64px;margin-top:var(--s-3)}
+.bars i{flex:1;border-radius:2px 2px 0 0;background:var(--primary);opacity:.75;font-style:normal;
+  transition:opacity var(--d-fast)}
+.bars i:hover{opacity:1}
+
+/* ── Chat ── */
+.chat{display:grid;grid-template-columns:250px 1fr;height:520px}
+.threads{border-right:1px solid var(--border);overflow-y:auto;background:var(--surface)}
+.thread{display:flex;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer}
+.thread:hover{background:var(--surface-hover)}
+.thread.on{background:var(--primary-soft)}
+.thread .n{font-size:var(--t-sm);font-weight:600}
+.thread .p{font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.thread .u{margin-left:auto;width:18px;height:18px;border-radius:50%;background:var(--primary);color:#fff;
+  font-size:10px;font-weight:700;display:grid;place-items:center;flex:none}
+.chat-main{display:flex;flex-direction:column;background:var(--bg-subtle)}
+.chat-head{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border);
+  background:var(--surface)}
+.msgs{flex:1;overflow-y:auto;padding:var(--s-4);display:flex;flex-direction:column;gap:9px}
+.msg{max-width:70%;padding:9px 13px;border-radius:var(--r-lg);font-size:var(--t-sm);line-height:1.5}
+.msg.them{align-self:flex-start;background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:5px}
+.msg.me{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:5px}
+.msg .time{display:block;margin-top:3px;font-size:10px;opacity:.6}
+.msg.offer{align-self:flex-start;background:var(--warning-50);border:1px solid var(--warning-500);color:var(--warning-600)}
+.chat-ai{padding:var(--s-3) var(--s-4);border-top:1px solid var(--border);background:var(--surface)}
+.sugg{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.sugg button{padding:7px 12px;border:1px solid var(--primary);border-radius:var(--r-full);
+  background:var(--primary-soft);color:var(--primary);font-family:inherit;font-size:var(--t-xs);
+  font-weight:520;cursor:pointer;transition:all var(--d-fast)}
+.sugg button:hover{background:var(--primary);color:#fff}
+.composer{display:flex;gap:9px;padding:var(--s-3) var(--s-4);border-top:1px solid var(--border);background:var(--surface)}
+
+.hint{font-size:11px;color:var(--text-muted);line-height:1.5}
+.note{margin-top:var(--s-4);padding:var(--s-4);border-left:3px solid var(--primary);background:var(--bg-subtle);
+  border-radius:0 var(--r-md) var(--r-md) 0;font-size:var(--t-sm);color:var(--text-secondary);line-height:1.6;max-width:900px}
+.note strong{color:var(--text)}
+
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.screens-nav{display:none}
+  .stage{padding:var(--s-5) var(--s-4) var(--s-16)}.chat{grid-template-columns:1fr}.threads{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo"><span class="logo-mark">AI</span>AI&nbsp;Trade<span class="badge-ver">Макети екранів</span></div>
+  <div style="margin-left:auto;display:flex;gap:var(--s-2)">
+    <button class="icon-btn" onclick="toggleTheme()" aria-label="Змінити тему"><span id="ticon">🌙</span></button>
+    <a class="btn btn-secondary btn-sm" href="landing.html">Landing</a>
+    <a class="btn btn-secondary btn-sm" href="design-system.html">Дизайн-система</a>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="screens-nav" id="nav">
+    <div class="grp">Продавець</div>
+    <button class="on" data-s="sell"><i>✨</i>AI Seller · створення</button>
+    <button data-s="advisor"><i>🔍</i>Чому не продається</button>
+    <button data-s="dashboard"><i>📊</i>Особистий кабінет</button>
+    <div class="grp">Покупець</div>
+    <button data-s="search"><i>🗣️</i>AI-пошук і каталог</button>
+    <button data-s="listing"><i>📱</i>Картка товару</button>
+    <button data-s="chat"><i>💬</i>Чат з AI-підказками</button>
+    <div class="grp">Бізнес і адмін</div>
+    <button data-s="bulk"><i>📥</i>Масовий імпорт</button>
+    <button data-s="admin"><i>🛡️</i>Адмін-панель</button>
+  </nav>
+
+  <div class="stage">
+
+  <!-- ══════════════════ 1. AI SELLER ══════════════════ -->
+  <section class="screen on" id="s-sell">
+    <div class="stage-head">
+      <h2>AI Seller — крок «Перевірте та опублікуйте»</h2>
+      <p>Усе вже заповнено. Поля з міткою <strong>✨ AI</strong> згенеровані — кожне редагується.
+         Це принципово: AI пропонує, людина підтверджує.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/sell/draft/7c2</div></div>
+
+      <div style="padding:var(--s-5);display:grid;grid-template-columns:1fr 340px;gap:var(--s-5)">
+
+        <!-- ліва колонка -->
+        <div style="display:flex;flex-direction:column;gap:var(--s-4)">
+
+          <div style="display:flex;align-items:center;gap:var(--s-3)">
+            <span class="badge badge-success">✓ Аналіз завершено за 19 с</span>
+            <span class="badge badge-brand">Впевненість AI 93%</span>
+          </div>
+
+          <div class="card">
+            <div class="ai-tag" style="margin-bottom:var(--s-3)"><span class="ai-dot"></span>Фотографії · фон прибрано</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+              <div style="aspect-ratio:1;border-radius:var(--r-md);background:var(--bg-inset);display:grid;place-items:center;font-size:28px;border:2px solid var(--primary);position:relative">📱
+                <span class="badge badge-brand" style="position:absolute;bottom:5px;left:5px">обкладинка</span></div>
+              <div style="aspect-ratio:1;border-radius:var(--r-md);background:var(--bg-inset);display:grid;place-items:center;font-size:28px">🔋</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-md);background:var(--bg-inset);display:grid;place-items:center;font-size:28px;opacity:.55;position:relative">📦
+                <span class="badge badge-warning" style="position:absolute;bottom:5px;left:5px">якість ↓</span></div>
+              <div style="aspect-ratio:1;border-radius:var(--r-md);border:1.5px dashed var(--border-strong);display:grid;place-items:center;color:var(--text-muted);font-size:20px;cursor:pointer">+</div>
+            </div>
+            <div style="margin-top:var(--s-3);padding:11px;background:var(--bg-subtle);border-radius:var(--r-md)">
+              <div style="font-size:var(--t-xs);font-weight:600;margin-bottom:6px">AI радить додати:</div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <span class="chip">📸 Екран увімкнено <b style="color:var(--success-600)">+18% довіри</b></span>
+                <span class="chip">📦 Коробка й комплект <b style="color:var(--success-600)">+9% до ціни</b></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-field">
+            <label class="label">Заголовок</label>
+            <input class="input" value="iPhone 13 Pro 128GB Graphite, батарея 89%">
+            <div style="display:flex;justify-content:space-between;margin-top:5px">
+              <span class="hint">42 / 70 символів</span>
+              <span class="hint" style="color:var(--primary);cursor:pointer">↻ Інший варіант</span>
+            </div>
+          </div>
+
+          <div class="ai-field">
+            <label class="label">Опис</label>
+            <textarea class="textarea" rows="5">Продаю iPhone 13 Pro у кольорі Graphite, 128 ГБ. Ємність акумулятора — 89%, працює весь день без підзарядки.
+
+Стан: екран без подряпин, захисне скло стояло з першого дня. На нижній рамці є легкі потертості — видно на другому фото.
+
+Комплект: телефон, кабель USB-C — Lightning. Коробка збереглася. Причина продажу — перехід на іншу модель.</textarea>
+            <span class="hint">612 символів · оптимально для цієї категорії</span>
+          </div>
+
+          <div class="card">
+            <div class="ai-tag" style="margin-bottom:var(--s-3)"><span class="ai-dot"></span>Характеристики</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-3)">
+              <div><label class="label">Бренд</label><input class="input" value="Apple"></div>
+              <div><label class="label">Модель</label><input class="input" value="iPhone 13 Pro"></div>
+              <div><label class="label">Пам'ять, ГБ</label>
+                <select class="select" style="border-color:var(--warning-500)"><option>128</option><option>256</option></select>
+                <span class="hint" style="color:var(--warning-600)">⚠ AI не впевнений — перевірте</span></div>
+              <div><label class="label">Колір</label><input class="input" value="Graphite"></div>
+              <div><label class="label">Стан батареї, %</label><input class="input" value="89"></div>
+              <div><label class="label">Стан товару</label><select class="select"><option>Гарний</option><option>Як новий</option></select></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- права колонка -->
+        <div style="display:flex;flex-direction:column;gap:var(--s-4)">
+
+          <div class="card" style="border-color:var(--primary)">
+            <div class="ai-tag" style="margin-bottom:var(--s-3)"><span class="ai-dot"></span>Рекомендація ціни</div>
+            <div style="display:grid;gap:7px">
+              <div style="padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg-subtle);cursor:pointer">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font-size:var(--t-xs);color:var(--text-muted);font-weight:560">Швидкий продаж</span>
+                  <b style="font-size:var(--t-lg);letter-spacing:-.02em">21 000 ₴</b></div>
+                <div class="hint" style="margin-top:4px">На 14% нижче медіани — зазвичай 3–5 днів</div>
+              </div>
+              <div style="padding:11px 13px;border:1.5px solid var(--primary);border-radius:var(--r-md);background:var(--primary-soft);box-shadow:0 0 0 3px var(--ring);cursor:pointer">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font-size:var(--t-xs);color:var(--primary);font-weight:640">Оптимальна ✓</span>
+                  <b style="font-size:var(--t-lg);letter-spacing:-.02em">24 500 ₴</b></div>
+                <div class="hint" style="margin-top:4px">Медіана по 43 схожих оголошеннях за 60 днів</div>
+              </div>
+              <div style="padding:11px 13px;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg-subtle);cursor:pointer">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font-size:var(--t-xs);color:var(--text-muted);font-weight:560">Максимум</span>
+                  <b style="font-size:var(--t-lg);letter-spacing:-.02em">27 900 ₴</b></div>
+                <div class="hint" style="margin-top:4px">Реально з повним комплектом; 25–35 днів</div>
+              </div>
+            </div>
+            <div style="margin-top:var(--s-4)">
+              <div style="display:flex;justify-content:space-between;font-size:var(--t-xs);margin-bottom:5px">
+                <span style="color:var(--text-muted)">Ймовірність продажу за 14 днів</span><b>78%</b></div>
+              <div class="meter"><div class="meter-fill ok" style="width:78%"></div></div>
+            </div>
+            <p class="hint" style="margin-top:var(--s-3)">Рекомендація базується на ринкових даних
+              і не є експертною оцінкою майна.</p>
+          </div>
+
+          <div class="card">
+            <label class="label">Ваша ціна, ₴</label>
+            <input class="input" value="24 500" style="height:44px;font-size:var(--t-lg);font-weight:640">
+            <label style="display:flex;align-items:center;gap:8px;margin-top:var(--s-3);font-size:var(--t-sm)">
+              <input type="checkbox" checked> Можливий торг</label>
+            <label class="label" style="margin-top:var(--s-4)">Місто</label>
+            <select class="select"><option>Київ</option><option>Львів</option></select>
+          </div>
+
+          <button class="btn btn-ai btn-block" style="height:46px">Опублікувати оголошення</button>
+          <button class="btn btn-ghost btn-block">Зберегти як чернетку</button>
+          <p class="hint" style="text-align:center">Тариф Free · використано 3 з 5 AI-створень</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Три деталі, які тут вирішують усе.</strong> По-перше, поле «Пам'ять» підсвічено жовтим —
+      AI позначив його як невпевнене, і користувач бачить це до публікації, а не після скарги покупця.
+      По-друге, третє фото має бейдж «якість ↓» — система не мовчить про погане фото.
+      По-третє, ціна показана трьома сценаріями з поясненням кожного, а не одним числом «від AI».
+    </div>
+  </section>
+
+  <!-- ══════════════════ 2. ADVISOR ══════════════════ -->
+  <section class="screen" id="s-advisor">
+    <div class="stage-head">
+      <h2>AI Seller Advisor — «Чому не продається»</h2>
+      <p>Головна причина, чому продавець переходить на Premium. Кожна знахідка має докази й кнопку дії.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/dashboard/listings/lst_88/advice</div></div>
+      <div style="padding:var(--s-5);display:grid;grid-template-columns:1fr 300px;gap:var(--s-5)">
+
+        <div style="display:flex;flex-direction:column;gap:var(--s-3)">
+          <div class="card" style="display:flex;align-items:center;gap:var(--s-4)">
+            <div style="width:64px;height:64px;border-radius:50%;display:grid;place-items:center;flex:none;
+              background:conic-gradient(var(--warning-500) 0 54%, var(--bg-inset) 54% 100%);position:relative">
+              <div style="position:absolute;inset:6px;border-radius:50%;background:var(--surface);display:grid;place-items:center">
+                <b style="font-size:var(--t-lg);letter-spacing:-.03em">54</b></div>
+            </div>
+            <div style="flex:1">
+              <h3 style="font-size:var(--t-h4)">Оголошення потребує уваги</h3>
+              <p style="font-size:var(--t-sm);color:var(--text-secondary);margin-top:3px">
+                За 9 днів — 214 переглядів і жодного звернення. AI знайшов 3 причини.</p>
+            </div>
+            <span class="badge badge-warning">Health 54 / 100</span>
+          </div>
+
+          <!-- знахідка 1 -->
+          <div class="card" style="border-left:3px solid var(--danger-500)">
+            <div style="display:flex;gap:var(--s-3)">
+              <span style="font-size:20px">💰</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <b style="font-size:var(--t-sm)">Ціна на 15% вище медіани</b>
+                  <span class="badge badge-danger">головна причина</span>
+                </div>
+                <p style="font-size:var(--t-sm);color:var(--text-secondary);margin-top:5px">
+                  Ваша ціна — <b style="color:var(--text)">28 500 ₴</b>. Медіана по 43 схожих
+                  оголошеннях за останні 60 днів — <b style="color:var(--text)">24 800 ₴</b>.
+                  У вашому ціновому діапазоні за 30 днів продалось лише 2 з 17 оголошень.</p>
+                <div style="margin-top:11px;display:flex;align-items:center;gap:var(--s-3)">
+                  <button class="btn btn-primary btn-sm">Знизити до 24 800 ₴</button>
+                  <span style="font-size:var(--t-xs);font-weight:600;color:var(--success-600)">
+                    → +65% ймовірності продажу за 14 днів</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- знахідка 2 -->
+          <div class="card" style="border-left:3px solid var(--warning-500)">
+            <div style="display:flex;gap:var(--s-3)">
+              <span style="font-size:20px">📷</span>
+              <div style="flex:1">
+                <b style="font-size:var(--t-sm)">Мало фотографій</b>
+                <p style="font-size:var(--t-sm);color:var(--text-secondary);margin-top:5px">
+                  У вас 3 фото. У десяти оголошень цієї категорії, що продались найшвидше, —
+                  в середньому 7. Бракує ракурсів: зворотний бік, екран увімкнено, комплектація.</p>
+                <div style="margin-top:11px;display:flex;align-items:center;gap:var(--s-3)">
+                  <button class="btn btn-secondary btn-sm">Додати фото</button>
+                  <span style="font-size:var(--t-xs);font-weight:600;color:var(--success-600)">→ +22% переглядів</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- знахідка 3 -->
+          <div class="card" style="border-left:3px solid var(--info-600)">
+            <div style="display:flex;gap:var(--s-3)">
+              <span style="font-size:20px">📝</span>
+              <div style="flex:1">
+                <b style="font-size:var(--t-sm)">У заголовку немає обсягу пам'яті</b>
+                <p style="font-size:var(--t-sm);color:var(--text-secondary);margin-top:5px">
+                  «Пам'ять» — фільтр №1 у категорії «Смартфони»: його застосовують у 68% пошуків.
+                  Без нього оголошення не потрапляє у відфільтровану видачу.</p>
+                <div style="margin-top:11px;display:flex;align-items:center;gap:var(--s-3)">
+                  <button class="btn btn-secondary btn-sm">Виправити заголовок</button>
+                  <span style="font-size:var(--t-xs);font-weight:600;color:var(--success-600)">→ +31% показів</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-ai btn-block" style="height:44px">Застосувати всі рекомендації</button>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--s-3)">
+          <div class="card">
+            <div class="label">Ваше оголошення</div>
+            <div style="display:flex;gap:11px;margin-top:9px">
+              <div style="width:56px;height:56px;border-radius:var(--r-md);background:var(--bg-inset);display:grid;place-items:center;font-size:24px;flex:none">📱</div>
+              <div><b style="font-size:var(--t-sm);line-height:1.35;display:block">iPhone 13 Pro Graphite</b>
+                <span style="font-size:var(--t-lg);font-weight:700;letter-spacing:-.02em">28 500 ₴</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="label">Позиція серед схожих</div>
+            <div class="bars">
+              <i style="height:22%"></i><i style="height:34%"></i><i style="height:48%"></i><i style="height:61%"></i>
+              <i style="height:74%"></i><i style="height:88%"></i><i style="height:100%;background:var(--danger-500)"></i>
+            </div>
+            <p class="hint" style="margin-top:8px">Ваша ціна (червона) — найвища серед 7 найближчих
+              за характеристиками оголошень.</p>
+          </div>
+          <div class="card">
+            <div class="label">Динаміка</div>
+            <table class="table" style="margin-top:6px">
+              <tr><td style="padding:7px 0;border:none">Перегляди</td><td style="padding:7px 0;border:none;text-align:right"><b>214</b></td></tr>
+              <tr><td style="padding:7px 0;border:none">Покази у пошуку</td><td style="padding:7px 0;border:none;text-align:right"><b>1 830</b></td></tr>
+              <tr><td style="padding:7px 0;border:none">CTR</td><td style="padding:7px 0;border:none;text-align:right"><b class="down">11.7%</b></td></tr>
+              <tr><td style="padding:7px 0;border:none">Збереження</td><td style="padding:7px 0;border:none;text-align:right"><b>9</b></td></tr>
+              <tr><td style="padding:7px 0;border:none">Звернення</td><td style="padding:7px 0;border:none;text-align:right"><b class="down">0</b></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Так виглядає екран для Premium.</strong> На тарифі Free користувач бачить лише
+      health score і перший рядок головної причини — без чисел, доказів і кнопок дії.
+      Це чесний тизер: проблема реальна й конкретна, але рішення — у платному тарифі.
+    </div>
+  </section>
+
+  <!-- ══════════════════ 3. DASHBOARD ══════════════════ -->
+  <section class="screen" id="s-dashboard">
+    <div class="stage-head">
+      <h2>Особистий кабінет</h2>
+      <p>Оголошення, статистика, сповіщення про те, що потребує дії.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/dashboard</div></div>
+      <div class="appbar">
+        <div class="logo" style="font-size:var(--t-sm)"><span class="logo-mark" style="width:26px;height:26px;font-size:11px">AI</span>AI&nbsp;Trade</div>
+        <div class="searchbar">🔍 Пошук за оголошеннями…</div>
+        <div class="right">
+          <span class="badge badge-brand">Premium</span>
+          <button class="btn btn-ai btn-sm">✨ Створити</button>
+          <div class="avatar">ОШ</div>
+        </div>
+      </div>
+
+      <div style="padding:var(--s-5)">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-3)">
+          <div class="kpi"><div class="k">Активні оголошення</div><div class="v">12</div><div class="d">з 50 за тарифом</div></div>
+          <div class="kpi"><div class="k">Перегляди за 30 днів</div><div class="v">4 128</div><div class="d up">↑ 23% до попереднього</div></div>
+          <div class="kpi"><div class="k">Звернення</div><div class="v">37</div><div class="d up">↑ 9%</div></div>
+          <div class="kpi"><div class="k">Продано</div><div class="v">8</div><div class="d">середньо за 11 днів</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:var(--s-4);margin-top:var(--s-4)">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s-4)">
+              <h3 style="font-size:var(--t-h4)">Мої оголошення</h3>
+              <div class="tabs">
+                <button class="tab on">Активні · 12</button>
+                <button class="tab">Чернетки · 2</button>
+                <button class="tab">Продані · 8</button>
+              </div>
+            </div>
+            <table class="table">
+              <tr><th>Товар</th><th>Ціна</th><th>Перегляди</th><th>Звернення</th><th>Стан</th></tr>
+              <tr>
+                <td><div style="display:flex;gap:10px;align-items:center">
+                  <div style="width:38px;height:38px;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:17px">📱</div>
+                  <div><b style="font-size:var(--t-sm)">iPhone 13 Pro Graphite</b>
+                    <div class="hint">опубліковано 9 днів тому</div></div></div></td>
+                <td><b>28 500 ₴</b></td><td>214</td><td class="down"><b>0</b></td>
+                <td><span class="badge badge-warning">⚠ Потребує уваги</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;gap:10px;align-items:center">
+                  <div style="width:38px;height:38px;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:17px">💻</div>
+                  <div><b style="font-size:var(--t-sm)">ASUS TUF Gaming F15</b>
+                    <div class="hint">опубліковано 2 дні тому</div></div></div></td>
+                <td><b>31 900 ₴</b></td><td>398</td><td><b>7</b></td>
+                <td><span class="badge badge-vip">VIP до 12.09</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;gap:10px;align-items:center">
+                  <div style="width:38px;height:38px;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:17px">🛞</div>
+                  <div><b style="font-size:var(--t-sm)">Шини Michelin R18, 4 шт.</b>
+                    <div class="hint">опубліковано 5 днів тому</div></div></div></td>
+                <td><b>8 200 ₴</b></td><td>156</td><td><b>3</b></td>
+                <td><span class="badge badge-success">Активне</span></td>
+              </tr>
+              <tr>
+                <td><div style="display:flex;gap:10px;align-items:center">
+                  <div style="width:38px;height:38px;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:17px">🎧</div>
+                  <div><b style="font-size:var(--t-sm)">Sony WH-1000XM4</b>
+                    <div class="hint">чернетка · створено AI</div></div></div></td>
+                <td><b>5 400 ₴</b></td><td>—</td><td>—</td>
+                <td><span class="badge badge-neutral">Чернетка</span></td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:var(--s-3)">
+            <div class="card" style="border-color:var(--primary)">
+              <div class="ai-tag"><span class="ai-dot"></span>AI знайшов проблему</div>
+              <p style="font-size:var(--t-sm);margin-top:9px;line-height:1.5">
+                <b>iPhone 13 Pro</b> — 214 переглядів і жодного звернення за 9 днів.
+                Головна причина: ціна на 15% вище медіани.</p>
+              <button class="btn btn-primary btn-sm btn-block" style="margin-top:11px">Подивитися розбір</button>
+            </div>
+
+            <div class="card">
+              <div class="label">Перегляди за 30 днів</div>
+              <div class="bars">
+                <i style="height:35%"></i><i style="height:52%"></i><i style="height:41%"></i><i style="height:68%"></i>
+                <i style="height:74%"></i><i style="height:59%"></i><i style="height:83%"></i><i style="height:91%"></i>
+                <i style="height:77%"></i><i style="height:100%"></i><i style="height:86%"></i><i style="height:64%"></i>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="label">Тариф Premium</div>
+              <div style="margin-top:9px;font-size:var(--t-sm)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                  <span style="color:var(--text-secondary)">AI-створення</span><b>37 / 100</b></div>
+                <div class="meter"><div class="meter-fill" style="width:37%"></div></div>
+                <div style="display:flex;justify-content:space-between;margin:11px 0 5px">
+                  <span style="color:var(--text-secondary)">Активні оголошення</span><b>12 / 50</b></div>
+                <div class="meter"><div class="meter-fill" style="width:24%"></div></div>
+              </div>
+              <p class="hint" style="margin-top:11px">Наступне списання — 3 вересня, 199 ₴</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 4. SEARCH ══════════════════ -->
+  <section class="screen" id="s-search">
+    <div class="stage-head">
+      <h2>AI-пошук природною мовою</h2>
+      <p>Користувач бачить, <em>як саме</em> AI зрозумів запит — у вигляді чіпів, які можна прибрати.
+         Без цього пошук здається магічним, але неконтрольованим.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/search?q=Ноутбук+для+ігор+до+30000+грн</div></div>
+      <div class="appbar">
+        <div class="logo" style="font-size:var(--t-sm)"><span class="logo-mark" style="width:26px;height:26px;font-size:11px">AI</span>AI&nbsp;Trade</div>
+        <div class="searchbar" style="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)">
+          🔍 <span style="color:var(--text)">Ноутбук для ігор до 30000 грн</span>
+          <span class="sp">✨ AI-пошук</span>
+        </div>
+        <div class="right"><button class="btn btn-ai btn-sm">✨ Продати</button><div class="avatar">ОШ</div></div>
+      </div>
+
+      <div style="padding:var(--s-4) var(--s-5);border-bottom:1px solid var(--border);background:var(--surface)">
+        <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">
+          <span class="hint" style="font-weight:600">AI зрозумів так:</span>
+          <span class="chip on">Ноутбуки <span class="x">×</span></span>
+          <span class="chip on">до 30 000 ₴ <span class="x">×</span></span>
+          <span class="chip on">дискретна відеокарта <span class="x">×</span></span>
+          <span class="chip on">ігровий <span class="x">×</span></span>
+          <span class="chip">+ Київ</span>
+          <span class="hint" style="margin-left:auto">Знайдено 87 оголошень</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:210px 1fr;gap:0">
+        <aside style="padding:var(--s-4);border-right:1px solid var(--border);background:var(--surface)">
+          <div class="label">Бренд</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:var(--t-sm);margin-bottom:var(--s-4)">
+            <label style="display:flex;gap:8px"><input type="checkbox" checked> ASUS <span style="margin-left:auto;color:var(--text-muted)">34</span></label>
+            <label style="display:flex;gap:8px"><input type="checkbox"> Lenovo <span style="margin-left:auto;color:var(--text-muted)">28</span></label>
+            <label style="display:flex;gap:8px"><input type="checkbox"> Acer <span style="margin-left:auto;color:var(--text-muted)">15</span></label>
+            <label style="display:flex;gap:8px"><input type="checkbox"> MSI <span style="margin-left:auto;color:var(--text-muted)">10</span></label>
+          </div>
+          <div class="label">Оперативна пам'ять</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:var(--t-sm);margin-bottom:var(--s-4)">
+            <label style="display:flex;gap:8px"><input type="checkbox"> 8 ГБ <span style="margin-left:auto;color:var(--text-muted)">21</span></label>
+            <label style="display:flex;gap:8px"><input type="checkbox" checked> 16 ГБ <span style="margin-left:auto;color:var(--text-muted)">41</span></label>
+            <label style="display:flex;gap:8px"><input type="checkbox"> 32 ГБ <span style="margin-left:auto;color:var(--text-muted)">12</span></label>
+          </div>
+          <div class="label">Стан</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:var(--t-sm)">
+            <label style="display:flex;gap:8px"><input type="checkbox"> Новий</label>
+            <label style="display:flex;gap:8px"><input type="checkbox" checked> Як новий</label>
+            <label style="display:flex;gap:8px"><input type="checkbox" checked> Гарний</label>
+          </div>
+        </aside>
+
+        <div style="padding:var(--s-4)">
+          <div style="display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-3)">
+            <div class="tabs">
+              <button class="tab on">За релевантністю</button>
+              <button class="tab">Новіші</button>
+              <button class="tab">Дешевші</button>
+            </div>
+            <button class="btn btn-ghost btn-sm" style="margin-left:auto">🔔 Зберегти пошук</button>
+          </div>
+
+          <div class="lgrid">
+            <article class="lcard"><div class="img">💻<div class="tags"><span class="badge badge-vip">VIP</span></div></div>
+              <div class="b"><div class="p">28 900 ₴</div><div class="t">ASUS TUF Gaming F15, RTX 4060, 16 ГБ, i7</div><div class="m"><span>Київ</span><span>2 год</span></div></div></article>
+            <article class="lcard"><div class="img">💻<div class="tags"><span class="badge badge-brand">✨ AI</span></div></div>
+              <div class="b"><div class="p">26 400 ₴</div><div class="t">Lenovo LOQ 15, RTX 3050, 16 ГБ, Ryzen 5</div><div class="m"><span>Київ</span><span>вчора</span></div></div></article>
+            <article class="lcard"><div class="img">💻</div>
+              <div class="b"><div class="p">29 500 ₴</div><div class="t">Acer Nitro V15, RTX 4050, 16 ГБ</div><div class="m"><span>Бровари</span><span>2 дні</span></div></div></article>
+            <article class="lcard"><div class="img">💻<div class="tags"><span class="badge badge-brand">✨ AI</span></div></div>
+              <div class="b"><div class="p">24 800 ₴</div><div class="t">ASUS ROG Strix G15, GTX 1660Ti, 16 ГБ</div><div class="m"><span>Київ</span><span>3 дні</span></div></div></article>
+            <article class="lcard"><div class="img">💻</div>
+              <div class="b"><div class="p">27 300 ₴</div><div class="t">MSI Katana 15, RTX 4050, 16 ГБ, i5</div><div class="m"><span>Ірпінь</span><span>4 дні</span></div></div></article>
+            <article class="lcard"><div class="img">💻</div>
+              <div class="b"><div class="p">22 100 ₴</div><div class="t">Lenovo IdeaPad Gaming 3, RTX 3050</div><div class="m"><span>Київ</span><span>5 днів</span></div></div></article>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Фолбек, який рятує пошук.</strong> Якщо LLM недоступний, рядок «AI зрозумів так»
+      просто не показується, а пошук деградує до повнотекстового. Результати гірші —
+      але сторінка працює. Пошук на маркетплейсі не має падати ніколи.
+    </div>
+  </section>
+
+  <!-- ══════════════════ 5. LISTING ══════════════════ -->
+  <section class="screen" id="s-listing">
+    <div class="stage-head">
+      <h2>Картка товару</h2>
+      <p>SEO-критична сторінка — головний канал органічного трафіку. Рендериться на сервері (SSR/ISR).</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/listing/iphone-13-pro-128gb-graphite-c8f2</div></div>
+      <div class="appbar">
+        <div class="logo" style="font-size:var(--t-sm)"><span class="logo-mark" style="width:26px;height:26px;font-size:11px">AI</span>AI&nbsp;Trade</div>
+        <div class="searchbar">🔍 Що шукаєте?</div>
+        <div class="right"><button class="btn btn-ai btn-sm">✨ Продати</button><div class="avatar">ОШ</div></div>
+      </div>
+
+      <div style="padding:var(--s-5)">
+        <div class="hint" style="margin-bottom:var(--s-3)">Головна → Електроніка → Смартфони → Apple</div>
+        <div style="display:grid;grid-template-columns:1fr 330px;gap:var(--s-5)">
+
+          <div>
+            <div style="aspect-ratio:4/3;border-radius:var(--r-lg);background:var(--bg-inset);
+              display:grid;place-items:center;font-size:78px;position:relative">📱
+              <span class="badge badge-brand" style="position:absolute;top:12px;left:12px">✨ Оголошення створено AI</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:9px">
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px;border:2px solid var(--primary)">📱</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px">🔋</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px">📦</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px">🔌</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px">📲</div>
+              <div style="aspect-ratio:1;border-radius:var(--r-sm);background:var(--bg-inset);display:grid;place-items:center;font-size:20px">🖼️</div>
+            </div>
+
+            <h1 style="margin-top:var(--s-5);font-size:1.5rem;letter-spacing:-.03em">
+              iPhone 13 Pro 128GB Graphite, батарея 89%</h1>
+            <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
+              <span class="badge badge-neutral">Стан: гарний</span>
+              <span class="badge badge-neutral">Київ</span>
+              <span class="badge badge-neutral">2 години тому</span>
+              <span class="badge badge-neutral">👁 214</span>
+            </div>
+
+            <h3 style="margin-top:var(--s-6);font-size:var(--t-h4)">Опис</h3>
+            <p style="margin-top:9px;font-size:var(--t-sm);color:var(--text-secondary);line-height:1.7;max-width:64ch">
+              Продаю iPhone 13 Pro у кольорі Graphite, 128 ГБ. Ємність акумулятора — 89%,
+              працює весь день без підзарядки.<br><br>
+              Стан: екран без подряпин, захисне скло стояло з першого дня. На нижній рамці
+              є легкі потертості — видно на другому фото.<br><br>
+              Комплект: телефон, кабель USB-C — Lightning. Коробка збереглася.
+              Причина продажу — перехід на іншу модель.</p>
+
+            <h3 style="margin-top:var(--s-6);font-size:var(--t-h4)">Характеристики</h3>
+            <table class="table" style="margin-top:9px;max-width:480px">
+              <tr><td style="color:var(--text-muted)">Бренд</td><td><b>Apple</b></td></tr>
+              <tr><td style="color:var(--text-muted)">Модель</td><td><b>iPhone 13 Pro</b></td></tr>
+              <tr><td style="color:var(--text-muted)">Пам'ять</td><td><b>128 ГБ</b></td></tr>
+              <tr><td style="color:var(--text-muted)">Колір</td><td><b>Graphite</b></td></tr>
+              <tr><td style="color:var(--text-muted)">Стан батареї</td><td><b>89%</b></td></tr>
+            </table>
+          </div>
+
+          <aside style="display:flex;flex-direction:column;gap:var(--s-3)">
+            <div class="card">
+              <div style="font-size:2rem;font-weight:700;letter-spacing:-.035em;line-height:1">24 500 ₴</div>
+              <div class="hint" style="margin-top:5px">Можливий торг</div>
+              <button class="btn btn-primary btn-block" style="margin-top:var(--s-4);height:44px">💬 Написати продавцю</button>
+              <button class="btn btn-secondary btn-block" style="margin-top:8px">📞 Показати телефон</button>
+              <button class="btn btn-ghost btn-block" style="margin-top:6px">♡ Зберегти</button>
+            </div>
+
+            <div class="card">
+              <div style="display:flex;gap:11px;align-items:center">
+                <div class="avatar" style="width:42px;height:42px">ДК</div>
+                <div style="flex:1">
+                  <b style="font-size:var(--t-sm)">Дмитро К.</b>
+                  <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
+                    <span style="color:var(--warning-500);font-size:12px">★★★★★</span>
+                    <span class="hint">4.9 · 34 відгуки</span></div>
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:11px">
+                <span class="badge badge-success">✓ Телефон підтверджено</span>
+                <span class="badge badge-neutral">⚡ Відповідає за 15 хв</span>
+                <span class="badge badge-neutral">28 продажів</span>
+              </div>
+              <button class="btn btn-ghost btn-sm btn-block" style="margin-top:11px">Усі оголошення продавця (7)</button>
+            </div>
+
+            <div class="card" style="background:var(--bg-subtle)">
+              <div class="label">🛡️ Безпечна угода</div>
+              <ul style="margin:8px 0 0;padding-left:17px;font-size:var(--t-xs);color:var(--text-secondary);line-height:1.7">
+                <li>Оглядайте товар перед оплатою</li>
+                <li>Не переказуйте передоплату незнайомцям</li>
+                <li>Спілкуйтесь у чаті платформи</li>
+              </ul>
+            </div>
+
+            <button class="btn btn-ghost btn-sm">⚑ Поскаржитись на оголошення</button>
+          </aside>
+        </div>
+
+        <h3 style="margin-top:var(--s-8);font-size:var(--t-h4)">Схожі товари</h3>
+        <div class="lgrid" style="margin-top:var(--s-3)">
+          <article class="lcard"><div class="img">📱</div><div class="b"><div class="p">22 900 ₴</div><div class="t">iPhone 13 Pro 128GB Sierra Blue</div><div class="m"><span>Київ</span></div></div></article>
+          <article class="lcard"><div class="img">📱</div><div class="b"><div class="p">26 700 ₴</div><div class="t">iPhone 13 Pro 256GB Gold</div><div class="m"><span>Львів</span></div></div></article>
+          <article class="lcard"><div class="img">📱</div><div class="b"><div class="p">19 400 ₴</div><div class="t">iPhone 12 Pro 128GB Graphite</div><div class="m"><span>Київ</span></div></div></article>
+          <article class="lcard"><div class="img">📱</div><div class="b"><div class="p">31 200 ₴</div><div class="t">iPhone 14 Pro 128GB Deep Purple</div><div class="m"><span>Одеса</span></div></div></article>
+          <article class="lcard"><div class="img">📱</div><div class="b"><div class="p">23 800 ₴</div><div class="t">iPhone 13 Pro Max 128GB Silver</div><div class="m"><span>Харків</span></div></div></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 6. CHAT ══════════════════ -->
+  <section class="screen" id="s-chat">
+    <div class="stage-head">
+      <h2>Чат покупець ↔ продавець</h2>
+      <p>AI пропонує варіанти відповіді й підказує позицію в торгах — але надсилає завжди людина.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/chat/thr_412</div></div>
+      <div class="chat">
+        <div class="threads">
+          <div class="thread on">
+            <div class="avatar">АМ</div>
+            <div style="flex:1;min-width:0"><div class="n">Андрій М.</div>
+              <div class="p">Готовий взяти за 22 000</div></div>
+            <span class="u">2</span>
+          </div>
+          <div class="thread">
+            <div class="avatar">ОК</div>
+            <div style="flex:1;min-width:0"><div class="n">Олена К.</div>
+              <div class="p">Дякую, подумаю</div></div>
+          </div>
+          <div class="thread">
+            <div class="avatar">ВП</div>
+            <div style="flex:1;min-width:0"><div class="n">Віктор П.</div>
+              <div class="p">Шини ще доступні?</div></div>
+          </div>
+          <div class="thread">
+            <div class="avatar">ІС</div>
+            <div style="flex:1;min-width:0"><div class="n">Ірина С.</div>
+              <div class="p">Можна забрати сьогодні?</div></div>
+          </div>
+        </div>
+
+        <div class="chat-main">
+          <div class="chat-head">
+            <div class="avatar">АМ</div>
+            <div style="flex:1"><b style="font-size:var(--t-sm)">Андрій М.</b>
+              <div class="hint">iPhone 13 Pro Graphite · 24 500 ₴</div></div>
+            <button class="btn btn-ghost btn-sm">⚑</button>
+          </div>
+
+          <div class="msgs">
+            <div class="msg them">Доброго дня! Телефон ще актуальний?<span class="time">14:02</span></div>
+            <div class="msg me">Так, актуальний<span class="time">14:05</span></div>
+            <div class="msg them">А який стан батареї і чи є коробка?<span class="time">14:06</span></div>
+            <div class="msg me">Батарея 89%, коробка є, кабель у комплекті<span class="time">14:08</span></div>
+            <div class="msg them">Зрозуміло. А торг доречний?<span class="time">14:22</span></div>
+            <div class="msg offer">💰 <b>Пропозиція: 22 000 ₴</b><br>
+              <span style="font-size:11px">на 2 500 ₴ нижче за вашу ціну</span><span class="time">14:23</span></div>
+          </div>
+
+          <div class="chat-ai">
+            <div style="display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r-md);
+              background:var(--primary-soft);border:1px solid var(--primary)">
+              <span style="font-size:16px">📊</span>
+              <div style="flex:1;font-size:var(--t-xs);line-height:1.5">
+                <b>Медіана угод у категорії — 24 100 ₴</b> по 43 оголошеннях за 60 днів.
+                Пропозиція на 8.7% нижче медіани. Схожі телефони продавались у середньому за 11 днів.</div>
+            </div>
+            <div class="ai-tag" style="margin-top:11px"><span class="ai-dot"></span>Варіанти відповіді</div>
+            <div class="sugg">
+              <button>Готовий на 23 500 ₴ — це чесна ціна за такий стан</button>
+              <button>Дякую, але ціна остаточна</button>
+              <button>23 000 ₴ і забираєте сьогодні</button>
+            </div>
+          </div>
+
+          <div class="composer">
+            <input class="input" placeholder="Напишіть повідомлення…">
+            <button class="btn btn-primary">Надіслати</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Підказка не надсилається сама.</strong> Кнопка вставляє текст у поле вводу —
+      користувач може відредагувати його або видалити. Якщо він надішле без правок,
+      повідомлення позначається як <code>aiGenerated</code> у базі: це метрика того,
+      наскільки підказки справді влучні.
+    </div>
+  </section>
+
+  <!-- ══════════════════ 7. BULK ══════════════════ -->
+  <section class="screen" id="s-bulk">
+    <div class="stage-head">
+      <h2>Масовий імпорт каталогу (Business)</h2>
+      <p>Крок 3 з 4: AI збагачує рядки прайсу — визначає категорії, пише описи, заповнює характеристики.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">aitrade.ua/business/import/imp_19</div></div>
+      <div style="padding:var(--s-5)">
+
+        <div style="display:flex;gap:var(--s-2);margin-bottom:var(--s-5)">
+          <div style="flex:1;padding:11px 14px;border-radius:var(--r-md);background:var(--success-50);color:var(--success-600);font-size:var(--t-xs);font-weight:600">✓ 1. Файл завантажено</div>
+          <div style="flex:1;padding:11px 14px;border-radius:var(--r-md);background:var(--success-50);color:var(--success-600);font-size:var(--t-xs);font-weight:600">✓ 2. Мапінг підтверджено</div>
+          <div style="flex:1;padding:11px 14px;border-radius:var(--r-md);background:var(--primary-soft);color:var(--primary);font-size:var(--t-xs);font-weight:700">● 3. AI-збагачення</div>
+          <div style="flex:1;padding:11px 14px;border-radius:var(--r-md);background:var(--bg-inset);color:var(--text-muted);font-size:var(--t-xs);font-weight:600">4. Публікація</div>
+        </div>
+
+        <div class="card" style="border-color:var(--primary)">
+          <div style="display:flex;align-items:center;gap:var(--s-4)">
+            <div style="flex:1">
+              <div class="ai-tag"><span class="ai-dot"></span>AI обробляє каталог</div>
+              <div style="display:flex;justify-content:space-between;font-size:var(--t-sm);margin:9px 0 6px">
+                <span><b>218</b> з 312 товарів</span>
+                <span style="color:var(--text-muted)">залишилось ~4 хв</span></div>
+              <div class="meter"><div class="meter-fill" style="width:70%"></div></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-3);margin-top:var(--s-4)">
+            <div class="kpi" style="padding:var(--s-3)"><div class="k">Оброблено</div><div class="v" style="font-size:1.25rem">218</div></div>
+            <div class="kpi" style="padding:var(--s-3)"><div class="k">Успішно</div><div class="v up" style="font-size:1.25rem">211</div></div>
+            <div class="kpi" style="padding:var(--s-3)"><div class="k">Помилки</div><div class="v down" style="font-size:1.25rem">7</div></div>
+            <div class="kpi" style="padding:var(--s-3)"><div class="k">Вартість AI</div><div class="v" style="font-size:1.25rem">184 ₴</div></div>
+          </div>
+        </div>
+
+        <h3 style="margin:var(--s-5) 0 var(--s-3);font-size:var(--t-h4)">Прев'ю збагачених товарів</h3>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="table">
+            <tr><th>#</th><th>Назва з прайсу</th><th>Категорія (AI)</th><th>Опис (AI)</th><th>Ціна</th><th>Стан</th></tr>
+            <tr><td class="hint">12</td><td><b style="font-size:var(--t-sm)">Гальм. колодки Bosch BP1234</b></td>
+              <td><span class="badge badge-brand">Авто → Гальмівна система</span></td>
+              <td class="hint">Передні гальмівні колодки Bosch для…</td><td><b>1 240 ₴</b></td>
+              <td><span class="badge badge-success">✓ Готово</span></td></tr>
+            <tr><td class="hint">13</td><td><b style="font-size:var(--t-sm)">Фільтр масляний Mann W712</b></td>
+              <td><span class="badge badge-brand">Авто → Фільтри</span></td>
+              <td class="hint">Оригінальний масляний фільтр Mann…</td><td><b>320 ₴</b></td>
+              <td><span class="badge badge-success">✓ Готово</span></td></tr>
+            <tr><td class="hint">14</td><td><b style="font-size:var(--t-sm)">Амортизатор перед. KYB 334834</b></td>
+              <td><span class="badge badge-brand">Авто → Підвіска</span></td>
+              <td class="hint">Передній амортизатор KYB Excel-G…</td><td><b>2 890 ₴</b></td>
+              <td><span class="badge badge-success">✓ Готово</span></td></tr>
+            <tr style="background:var(--danger-50)"><td class="hint">15</td>
+              <td><b style="font-size:var(--t-sm)">Комплект №4 (див. опис)</b></td>
+              <td><span class="badge badge-danger">Не визначено</span></td>
+              <td class="hint" style="color:var(--danger-600)">Недостатньо даних у назві</td><td><b>—</b></td>
+              <td><span class="badge badge-danger">⚠ Потрібна дія</span></td></tr>
+            <tr><td class="hint">16</td><td><b style="font-size:var(--t-sm)">Свічки NGK BKR6E (4 шт)</b></td>
+              <td><span class="badge badge-brand">Авто → Запалювання</span></td>
+              <td class="hint">Комплект свічок запалювання NGK…</td><td><b>640 ₴</b></td>
+              <td><span class="badge badge-success">✓ Готово</span></td></tr>
+          </table>
+        </div>
+
+        <div style="display:flex;gap:var(--s-3);margin-top:var(--s-4);align-items:center">
+          <button class="btn btn-secondary">Виправити 7 помилок</button>
+          <button class="btn btn-ai">Опублікувати 211 товарів</button>
+          <span class="hint" style="margin-left:auto">Звіт про помилки можна завантажити в CSV</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ 8. ADMIN ══════════════════ -->
+  <section class="screen" id="s-admin">
+    <div class="stage-head">
+      <h2>Адмін-панель</h2>
+      <p>Модерація з AI-прескорингом ризику та окремий дашборд якості й вартості AI —
+         без нього неможливо керувати AI-продуктом.</p>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">admin.aitrade.ua/moderation</div></div>
+      <div style="padding:var(--s-5)">
+
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s-3)">
+          <div class="kpi"><div class="k">У черзі модерації</div><div class="v">23</div><div class="d">автопублікація 86%</div></div>
+          <div class="kpi"><div class="k">Нових користувачів</div><div class="v">412</div><div class="d up">↑ 18% за тиждень</div></div>
+          <div class="kpi"><div class="k">Нових оголошень</div><div class="v">1 847</div><div class="d">з них AI — 91%</div></div>
+          <div class="kpi"><div class="k">Витрати на AI</div><div class="v">2 840 ₴</div><div class="d">за 7 днів</div></div>
+          <div class="kpi"><div class="k">Відкриті скарги</div><div class="v down">9</div><div class="d">2 щодо AI-неточності</div></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:var(--s-4);margin-top:var(--s-4)">
+
+          <div class="card" style="padding:0;overflow:hidden">
+            <div style="padding:var(--s-4);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:var(--s-3)">
+              <h3 style="font-size:var(--t-h4)">Черга модерації</h3>
+              <span class="hint">відсортовано за ризиком</span>
+              <div class="tabs" style="margin-left:auto">
+                <button class="tab on">Усі</button><button class="tab">Високий ризик</button><button class="tab">Скарги</button>
+              </div>
+            </div>
+            <table class="table">
+              <tr><th>Ризик</th><th>Оголошення</th><th>Причина AI</th><th>Продавець</th><th></th></tr>
+              <tr>
+                <td><span class="badge badge-danger">0.91</span></td>
+                <td><b style="font-size:var(--t-sm)">Продам сигнальний пістолет</b><div class="hint">Хобі → Колекції</div></td>
+                <td class="hint" style="color:var(--danger-600)">Ознаки забороненого товару (зброя)</td>
+                <td class="hint">новий акаунт<br>тел. не підтв.</td>
+                <td><div style="display:flex;gap:5px"><button class="btn btn-secondary btn-sm">Відхилити</button></div></td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-warning">0.64</span></td>
+                <td><b style="font-size:var(--t-sm)">iPhone 15 Pro Max 1TB — 8 000 ₴</b><div class="hint">Електроніка → Смартфони</div></td>
+                <td class="hint" style="color:var(--warning-600)">Ціна на 73% нижче медіани — можливе шахрайство</td>
+                <td class="hint">2 дні на платформі</td>
+                <td><div style="display:flex;gap:5px"><button class="btn btn-secondary btn-sm">Відхилити</button><button class="btn btn-primary btn-sm">Схвалити</button></div></td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-warning">0.48</span></td>
+                <td><b style="font-size:var(--t-sm)">Nike Air Max, оригінал 100%</b><div class="hint">Взуття → Кросівки</div></td>
+                <td class="hint">Фото збігається з іншим оголошенням</td>
+                <td class="hint">★ 4.2 · 6 продажів</td>
+                <td><div style="display:flex;gap:5px"><button class="btn btn-secondary btn-sm">Відхилити</button><button class="btn btn-primary btn-sm">Схвалити</button></div></td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-neutral">0.31</span></td>
+                <td><b style="font-size:var(--t-sm)">Меблі для салону, комплект</b><div class="hint">Меблі → Інше</div></td>
+                <td class="hint">Категорія може не відповідати товару</td>
+                <td class="hint">★ 4.9 · 34 продажі</td>
+                <td><div style="display:flex;gap:5px"><button class="btn btn-secondary btn-sm">Відхилити</button><button class="btn btn-primary btn-sm">Схвалити</button></div></td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:var(--s-3)">
+            <div class="card" style="border-color:var(--primary)">
+              <div class="ai-tag" style="margin-bottom:var(--s-3)"><span class="ai-dot"></span>Якість AI · 7 днів</div>
+              <div style="display:flex;flex-direction:column;gap:11px;font-size:var(--t-sm)">
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--text-secondary)">Точність категорії</span><b class="up">94.1%</b></div>
+                  <div class="meter"><div class="meter-fill ok" style="width:94%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--text-secondary)">Заголовок без правок</span><b>61.4%</b></div>
+                  <div class="meter"><div class="meter-fill" style="width:61%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--text-secondary)">Опис без правок</span><b class="up">73.8%</b></div>
+                  <div class="meter"><div class="meter-fill ok" style="width:74%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--text-secondary)">Ціна прийнята як є</span><b>56.2%</b></div>
+                  <div class="meter"><div class="meter-fill" style="width:56%"></div></div></div>
+                <div><div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--text-secondary)">Деградації (фолбек)</span><b class="up">0.4%</b></div>
+                  <div class="meter"><div class="meter-fill ok" style="width:4%"></div></div></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="label">Витрати по типах задач</div>
+              <table class="table" style="margin-top:6px;font-size:var(--t-xs)">
+                <tr><td style="padding:6px 0;border:none">Розпізнавання фото</td><td style="padding:6px 0;border:none;text-align:right"><b>1 980 ₴</b></td></tr>
+                <tr><td style="padding:6px 0;border:none">Генерація тексту</td><td style="padding:6px 0;border:none;text-align:right"><b>412 ₴</b></td></tr>
+                <tr><td style="padding:6px 0;border:none">Діагностика оголошень</td><td style="padding:6px 0;border:none;text-align:right"><b>268 ₴</b></td></tr>
+                <tr><td style="padding:6px 0;border:none">Пошук і ембеддинги</td><td style="padding:6px 0;border:none;text-align:right"><b>180 ₴</b></td></tr>
+              </table>
+              <div style="margin-top:11px;padding:9px 11px;border-radius:var(--r-md);background:var(--bg-subtle)">
+                <div class="hint">Кеш заощадив за тиждень</div>
+                <b class="up" style="font-size:var(--t-lg)">— 3 120 ₴</b>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="label">Версії промптів</div>
+              <div style="margin-top:9px;font-size:var(--t-xs);display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between">
+                  <code style="font-family:var(--mono)">vision.recognize@v4</code><span class="up"><b>94.1%</b></span></div>
+                <div style="display:flex;justify-content:space-between;opacity:.6">
+                  <code style="font-family:var(--mono)">vision.recognize@v3</code><span><b>92.3%</b></span></div>
+                <div style="display:flex;justify-content:space-between">
+                  <code style="font-family:var(--mono)">copy.generate@v2</code><span><b>61.4%</b></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Права колонка — це те, чого немає в звичайній адмінці маркетплейсу.</strong>
+      «Заголовок без правок 61.4%» означає, що майже 4 з 10 користувачів переписують згенерований
+      заголовок — отже, промпт <code>copy.generate@v2</code> треба покращувати. Без цієї метрики
+      команда б і не дізналась, що з ним проблема.
+    </div>
+  </section>
+
+  </div>
+</div>
+
+<script>
+function toggleTheme(){
+  const r=document.documentElement, dark=r.dataset.theme==='dark';
+  r.dataset.theme = dark?'light':'dark';
+  document.getElementById('ticon').textContent = dark?'🌙':'☀️';
+}
+if (matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
+
+document.querySelectorAll('#nav button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('s-'+b.dataset.s).classList.add('on');
+    scrollTo({top:0,behavior:'smooth'});
+  });
+});
+
+/* Демо-перемикання цінових сценаріїв */
+document.querySelectorAll('.tabs').forEach(g=>{
+  g.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+    g.querySelectorAll('.tab').forEach(x=>x.classList.remove('on')); t.classList.add('on');
+  }));
+});
+</script>
+</body>
+</html>

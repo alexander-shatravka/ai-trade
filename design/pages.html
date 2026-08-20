@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Trade — Про нас, правила, політика, контакти, для бізнесу</title>
+<style>
+:root{
+  color-scheme:light;
+  --brand-400:#8C7DF1;--brand-500:#6E5BE8;--brand-600:#5B45D9;--brand-700:#4A36B8;
+  --accent-500:#14B8A6;--accent-600:#0E9384;
+  --n-0:#FFFFFF;--n-50:#F8F9FB;--n-100:#F1F3F7;--n-200:#E4E7EE;--n-300:#CDD2DE;--n-400:#9AA1B1;
+  --n-500:#6E7789;--n-600:#545C6B;--n-950:#101219;--n-1000:#0A0C11;
+  --success-50:#ECFDF5;--success-600:#059669;--warning-50:#FFFBEB;--warning-600:#D97706;
+  --danger-50:#FEF2F2;--danger-600:#DC2626;--info-50:#EFF6FF;--info-600:#2563EB;
+  --bg:var(--n-0);--bg-subtle:var(--n-50);--bg-inset:var(--n-100);
+  --surface:var(--n-0);--surface-hover:var(--n-50);
+  --border:var(--n-200);--border-strong:var(--n-300);
+  --text:var(--n-950);--text-secondary:var(--n-600);--text-muted:var(--n-500);
+  --primary:var(--brand-500);--primary-hover:var(--brand-600);--primary-soft:#F2F1FE;
+  --ring:rgba(110,91,232,.35);
+  --sh-xs:0 1px 2px rgba(16,18,25,.05);
+  --sh-sm:0 1px 3px rgba(16,18,25,.07),0 1px 2px rgba(16,18,25,.04);
+  --sh-md:0 4px 12px rgba(16,18,25,.07),0 2px 4px rgba(16,18,25,.04);
+  --sh-lg:0 12px 32px rgba(16,18,25,.10),0 4px 8px rgba(16,18,25,.04);
+  --sh-brand:0 8px 24px rgba(110,91,232,.28);
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:20px;--r-2xl:28px;--r-full:999px;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:20px;--s-6:24px;--s-8:32px;
+  --s-10:40px;--s-12:48px;--s-16:64px;--s-20:80px;--s-24:96px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',system-ui,sans-serif;
+  --t-h1:clamp(1.9rem,1.3rem + 1.8vw,2.75rem);--t-h2:1.5rem;--t-h3:1.125rem;
+  --t-lg:1.0625rem;--t-base:0.9375rem;--t-sm:0.8125rem;--t-xs:0.75rem;
+  --e-out:cubic-bezier(.32,.72,0,1);--d-fast:120ms;--d-base:200ms;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:var(--n-1000);--bg-subtle:#0E1117;--bg-inset:#161A22;
+  --surface:#12151C;--surface-hover:#1C212B;
+  --border:#242935;--border-strong:#333A48;
+  --text:#F2F4F8;--text-secondary:#A2AABB;--text-muted:#6E7789;
+  --primary:#8C7DF1;--primary-hover:#A093F5;--primary-soft:rgba(140,125,241,.14);
+  --success-50:rgba(16,185,129,.14);--success-600:#34D399;
+  --warning-50:rgba(245,158,11,.14);--warning-600:#FCD34D;
+  --danger-50:rgba(239,68,68,.14);--danger-600:#FCA5A5;
+  --info-50:rgba(59,130,246,.12);--info-600:#93C5FD;
+  --sh-xs:0 1px 2px rgba(0,0,0,.4);--sh-sm:0 1px 3px rgba(0,0,0,.5);
+  --sh-md:0 4px 12px rgba(0,0,0,.5);--sh-lg:0 12px 32px rgba(0,0,0,.55);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:var(--t-base);line-height:1.65;-webkit-font-smoothing:antialiased;letter-spacing:-.006em;
+  transition:background var(--d-base) var(--e-out),color var(--d-base) var(--e-out)}
+h1,h2,h3,h4{margin:0;font-weight:640;letter-spacing:-.026em;line-height:1.18}
+p{margin:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+.topbar{position:sticky;top:0;z-index:50;height:62px;display:flex;align-items:center;
+  padding:0 var(--s-6);border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(180%) blur(16px)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:680;letter-spacing:-.03em;font-size:1.0625rem}
+.logo-mark{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--brand-400),var(--brand-600) 55%,var(--accent-500));
+  box-shadow:var(--sh-brand);color:#fff;font-weight:800;font-size:13px}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:var(--s-2)}
+.icon-btn{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--border);
+  border-radius:var(--r-md);background:var(--surface);color:var(--text-secondary);cursor:pointer;font-size:15px}
+.icon-btn:hover{border-color:var(--border-strong);color:var(--text)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;
+  border:1px solid transparent;border-radius:var(--r-md);font-family:inherit;font-size:var(--t-base);
+  font-weight:560;cursor:pointer;transition:all var(--d-fast) var(--e-out)}
+.btn:active{transform:scale(.975)}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:var(--sh-sm)}
+.btn-primary:hover{background:var(--primary-hover);box-shadow:var(--sh-brand)}
+.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border-strong)}
+.btn-secondary:hover{background:var(--surface-hover)}
+.btn-ai{background:linear-gradient(135deg,var(--brand-500),var(--brand-600) 58%,var(--accent-600));
+  color:#fff;box-shadow:var(--sh-brand)}
+.btn-sm{height:32px;padding:0 13px;font-size:var(--t-sm)}
+
+.shell{display:grid;grid-template-columns:236px 1fr;max-width:1220px;margin:0 auto}
+.sidenav{position:sticky;top:62px;align-self:start;height:calc(100vh - 62px);overflow-y:auto;
+  padding:var(--s-6) var(--s-4);border-right:1px solid var(--border)}
+.sidenav a{display:block;padding:8px var(--s-3);border-radius:var(--r-sm);color:var(--text-secondary);
+  font-size:var(--t-sm);font-weight:520;transition:all var(--d-fast) var(--e-out)}
+.sidenav a:hover{background:var(--surface-hover);color:var(--text)}
+.sidenav a.on{background:var(--primary-soft);color:var(--primary);font-weight:600}
+.sidenav .grp{margin:var(--s-5) 0 var(--s-2);padding-left:var(--s-3);font-size:var(--t-xs);
+  font-weight:640;letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted)}
+main{padding:var(--s-12) var(--s-10) var(--s-24);max-width:780px}
+.page{margin-bottom:var(--s-24);scroll-margin-top:80px}
+.page > h1{font-size:var(--t-h1);letter-spacing:-.033em}
+.page .sub{margin-top:var(--s-3);font-size:var(--t-lg);color:var(--text-secondary);line-height:1.6}
+.page h2{margin:var(--s-10) 0 var(--s-3);font-size:var(--t-h2)}
+.page h3{margin:var(--s-6) 0 var(--s-2);font-size:var(--t-h3);font-weight:620}
+.page p{margin-top:var(--s-3);color:var(--text-secondary)}
+.page ul,.page ol{margin:var(--s-3) 0 0;padding-left:22px;color:var(--text-secondary)}
+.page li{margin-bottom:7px}
+.page li::marker{color:var(--text-muted)}
+.page strong{color:var(--text);font-weight:600}
+.updated{margin-top:var(--s-3);font-size:var(--t-sm);color:var(--text-muted)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:var(--s-5);box-shadow:var(--sh-xs)}
+.callout{margin-top:var(--s-4);padding:var(--s-4) var(--s-5);border-radius:var(--r-md);
+  border-left:3px solid var(--primary);background:var(--bg-subtle);font-size:var(--t-sm);line-height:1.6}
+.callout.warn{border-color:var(--warning-600);background:var(--warning-50);color:var(--warning-600)}
+.callout.warn strong{color:inherit}
+.callout.danger{border-color:var(--danger-600);background:var(--danger-50);color:var(--danger-600)}
+.callout.danger strong{color:inherit}
+.grid{display:grid;gap:var(--s-3)}
+.g2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.table{width:100%;border-collapse:collapse;font-size:var(--t-sm);margin-top:var(--s-4);
+  border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.table th{text-align:left;padding:11px 14px;background:var(--bg-inset);font-size:var(--t-xs);
+  font-weight:620;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted)}
+.table td{padding:12px 14px;border-top:1px solid var(--border);vertical-align:top;color:var(--text-secondary)}
+.table td:first-child{color:var(--text);font-weight:560;width:34%}
+
+.f-ico{width:42px;height:42px;border-radius:var(--r-md);display:grid;place-items:center;
+  font-size:20px;background:var(--primary-soft)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:var(--s-4)}
+.label{font-size:var(--t-sm);font-weight:560;color:var(--text-secondary)}
+.input,.select,.textarea{width:100%;height:40px;padding:0 13px;border:1px solid var(--border-strong);
+  border-radius:var(--r-md);background:var(--surface);color:var(--text);font-family:inherit;font-size:var(--t-base)}
+.textarea{height:auto;padding:11px 13px;resize:vertical;line-height:1.55}
+.input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
+.badge{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:var(--r-full);
+  font-size:var(--t-xs);font-weight:600;background:var(--primary-soft);color:var(--primary)}
+
+.biz-hero{padding:var(--s-10);border-radius:var(--r-2xl);color:#fff;
+  background:linear-gradient(140deg,var(--brand-600),var(--brand-500) 45%,var(--accent-600));
+  box-shadow:var(--sh-lg)}
+.biz-hero h1{font-size:var(--t-h1);letter-spacing:-.033em}
+.biz-hero p{margin-top:var(--s-3);opacity:.92;font-size:var(--t-lg);color:#fff;max-width:46ch}
+.biz-hero .btn{margin-top:var(--s-6);background:#fff;color:var(--brand-700)}
+.stat{padding:var(--s-5);border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface)}
+.stat b{display:block;font-size:1.75rem;font-weight:700;letter-spacing:-.03em}
+.stat span{font-size:var(--t-sm);color:var(--text-secondary)}
+
+@media(max-width:900px){.shell{grid-template-columns:1fr}.sidenav{display:none}
+  main{padding:var(--s-8) var(--s-5) var(--s-20)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="landing.html" class="logo"><span class="logo-mark">AI</span>AI&nbsp;Trade</a>
+  <div class="right">
+    <button class="icon-btn" onclick="toggleTheme()" aria-label="Змінити тему"><span id="ticon">🌙</span></button>
+    <a class="btn btn-primary btn-sm" href="landing.html">На головну</a>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="sidenav" id="nav">
+    <div class="grp">Компанія</div>
+    <a href="#about">Про нас</a>
+    <a href="#business">Для бізнесу</a>
+    <a href="#contacts">Контакти</a>
+    <div class="grp">Правові документи</div>
+    <a href="#terms">Правила користування</a>
+    <a href="#privacy">Політика конфіденційності</a>
+  </nav>
+
+  <main>
+
+  <!-- ═══════════ ПРО НАС ═══════════ -->
+  <article class="page" id="about">
+    <h1>Про нас</h1>
+    <p class="sub">AI Trade створений, щоб змінити спосіб продажу товарів.</p>
+
+    <p>Ми використовуємо штучний інтелект, щоб зробити створення оголошень простим, швидким
+       і доступним для кожного. Наша мета — побудувати нове покоління електронної комерції.</p>
+
+    <h2>З чого все почалося</h2>
+    <p>Ми подивилися на статистику класичних дошок оголошень і побачили дивну річ: із ста людей,
+       які натискають «Подати оголошення», до публікації доходить менше двадцяти. Люди відвалюються
+       у двох місцях — на полі «Опис», де треба щось написати, і на полі «Ціна», де треба вгадати ринок.</p>
+    <p>Обидві проблеми має вирішувати не людина, а машина. Так з'явився AI Trade.</p>
+
+    <h2>У що ми віримо</h2>
+    <div class="grid g2" style="margin-top:var(--s-4)">
+      <div class="card">
+        <div class="f-ico">🎯</div>
+        <h3 style="margin-top:var(--s-3)">Технологія має прибирати роботу, а не додавати</h3>
+        <p style="font-size:var(--t-sm)">Якщо AI змушує користувача розбиратися в налаштуваннях —
+          це поганий AI. Хороший працює з одного фото.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🤝</div>
+        <h3 style="margin-top:var(--s-3)">Останнє слово — за людиною</h3>
+        <p style="font-size:var(--t-sm)">Кожне поле, яке заповнив AI, можна змінити.
+          Ми пропонуємо, ви вирішуєте. Ніяких «AI знає краще».</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🔍</div>
+        <h3 style="margin-top:var(--s-3)">Чесність замість магії</h3>
+        <p style="font-size:var(--t-sm)">Ми показуємо, звідки взялася ціна і на скількох
+          оголошеннях побудований розрахунок. Якщо AI не впевнений — ми так і пишемо.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🇺🇦</div>
+        <h3 style="margin-top:var(--s-3)">Українська за замовчуванням</h3>
+        <p style="font-size:var(--t-sm)">Продукт створюється українською мовою для українського
+          ринку, а не перекладається з чужої платформи.</p>
+      </div>
+    </div>
+
+    <h2>Куди ми рухаємось</h2>
+    <p>Зараз AI Trade — це помічник для створення оголошень. Далі — рекомендації й аналітика,
+       потім інструменти для магазинів, а згодом — безпечні угоди з захищеною оплатою та доставкою.
+       Ми відкрито публікуємо план розвитку й рухаємось поетапно.</p>
+  </article>
+
+  <!-- ═══════════ ДЛЯ БІЗНЕСУ ═══════════ -->
+  <article class="page" id="business">
+    <div class="biz-hero">
+      <span class="badge" style="background:rgba(255,255,255,.2);color:#fff">AI Trade Business · 499 ₴/міс</span>
+      <h1 style="margin-top:var(--s-4)">AI Trade допомагає магазинам автоматизувати продажі</h1>
+      <p>Завантажте прайс — і AI сам створить каталог: визначить категорії, напише описи,
+         заповнить характеристики та запропонує ціни.</p>
+      <a class="btn" href="#contacts">Замовити демонстрацію</a>
+    </div>
+
+    <h2>Що отримує магазин</h2>
+    <div class="grid g2" style="margin-top:var(--s-4)">
+      <div class="card">
+        <div class="f-ico">📦</div>
+        <h3 style="margin-top:var(--s-3)">AI каталог</h3>
+        <p style="font-size:var(--t-sm)">Власна сторінка магазину з логотипом, описом, графіком роботи
+          та повним каталогом товарів. Єдиний стиль описів по всіх позиціях — їх пише один і той самий AI.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">📥</div>
+        <h3 style="margin-top:var(--s-3)">Масове завантаження</h3>
+        <p style="font-size:var(--t-sm)">Excel, CSV або архів фото. AI пропонує відповідність колонок,
+          ви підтверджуєте — і сотні товарів публікуються з описами та характеристиками.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🤖</div>
+        <h3 style="margin-top:var(--s-3)">AI менеджер</h3>
+        <p style="font-size:var(--t-sm)">Відповідає покупцям на типові питання про наявність, розміри
+          й умови доставки за вашими правилами. Складні питання передає живій людині.</p>
+      </div>
+      <div class="card">
+        <div class="f-ico">📈</div>
+        <h3 style="margin-top:var(--s-3)">Аналітика продажів</h3>
+        <p style="font-size:var(--t-sm)">Які позиції переглядають, а які висять; де ваша ціна вища
+          за ринок; який товар варто просунути. З конкретними діями, а не просто графіками.</p>
+      </div>
+    </div>
+
+    <h2>Як виглядає підключення</h2>
+    <ol>
+      <li><strong>Завантаження прайсу.</strong> Excel, CSV або ZIP-архів з фотографіями.</li>
+      <li><strong>Перевірка мапінгу.</strong> AI пропонує, які колонки файлу відповідають назві,
+          ціні, характеристикам. Ви підтверджуєте або виправляєте.</li>
+      <li><strong>AI-збагачення.</strong> Категорія, опис, характеристики, ключові слова —
+          для кожного товару. Обробка йде партіями, прогрес видно в реальному часі.</li>
+      <li><strong>Перегляд і публікація.</strong> Ви бачите готовий каталог до публікації
+          й можете відредагувати будь-яку позицію.</li>
+    </ol>
+
+    <div class="grid g2" style="margin-top:var(--s-6)">
+      <div class="stat"><b>~4 год</b><span>Ручне заведення 300 товарів</span></div>
+      <div class="stat"><b>~12 хв</b><span>Те саме через масовий імпорт</span></div>
+    </div>
+
+    <div class="callout">
+      <strong>Чесно про «безліміт».</strong> Тариф Business не має обмеження на кількість оголошень
+      і AI-створень у межах добросовісного використання. Для каталогів понад 2 000 позицій на місяць
+      ми домовляємось про індивідуальні умови — просто напишіть нам.
+    </div>
+  </article>
+
+  <!-- ═══════════ КОНТАКТИ ═══════════ -->
+  <article class="page" id="contacts">
+    <h1>Контакти</h1>
+    <p class="sub">Напишіть нам — ми відповідаємо в робочі дні протягом одного дня.</p>
+
+    <div class="grid g2" style="margin-top:var(--s-6)">
+      <div class="card">
+        <div class="f-ico">💬</div>
+        <h3 style="margin-top:var(--s-3)">Підтримка користувачів</h3>
+        <p style="font-size:var(--t-sm)">Питання про акаунт, оголошення, тарифи чи роботу AI.</p>
+        <p style="font-size:var(--t-sm);margin-top:var(--s-2)"><strong>support@aitrade.ua</strong></p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🏢</div>
+        <h3 style="margin-top:var(--s-3)">Бізнес-звернення</h3>
+        <p style="font-size:var(--t-sm)">Підключення магазину, партнерство, інтеграції, преса.</p>
+        <p style="font-size:var(--t-sm);margin-top:var(--s-2)"><strong>business@aitrade.ua</strong></p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🛡️</div>
+        <h3 style="margin-top:var(--s-3)">Порушення й безпека</h3>
+        <p style="font-size:var(--t-sm)">Шахрайство, заборонені товари, скарги на контент.</p>
+        <p style="font-size:var(--t-sm);margin-top:var(--s-2)"><strong>abuse@aitrade.ua</strong></p>
+      </div>
+      <div class="card">
+        <div class="f-ico">🔐</div>
+        <h3 style="margin-top:var(--s-3)">Персональні дані</h3>
+        <p style="font-size:var(--t-sm)">Запити щодо ваших даних, видалення акаунта, GDPR.</p>
+        <p style="font-size:var(--t-sm);margin-top:var(--s-2)"><strong>privacy@aitrade.ua</strong></p>
+      </div>
+    </div>
+
+    <h2>Форма звернення</h2>
+    <form class="card" style="margin-top:var(--s-4)" onsubmit="event.preventDefault();alert('Демонстраційний макет — форма не надсилається.')">
+      <div class="field">
+        <label class="label" for="c-topic">Тема звернення</label>
+        <select class="select" id="c-topic">
+          <option>Питання щодо роботи платформи</option>
+          <option>Проблема з оголошенням</option>
+          <option>Питання щодо тарифу чи оплати</option>
+          <option>AI надав неточну інформацію про товар</option>
+          <option>Підключення магазину (бізнес)</option>
+          <option>Партнерство або преса</option>
+          <option>Скарга на користувача чи оголошення</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="c-name">Ваше ім'я</label>
+        <input class="input" id="c-name" placeholder="Олександр">
+      </div>
+      <div class="field">
+        <label class="label" for="c-mail">Email для відповіді</label>
+        <input class="input" id="c-mail" type="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label class="label" for="c-msg">Повідомлення</label>
+        <textarea class="textarea" id="c-msg" rows="5" placeholder="Опишіть ситуацію якомога конкретніше — це прискорить відповідь."></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Надіслати звернення</button>
+      <p class="updated">Надсилаючи форму, ви погоджуєтесь з обробкою даних згідно з
+        <a href="#privacy" style="color:var(--primary)">Політикою конфіденційності</a>.</p>
+    </form>
+  </article>
+
+  <!-- ═══════════ ПРАВИЛА ═══════════ -->
+  <article class="page" id="terms">
+    <h1>Правила користування</h1>
+    <p class="sub">Коротко і без юридичного туману: що можна, чого не можна і за що відповідає кожна сторона.</p>
+    <p class="updated">Редакція від 17 серпня 2026 року · чинна для всіх користувачів платформи</p>
+
+    <h2>1. Загальні положення</h2>
+    <p>AI Trade — це майданчик для розміщення оголошень про продаж товарів. Платформа не є стороною
+       угод між користувачами, не є продавцем і не є посередником у розрахунках. Усі домовленості,
+       передача товару й оплата відбуваються безпосередньо між покупцем і продавцем.</p>
+    <p>Реєструючись, ви підтверджуєте, що вам виповнилось 18 років або ви користуєтесь платформою
+       за згодою батьків чи опікунів.</p>
+
+    <h2>2. Відповідальність користувачів</h2>
+    <ul>
+      <li>Ви відповідаєте за <strong>достовірність</strong> усієї інформації в оголошенні —
+          навіть тієї, яку згенерував AI. Публікуючи оголошення, ви підтверджуєте, що перевірили її.</li>
+      <li>Ви відповідаєте за те, що маєте <strong>право продавати</strong> цей товар:
+          він ваш, не є краденим, не перебуває під арештом чи в заставі.</li>
+      <li>Ви відповідаєте за <strong>виконання домовленостей</strong> з іншою стороною.</li>
+      <li>Ви відповідаєте за <strong>безпеку свого акаунта</strong>. Не передавайте доступ третім особам.</li>
+      <li>Ви зобов'язуєтесь не використовувати платформу для обману, тиску чи переслідування інших користувачів.</li>
+    </ul>
+
+    <h2>3. Заборонені товари та послуги</h2>
+    <p>На платформі заборонено розміщувати:</p>
+    <ul>
+      <li>зброю, боєприпаси, вибухові речовини та їх компоненти;</li>
+      <li>наркотичні засоби, психотропні речовини, прекурсори, будь-які товари для їх виготовлення;</li>
+      <li>ліки рецептурного відпуску, БАДи з недоведеною безпечністю, медичні вироби без дозволів;</li>
+      <li>тютюнові й алкогольні вироби, електронні сигарети та рідини до них;</li>
+      <li>контрафакт, підробки брендів, товари з порушенням прав інтелектуальної власності;</li>
+      <li>крадене майно, товари сумнівного походження, документи, державні нагороди;</li>
+      <li>персональні дані, бази даних, акаунти сервісів;</li>
+      <li>порнографічні матеріали й будь-який контент за участю неповнолітніх;</li>
+      <li>живих тварин з порушенням законодавства про поводження з тваринами;</li>
+      <li>фінансові піраміди, «швидкий заробіток», криптосхеми;</li>
+      <li>будь-які товари й послуги, обіг яких обмежено або заборонено законодавством України.</li>
+    </ul>
+    <div class="callout danger">
+      <strong>Нульова терпимість.</strong> Оголошення про зброю, наркотики й контент за участю
+      неповнолітніх видаляються без попередження, акаунт блокується назавжди, а інформація
+      передається правоохоронним органам.
+    </div>
+
+    <h2>4. Правила публікації</h2>
+    <ul>
+      <li><strong>Одне оголошення = один товар.</strong> Не об'єднуйте різні позиції в одне оголошення.</li>
+      <li><strong>Фото мають бути ваші.</strong> Не використовуйте зображення з інтернету
+          чи чужих оголошень — товар на фото має бути тим самим, що продається.</li>
+      <li><strong>Ціна має бути реальною.</strong> Заборонено вказувати «1 ₴» або «договірна»
+          в полі ціни, щоб потрапити вище у видачу.</li>
+      <li><strong>Категорія має відповідати товару.</strong> Розміщення у популярній категорії
+          заради переглядів — порушення.</li>
+      <li><strong>Без дублів.</strong> Одне й те саме оголошення не можна публікувати кілька разів.</li>
+      <li><strong>Без контактів у тексті й на фото.</strong> Спілкування — через внутрішній чат;
+          так ми можемо захистити обидві сторони.</li>
+      <li><strong>Без КАПСУ, спецсимволів і «!!!»</strong> у заголовку.</li>
+    </ul>
+
+    <h2>5. Модерація</h2>
+    <p>Кожне оголошення проходить автоматичну перевірку. Більшість публікується одразу;
+       оголошення з ознаками ризику потрапляють на перевірку модератором. Ми можемо:</p>
+    <ul>
+      <li>відхилити оголошення з поясненням причини;</li>
+      <li>попросити відредагувати оголошення;</li>
+      <li>тимчасово обмежити доступ до акаунта;</li>
+      <li>заблокувати акаунт назавжди при грубих або повторних порушеннях.</li>
+    </ul>
+    <p>Ви можете оскаржити будь-яке рішення модерації, написавши на
+       <strong>support@aitrade.ua</strong>. Ми розглядаємо звернення протягом 3 робочих днів.</p>
+
+    <h2>6. Обмеження відповідальності щодо AI</h2>
+    <div class="callout warn">
+      <strong>Це важливо прочитати повністю.</strong> AI Trade використовує штучний інтелект
+      для створення описів, визначення характеристик і рекомендації цін. Ці результати
+      є <strong>допоміжними</strong>.
+    </div>
+    <ul>
+      <li>AI може <strong>помилятися</strong> у визначенні бренду, моделі, характеристик
+          чи стану товару. Перед публікацією перевіряйте кожне поле.</li>
+      <li>Рекомендація ціни — це <strong>інформаційна оцінка на основі ринкових даних</strong>
+          платформи, а не експертна оцінка майна в розумінні законодавства. Вона не може
+          використовуватись для страхових, судових, податкових чи заставних цілей.</li>
+      <li>Прогноз ймовірності продажу — <strong>статистична оцінка</strong>, а не гарантія.</li>
+      <li>Покращені AI фотографії не повинні спотворювати реальний стан товару.
+          Приховування дефектів обробкою фото — порушення правил.</li>
+      <li><strong>Відповідальність за опублікований зміст оголошення несе користувач</strong>,
+          навіть якщо текст згенеровано AI. Публікуючи, ви робите його своєю заявою про товар.</li>
+      <li>Якщо AI надав про ваш товар неточну інформацію — повідомте нас через форму зворотного
+          зв'язку з причиною «AI надав неточну інформацію». Ми використовуємо ці звернення
+          для покращення системи.</li>
+    </ul>
+
+    <h2>7. Тарифи, оплата й повернення коштів</h2>
+    <ul>
+      <li>Підписка списується щомісяця автоматично й діє до кінця оплаченого періоду після скасування.</li>
+      <li>Невикористані ліміти AI-створень не переносяться на наступний місяць.</li>
+      <li>Платне просування діє вказану кількість днів з моменту активації.</li>
+      <li>Кошти за платне просування не повертаються, якщо оголошення було видалено
+          за порушення правил.</li>
+      <li>Якщо послугу не надано з нашої вини — ми повертаємо кошти повністю.</li>
+    </ul>
+
+    <h2>8. Зміни правил</h2>
+    <p>Ми можемо оновлювати ці правила. Про суттєві зміни повідомляємо на email
+       і в інтерфейсі щонайменше за 14 днів до набрання чинності.</p>
+  </article>
+
+  <!-- ═══════════ ПОЛІТИКА ═══════════ -->
+  <article class="page" id="privacy">
+    <h1>Політика конфіденційності</h1>
+    <p class="sub">Які дані ми збираємо, навіщо, як захищаємо і як їх видалити.</p>
+    <p class="updated">Редакція від 17 серпня 2026 року</p>
+
+    <h2>1. Які дані ми збираємо</h2>
+    <table class="table">
+      <tr><th>Категорія</th><th>Що саме</th><th>Навіщо</th></tr>
+      <tr><td>Реєстраційні</td><td>Email, ім'я, аватар (з Google, якщо ви входите через нього)</td><td>Створення й ідентифікація акаунта</td></tr>
+      <tr><td>Номер телефону</td><td>Номер і факт підтвердження</td><td>Захист від шахраїв. Обов'язковий перед першою публікацією</td></tr>
+      <tr><td>Контент</td><td>Оголошення, фотографії, повідомлення в чаті, відгуки</td><td>Робота платформи</td></tr>
+      <tr><td>Поведінкові</td><td>Перегляди, пошукові запити, збережені товари, категорії</td><td>Рекомендації й покращення пошуку</td></tr>
+      <tr><td>Технічні</td><td>IP-адреса, тип пристрою, браузер, мова</td><td>Безпека, боротьба зі зловживаннями, аналітика</td></tr>
+      <tr><td>Платіжні</td><td>Історія платежів і статус підписки</td><td>Виставлення рахунків</td></tr>
+    </table>
+    <div class="callout">
+      <strong>Чого ми НЕ зберігаємо:</strong> дані вашої банківської картки. Платежі обробляє
+      сертифікований платіжний провайдер; ми бачимо лише статус операції та останні 4 цифри картки.
+    </div>
+
+    <h2>2. Як ми використовуємо дані</h2>
+    <ul>
+      <li>Щоб платформа працювала: показувати оголошення, доставляти повідомлення, приймати оплату.</li>
+      <li>Щоб AI створював якісні оголошення й точні цінові рекомендації.</li>
+      <li>Щоб рекомендувати релевантні товари на основі ваших переглядів і пошуків.</li>
+      <li>Щоб виявляти шахрайство, спам і заборонені товари.</li>
+      <li>Щоб покращувати продукт — в агрегованому, знеособленому вигляді.</li>
+      <li>Щоб надсилати сервісні листи (нове повідомлення, статус оголошення). Маркетингові
+          розсилки — тільки за окремою згодою, з відпискою в один клік.</li>
+    </ul>
+    <p><strong>Ми не продаємо ваші дані</strong> третім особам і не передаємо їх рекламодавцям.</p>
+
+    <h2>3. Використання штучного інтелекту</h2>
+    <p>Для роботи AI-функцій ми передаємо дані зовнішньому AI-провайдеру. Конкретно:</p>
+    <ul>
+      <li><strong>Що передається:</strong> фотографії товару, введена вами підказка, текст оголошення,
+          текст пошукового запиту, контекст переписки (для підказок у чаті).</li>
+      <li><strong>Що НЕ передається:</strong> ваш email, номер телефону, ім'я, IP-адреса,
+          платіжні дані. AI-провайдер не знає, чиї це дані.</li>
+      <li><strong>Метадані фото видаляються</strong> перед відправкою — зокрема GPS-координати,
+          які автоматично зберігає камера телефона.</li>
+      <li><strong>Дані не використовуються для навчання</strong> моделей провайдера —
+          це закріплено договором про обробку даних.</li>
+      <li><strong>Ми зберігаємо історію AI-запитів</strong> (що надійшло на вхід і що вийшло)
+          протягом 90 днів — для розгляду скарг і покращення якості. Далі вона видаляється автоматично.</li>
+      <li>Ви можете вимкнути персоналізовані AI-рекомендації в налаштуваннях. Основні
+          AI-функції створення оголошень при цьому продовжать працювати.</li>
+    </ul>
+
+    <h2>4. Хто ще бачить ваші дані</h2>
+    <ul>
+      <li><strong>Інші користувачі</strong> — ваше ім'я, аватар, місто, рейтинг, відгуки
+          й активні оголошення. Email і телефон не показуються нікому.</li>
+      <li><strong>Постачальники послуг</strong> — хмарний хостинг, сховище файлів, email-сервіс,
+          платіжний провайдер, AI-провайдер. Кожен має підписаний договір про обробку даних
+          і доступ лише до необхідного мінімуму.</li>
+      <li><strong>Правоохоронні органи</strong> — лише на підставі законної вимоги.</li>
+    </ul>
+
+    <h2>5. Як ми захищаємо інформацію</h2>
+    <ul>
+      <li>Шифрування каналу (TLS) для всіх з'єднань і шифрування персональних даних у сховищі.</li>
+      <li>Паролі не зберігаються взагалі — вхід через Google або одноразове посилання на email.</li>
+      <li>Обмежений доступ співробітників за принципом мінімально необхідних прав,
+          з журналюванням кожної дії адміністратора.</li>
+      <li>Автоматичне видалення метаданих з фотографій.</li>
+      <li>Регулярні резервні копії й моніторинг підозрілої активності.</li>
+      <li>Сервери й резервні копії розміщені на території Європейського Союзу.</li>
+    </ul>
+
+    <h2>6. Скільки ми зберігаємо дані</h2>
+    <table class="table">
+      <tr><th>Дані</th><th>Термін зберігання</th></tr>
+      <tr><td>Акаунт і профіль</td><td>Поки акаунт активний</td></tr>
+      <tr><td>Оголошення</td><td>2 роки після архівації</td></tr>
+      <tr><td>Повідомлення в чаті</td><td>1 рік після останнього повідомлення</td></tr>
+      <tr><td>Історія AI-запитів</td><td>90 днів</td></tr>
+      <tr><td>Поведінкові події</td><td>6 місяців</td></tr>
+      <tr><td>Платіжні документи</td><td>3 роки (вимога законодавства)</td></tr>
+    </table>
+
+    <h2>7. Ваші права</h2>
+    <ul>
+      <li><strong>Дізнатися</strong>, які дані про вас ми зберігаємо, і отримати їх копію.</li>
+      <li><strong>Виправити</strong> неточні дані — більшість можна змінити в налаштуваннях.</li>
+      <li><strong>Видалити</strong> акаунт і персональні дані.</li>
+      <li><strong>Обмежити</strong> обробку або заперечити проти неї.</li>
+      <li><strong>Забрати дані</strong> у машиночитаному форматі (експорт).</li>
+      <li><strong>Відкликати згоду</strong> на маркетингові розсилки будь-коли.</li>
+    </ul>
+    <p>Для реалізації будь-якого права напишіть на <strong>privacy@aitrade.ua</strong>.
+       Ми відповідаємо протягом 30 днів.</p>
+
+    <h2>8. Видалення акаунта</h2>
+    <p>Видалити акаунт можна в налаштуваннях, у розділі «Акаунт». Що відбувається далі:</p>
+    <ol>
+      <li><strong>Одразу:</strong> усі ваші оголошення знімаються з публікації, сесії завершуються,
+          профіль стає недоступним для інших користувачів.</li>
+      <li><strong>Одразу:</strong> ваші персональні дані — email, телефон, ім'я, фотографія
+          профілю — знеособлюються.</li>
+      <li><strong>Протягом 30 днів:</strong> видаляються фотографії з нашого сховища
+          та історія AI-запитів.</li>
+      <li><strong>Залишаються:</strong> знеособлені відгуки, які ви залишили іншим користувачам
+          (щоб не спотворювати їхній рейтинг), і платіжні документи, які ми зобов'язані
+          зберігати за законом.</li>
+    </ol>
+    <div class="callout warn">
+      Видалення акаунта незворотне. Якщо ви просто хочете зробити паузу — можна
+      приховати всі оголошення й вимкнути сповіщення, не видаляючи акаунт.
+    </div>
+
+    <h2>9. Файли cookie</h2>
+    <p>Ми використовуємо необхідні cookie (сесія, безпека, налаштування теми) — вони потрібні
+       для роботи сайту. Аналітичні cookie вмикаються лише після вашої згоди в банері.
+       Рекламні cookie ми не використовуємо.</p>
+
+    <h2>10. Діти</h2>
+    <p>Платформа не призначена для осіб молодше 18 років. Ми свідомо не збираємо дані дітей.
+       Якщо ви вважаєте, що дитина створила акаунт, напишіть на privacy@aitrade.ua —
+       ми видалимо його.</p>
+
+    <h2>11. Зміни політики</h2>
+    <p>Про суттєві зміни ми повідомляємо на email і в інтерфейсі щонайменше за 14 днів.
+       Дата останньої редакції завжди вказана на початку документа.</p>
+  </article>
+
+  </main>
+</div>
+
+<script>
+function toggleTheme(){
+  const r=document.documentElement, dark=r.dataset.theme==='dark';
+  r.dataset.theme = dark?'light':'dark';
+  document.getElementById('ticon').textContent = dark?'🌙':'☀️';
+}
+if (matchMedia('(prefers-color-scheme: dark)').matches) toggleTheme();
+
+/* Підсвітка активного розділу */
+const links=[...document.querySelectorAll('#nav a')];
+const obs=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#'+e.target.id));
+    }
+  });
+},{rootMargin:'-20% 0px -70%'});
+document.querySelectorAll('.page').forEach(p=>obs.observe(p));
+</script>
+</body>
+</html>
